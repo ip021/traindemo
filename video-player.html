@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频回放 - 数字人教育平台</title>
+    <!-- 引入Font Awesome图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* 全局变量 */
+        :root {
+            --primary-color: #4a6cf7;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-color: #dee2e6;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        /* 重置样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: var(--dark-color);
+            background-color: #000;
+            line-height: 1.6;
+        }
+
+        /* 视频播放器容器 */
+        .video-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #000;
+        }
+
+        /* 顶部导航栏 */
+        .video-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .video-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .video-meta {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        /* 视频播放区域 */
+        .player-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .video-player {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #000;
+        }
+
+        .placeholder {
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .placeholder i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        /* 控制栏 */
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .progress-container {
+            flex: 1;
+            max-width: 600px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 5px;
+            background-color: #555;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 5px;
+            width: 0%;
+        }
+
+        .time-display {
+            font-size: 0.9rem;
+            color: #ccc;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        /* 讲座信息面板 */
+        .lecture-info {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .info-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .info-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--secondary-color);
+        }
+
+        .info-description {
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .info-outline {
+            margin-bottom: 1.5rem;
+        }
+
+        .outline-list {
+            padding-left: 1.5rem;
+        }
+
+        .outline-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .instructor-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+        }
+
+        .instructor-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .instructor-details {
+            flex: 1;
+        }
+
+        .instructor-name {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .instructor-title {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .video-header {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+
+            .header-left {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .controls {
+                flex-wrap: wrap;
+            }
+
+            .progress-container {
+                order: 3;
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <!-- 顶部导航栏 -->
+        <div class="video-header">
+            <div class="header-left">
+                <button class="back-btn" id="backBtn">
+                    <i class="fas fa-arrow-left"></i> 返回
+                </button>
+                <div>
+                    <div class="video-title" id="videoTitle">讲座标题</div>
+                    <div class="video-meta" id="videoMeta">课程名称 | 主讲人</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 视频播放区域 -->
+        <div class="player-container">
+            <!-- 视频播放器 -->
+            <video class="video-player" id="videoPlayer" controls>
+                您的浏览器不支持视频播放。
+            </video>
+        </div>
+
+        <!-- 控制栏 -->
+        <div class="controls">
+            <button class="control-btn" id="playPauseBtn">
+                <i class="fas fa-play"></i>
+            </button>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress" id="progress"></div>
+                </div>
+            </div>
+            <div class="time-display">
+                <span id="currentTime">00:00</span> / <span id="duration">00:00</span>
+            </div>
+            <button class="control-btn" id="volumeBtn">
+                <i class="fas fa-volume-up"></i>
+            </button>
+        </div>
+
+        <!-- 讲座信息面板 -->
+        <div class="lecture-info">
+            <div class="info-header">
+                <div class="info-title" id="lectureTitle">讲座标题</div>
+            </div>
+            
+            <div class="info-meta">
+                <div class="meta-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="lectureTime">2023-10-20 14:00</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-clock"></i>
+                    <span id="lectureDuration">100分钟</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-users"></i>
+                    <span id="lectureRegistrants">75人报名</span>
+                </div>
+            </div>
+            
+            <div class="info-description" id="lectureDescription">
+                讲座描述内容...
+            </div>
+            
+            <div class="info-outline">
+                <h3>讲座大纲</h3>
+                <ul class="outline-list" id="lectureOutline">
+                    <!-- 大纲项将通过JavaScript动态生成 -->
+                </ul>
+            </div>
+            
+            <div class="instructor-info">
+                <div class="instructor-avatar">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="instructor-details">
+                    <div class="instructor-name" id="instructorName">主讲人姓名</div>
+                    <div class="instructor-title" id="instructorTitle">主讲人职位</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取URL参数
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(window.location.href);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取讲座ID
+            const lectureId = getUrlParameter('id');
+            
+            // 如果有讲座ID，则加载对应讲座信息
+            if (lectureId) {
+                loadLectureData(lectureId);
+            } else {
+                // 默认加载第一个讲座作为示例
+                loadDefaultLecture();
+            }
+            
+            // 设置事件监听器
+            setupEventListeners();
+        });
+
+        // 加载讲座数据
+        function loadLectureData(lectureId) {
+            // 这里应该是从服务器获取数据，现在使用模拟数据
+            // 在实际应用中，这里会是一个AJAX请求
+            
+            // 模拟讲座数据（与shuziren1.html中的数据一致）
+            const lecturesData = [
+                {
+                    id: 5,
+                    title: "供应链风险管理策略",
+                    course: "供应链战略管理",
+                    description: "学习如何识别、评估和应对供应链风险，建立弹性供应链体系，应对突发事件和市场波动。",
+                    instructor: {
+                        name: "陈经理",
+                        title: "某跨国公司供应链总监"
+                    },
+                    startTime: "2023-10-28 15:00",
+                    duration: 90,
+                    registrants: 110,
+                    capacity: 150,
+                    status: "recorded",
+                    category: "supplychain",
+                    outline: [
+                        "供应链风险识别方法",
+                        "风险评估模型介绍",
+                        "风险应对策略",
+                        "弹性供应链构建",
+                        "案例分析与讨论"
+                    ]
+                },
+                {
+                    id: 6,
+                    title: "大数据分析在需求预测中的应用",
+                    course: "供应链数据分析",
+                    description: "掌握大数据分析技术在需求预测中的应用方法，提高预测准确度，优化库存管理和生产计划。",
+                    instructor: {
+                        name: "吴博士",
+                        title: "某电商平台数据科学负责人"
+                    },
+                    startTime: "2023-10-20 14:00",
+                    duration: 100,
+                    registrants: 75,
+                    capacity: 120,
+                    status: "recorded",
+                    category: "ai",
+                    outline: [
+                        "需求预测基础理论",
+                        "大数据分析方法",
+                        "机器学习模型应用",
+                        "预测结果评估",
+                        "实际业务案例"
+                    ]
+                }
+            ];
+            
+            // 查找对应的讲座
+            const lecture = lecturesData.find(l => l.id == lectureId);
+            
+            if (lecture) {
+                // 更新页面内容
+                updatePageContent(lecture);
+            } else {
+                // 如果找不到对应的讲座，加载默认讲座
+                loadDefaultLecture();
+            }
+        }
+
+        // 加载默认讲座
+        function loadDefaultLecture() {
+            const defaultLecture = {
+                id: 6,
+                title: "大数据分析在需求预测中的应用",
+                course: "供应链数据分析",
+                description: "掌握大数据分析技术在需求预测中的应用方法，提高预测准确度，优化库存管理和生产计划。",
+                instructor: {
+                    name: "吴博士",
+                    title: "某电商平台数据科学负责人"
+                },
+                startTime: "2023-10-20 14:00",
+                duration: 100,
+                registrants: 75,
+                capacity: 120,
+                status: "recorded",
+                category: "ai",
+                outline: [
+                    "需求预测基础理论",
+                    "大数据分析方法",
+                    "机器学习模型应用",
+                    "预测结果评估",
+                    "实际业务案例"
+                ]
+            };
+            
+            updatePageContent(defaultLecture);
+        }
+
+        // 更新页面内容
+        function updatePageContent(lecture) {
+            // 更新标题和元信息
+            document.getElementById('videoTitle').textContent = lecture.title;
+            document.getElementById('videoMeta').textContent = `${lecture.course} | ${lecture.instructor.name}`;
+            document.getElementById('lectureTitle').textContent = lecture.title;
+            
+            // 更新时间信息
+            document.getElementById('lectureTime').textContent = lecture.startTime;
+            document.getElementById('lectureDuration').textContent = `${lecture.duration}分钟`;
+            document.getElementById('lectureRegistrants').textContent = `${lecture.registrants}人报名`;
+            
+            // 更新描述
+            document.getElementById('lectureDescription').textContent = lecture.description;
+            
+            // 更新主讲人信息
+            document.getElementById('instructorName').textContent = lecture.instructor.name;
+            document.getElementById('instructorTitle').textContent = lecture.instructor.title;
+            
+            // 更新大纲
+            const outlineList = document.getElementById('lectureOutline');
+            outlineList.innerHTML = '';
+            lecture.outline.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                outlineList.appendChild(li);
+            });
+            
+            // 设置视频源（这里使用一个示例视频链接，实际应用中应该替换为真实的视频地址）
+            const videoPlayer = document.getElementById('videoPlayer');
+            // 注意：在实际应用中，这里应该根据lecture.id或其他标识符来获取对应的视频文件
+            videoPlayer.src = 'sample-video.mp4'; // 示例视频文件
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            const videoPlayer = document.getElementById('videoPlayer');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const progressBar = document.getElementById('progressBar');
+            const progress = document.getElementById('progress');
+            const currentTimeEl = document.getElementById('currentTime');
+            const durationEl = document.getElementById('duration');
+            const volumeBtn = document.getElementById('volumeBtn');
+            const backBtn = document.getElementById('backBtn');
+            
+            // 播放/暂停按钮
+            playPauseBtn.addEventListener('click', function() {
+                if (videoPlayer.paused) {
+                    videoPlayer.play();
+                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                } else {
+                    videoPlayer.pause();
+                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            });
+            
+            // 视频播放状态变化
+            videoPlayer.addEventListener('play', function() {
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            });
+            
+            videoPlayer.addEventListener('pause', function() {
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            });
+            
+            // 视频时间更新
+            videoPlayer.addEventListener('timeupdate', function() {
+                const percent = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+                progress.style.width = percent + '%';
+                
+                // 更新时间显示
+                currentTimeEl.textContent = formatTime(videoPlayer.currentTime);
+            });
+            
+            // 视频加载完成
+            videoPlayer.addEventListener('loadedmetadata', function() {
+                durationEl.textContent = formatTime(videoPlayer.duration);
+            });
+            
+            // 进度条点击
+            progressBar.addEventListener('click', function(e) {
+                const rect = progressBar.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                videoPlayer.currentTime = pos * videoPlayer.duration;
+            });
+            
+            // 音量按钮
+            volumeBtn.addEventListener('click', function() {
+                videoPlayer.muted = !videoPlayer.muted;
+                volumeBtn.innerHTML = videoPlayer.muted ? 
+                    '<i class="fas fa-volume-mute"></i>' : 
+                    '<i class="fas fa-volume-up"></i>';
+            });
+            
+            // 返回按钮
+            backBtn.addEventListener('click', function() {
+                // 返回到上一个页面
+                window.history.back();
+            });
+        }
+
+        // 格式化时间显示
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+    </script>
+</body>
+</html>

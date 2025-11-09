@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程进度详情 - 供应链实训课程系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --success: #4ade80;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --border-radius: 12px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        html, body {
+            height: 100%;
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 100%;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: white;
+            color: var(--dark);
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        .back-button:hover {
+            background: var(--gray-light);
+        }
+        
+        .course-header {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 32px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .course-info {
+            flex: 1;
+        }
+        
+        .course-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+        
+        .course-meta {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 16px;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray);
+        }
+        
+        .progress-overview {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .progress-percent {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .progress-label {
+            font-size: 18px;
+            color: var(--gray);
+        }
+        
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            background: var(--light);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .student-card {
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            transition: var(--transition);
+        }
+        
+        .student-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .student-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+        
+        .student-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .student-id {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .progress-bar-container {
+            margin: 12px 0;
+        }
+        
+        .progress-bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: var(--gray-light);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+        }
+        
+        .student-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-ahead {
+            background: rgba(74, 222, 128, 0.1);
+            color: var(--success);
+        }
+        
+        .status-on-track {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+        
+        .status-behind {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+        
+        .btn-secondary {
+            background: var(--gray-light);
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+        
+        @media (max-width: 768px) {
+            .course-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .course-meta {
+                justify-content: center;
+            }
+            
+            .students-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">课程进度详情</h1>
+            <button class="back-button" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i> 返回
+            </button>
+        </div>
+        
+        <div class="course-header">
+            <div class="course-info">
+                <h2 class="course-title" id="course-title">供应链管理基础</h2>
+                <div class="course-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span id="course-teacher">授课教师: 张老师</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-users"></i>
+                        <span id="course-students">学生人数: 35人</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span id="course-duration">课程周期: 16周</span>
+                    </div>
+                </div>
+            </div>
+            <div class="progress-overview">
+                <div class="progress-percent" id="overall-progress">75%</div>
+                <div class="progress-label">整体完成度</div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('overview')">概览</div>
+            <div class="tab" onclick="switchTab('students')">学生详情</div>
+            <div class="tab" onclick="switchTab('analytics')">数据分析</div>
+        </div>
+        
+        <div class="tab-content active" id="overview-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">进度统计</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">章节完成情况</h3>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-label">
+                        <span>第一章 供应链概述</span>
+                        <span>85%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 85%"></div>
+                    </div>
+                </div>
+                
+                <div class="progress-bar-container">
+                    <div class="progress-bar-label">
+                        <span>第二章 供应链设计</span>
+                        <span>78%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 78%"></div>
+                    </div>
+                </div>
+                
+                <div class="progress-bar-container">
+                    <div class="progress-bar-label">
+                        <span>第三章 供应商管理</span>
+                        <span>72%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 72%"></div>
+                    </div>
+                </div>
+                
+                <div class="progress-bar-container">
+                    <div class="progress-bar-label">
+                        <span>第四章 库存管理</span>
+                        <span>65%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="students-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">学生进度详情</h3>
+                </div>
+                <div class="students-grid">
+                    <div class="student-card">
+                        <div class="student-header">
+                            <div class="student-avatar">李</div>
+                            <div>
+                                <div class="student-name">李明</div>
+                                <div class="student-id">学号: 2023001</div>
+                            </div>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-label">
+                                <span>完成度</span>
+                                <span>90%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 90%; background: var(--success)"></div>
+                            </div>
+                        </div>
+                        <span class="student-status status-ahead">进度超前</span>
+                    </div>
+                    
+                    <div class="student-card">
+                        <div class="student-header">
+                            <div class="student-avatar">王</div>
+                            <div>
+                                <div class="student-name">王芳</div>
+                                <div class="student-id">学号: 2023002</div>
+                            </div>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-label">
+                                <span>完成度</span>
+                                <span>75%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%; background: var(--primary)"></div>
+                            </div>
+                        </div>
+                        <span class="student-status status-on-track">正常</span>
+                    </div>
+                    
+                    <div class="student-card">
+                        <div class="student-header">
+                            <div class="student-avatar">张</div>
+                            <div>
+                                <div class="student-name">张伟</div>
+                                <div class="student-id">学号: 2023003</div>
+                            </div>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-label">
+                                <span>完成度</span>
+                                <span>60%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%; background: var(--warning)"></div>
+                            </div>
+                        </div>
+                        <span class="student-status status-behind">进度落后</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="analytics-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">学习行为分析</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="analyticsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('课程进度详情页面已加载');
+            initCharts();
+        });
+        
+        // 初始化图表
+        function initCharts() {
+            // 进度图表
+            const progressCtx = document.getElementById('progressChart').getContext('2d');
+            const progressChart = new Chart(progressCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['第1周', '第2周', '第3周', '第4周', '第5周', '第6周', '第7周', '第8周'],
+                    datasets: [{
+                        label: '平均完成率 (%)',
+                        data: [45, 52, 58, 65, 70, 72, 75, 78],
+                        backgroundColor: 'rgba(67, 97, 238, 0.7)',
+                        borderColor: 'rgba(67, 97, 238, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+            
+            // 学习行为分析图表
+            const analyticsCtx = document.getElementById('analyticsChart').getContext('2d');
+            const analyticsChart = new Chart(analyticsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+                    datasets: [
+                        {
+                            label: '视频观看时长 (分钟)',
+                            data: [120, 95, 150, 110, 130, 80, 160],
+                            borderColor: 'rgba(67, 97, 238, 1)',
+                            backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: '作业提交数量',
+                            data: [8, 6, 10, 7, 9, 5, 12],
+                            borderColor: 'rgba(74, 222, 128, 1)',
+                            backgroundColor: 'rgba(74, 222, 128, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: '讨论参与次数',
+                            data: [5, 3, 7, 4, 6, 2, 8],
+                            borderColor: 'rgba(245, 158, 11, 1)',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 切换标签页
+        function switchTab(tabName) {
+            // 隐藏所有标签页内容
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 移除所有标签的激活状态
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 显示选中的标签页内容
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // 激活选中的标签
+            event.target.classList.add('active');
+        }
+        
+        // 返回上一页
+        function goBack() {
+            try {
+                if (window.parent) {
+                    window.parent.postMessage({
+                        type: 'loadPage',
+                        pageUrl: 'dashboard.html'
+                    }, '*');
+                } else {
+                    console.error('无法访问父页面');
+                }
+            } catch (error) {
+                console.error('跨域通信失败:', error);
+                // 如果跨域通信失败，尝试其他方式返回
+                window.history.back();
+            }
+        }
+    </script>
+</body>
+</html>

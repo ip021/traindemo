@@ -120,6 +120,15 @@
             gap: 8px;
         }
         
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+        
         .btn-secondary {
             background: var(--gray-light);
             color: var(--dark);
@@ -173,6 +182,7 @@
             justify-content: center;
             margin: 0 auto 16px;
             font-size: 24px;
+            color: var(--primary);
         }
         
         .action-title {
@@ -296,190 +306,282 @@
 
     <div class="main-content">
         <!-- 快速操作 -->
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">快速操作</div>
-            <div class="card-actions">
-                <button class="btn btn-secondary">
-                    <i class="fas fa-plus"></i> 新建课程
-                </button>
+        <div class="card">
+           
+            <div class="grid grid-4">
+                <div class="quick-action-card" data-page="beike.html">
+                    <div class="action-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="action-title">备课中心</div>
+                    <div class="action-desc">创建和管理课程内容</div>
+                </div>
+                <div class="quick-action-card" data-page="jiaoan.html">
+                    <div class="action-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="action-title">教案管理</div>
+                    <div class="action-desc">设计和分享教学方案</div>
+                </div>
+                <div class="quick-action-card" data-page="zuoyexitong.html">
+                    <div class="action-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="action-title">作业系统</div>
+                    <div class="action-desc">布置和批改学生作业</div>
+                </div>
+                <div class="quick-action-card" data-page="shujutongji.html">
+                    <div class="action-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="action-title">数据分析</div>
+                    <div class="action-desc">查看学习效果分析</div>
+                </div>
             </div>
         </div>
-        <div class="grid grid-4">
-            <div class="quick-action-card" onclick="parent.loadPage('beike.html')">
-                <div class="action-icon">
-                    <i class="fas fa-book-open"></i>
-                </div>
-                <div class="action-title">备课中心</div>
-                <div class="action-desc">创建和管理课程内容</div>
-            </div>
-            <div class="quick-action-card" onclick="parent.loadPage('jiaoan.html')">
-                <div class="action-icon">
-                    <i class="fas fa-clipboard-list"></i>
-                </div>
-                <div class="action-title">教案管理</div>
-                <div class="action-desc">设计和分享教学方案</div>
-            </div>
-            <div class="quick-action-card" onclick="parent.loadPage('zuoyexitong.html')">
-                <div class="action-icon">
-                    <i class="fas fa-tasks"></i>
-                </div>
-                <div class="action-title">作业系统</div>
-                <div class="action-desc">布置和批改学生作业</div>
-            </div>
-            <div class="quick-action-card" onclick="parent.loadPage('shujufenxi.html')">
-                <div class="action-icon">
-                    <i class="fas fa-chart-bar"></i>
-                </div>
-                <div class="action-title">数据分析</div>
-                <div class="action-desc">查看学习效果分析</div>
-            </div>
-        </div>
-    </div>
 
-    <div class="grid grid-2">
-        <!-- 待办事项 -->
+        <div class="grid grid-2">
+            <!-- 待办事项 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">待办事项</div>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary" data-page="todo-details.html">
+                            <i class="fas fa-list"></i> 查看全部
+                        </button>
+                    </div>
+                </div>
+                <div class="todo-list">
+                    <div class="list-item">
+                        <div class="list-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="list-content">
+                            <div class="list-title">批改《供应链基础》作业</div>
+                            <div class="list-desc">3份作业待批改，截止明天</div>
+                        </div>
+                        <span class="tag tag-warning">待处理</span>
+                    </div>
+                    <div class="list-item">
+                        <div class="list-icon">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="list-content">
+                            <div class="list-title">准备下周库存管理教案</div>
+                            <div class="list-desc">需要准备教学资源和案例</div>
+                        </div>
+                        <span class="tag tag-primary">进行中</span>
+                    </div>
+                    <div class="list-item">
+                        <div class="list-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="list-content">
+                            <div class="list-title">安排小组实训活动</div>
+                            <div class="list-desc">需要分配角色和准备场景</div>
+                        </div>
+                        <span class="tag tag-primary">进行中</span>
+                    </div>
+                    <div class="list-item">
+                        <div class="list-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="list-content">
+                            <div class="list-title">查看学生学习进度报告</div>
+                            <div class="list-desc">生成月度学习分析报告</div>
+                        </div>
+                        <span class="tag tag-success">已完成</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 课程动态 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">课程动态</div>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary" id="refresh-activity">
+                            <i class="fas fa-sync-alt"></i> 刷新
+                        </button>
+                    </div>
+                </div>
+                <div class="activity-list">
+                    <div class="list-item">
+                        <div class="list-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="list-content">
+                            <div class="list-title">学生李华提交了作业</div>
+                            <div class="list-desc">《物流管理》章节作业，刚刚提交</div>
+                        </div>
+                    </div>
+                    <div class="list-item">
+                        <div class="list-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="list-content">
+                            <div class="list-title">《供应链优化》考试已结束</div>
+                            <div class="list-desc">25名学生完成考试，待批改</div>
+                        </div>
+                    </div>
+                    <div class="list-item">
+                        <div class="list-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="list-content">
+                            <div class="list-title">3名学生学习进度落后</div>
+                            <div class="list-desc">需要关注并发送提醒</div>
+                        </div>
+                    </div>
+                    <div class="list-item">
+                        <div class="list-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div class="list-content">
+                            <div class="list-title">系统备份已完成</div>
+                            <div class="list-desc">所有数据已安全备份</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 课程进度 -->
         <div class="card">
             <div class="card-header">
-                <div class="card-title">待办事项</div>
+                <div class="card-title">课程进度</div>
                 <div class="card-actions">
-                    <button class="btn btn-secondary">查看全部</button>
+                    <button class="btn btn-secondary" data-page="course-progress-details.html">
+                        <i class="fas fa-chart-line"></i> 查看详情
+                    </button>
                 </div>
             </div>
-            <div class="todo-list">
-                <div class="list-item">
-                    <div class="list-icon">
-                        <i class="fas fa-edit"></i>
+            <div class="grid grid-3">
+                <div class="progress-card">
+                    <div class="card-title">供应链管理基础</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%"></div>
                     </div>
-                    <div class="list-content">
-                        <div class="list-title">批改《供应链基础》作业</div>
-                        <div class="list-desc">3份作业待批改，截止明天</div>
-                    </div>
-                    <span class="tag tag-warning">待处理</span>
-                </div>
-                <div class="list-item">
-                    <div class="list-icon">
-                        <i class="fas fa-calendar"></i>
-                    </div>
-                    <div class="list-content">
-                        <div class="list-title">准备下周库存管理教案</div>
-                        <div class="list-desc">需要准备教学资源和案例</div>
-                    </div>
-                    <span class="tag tag-primary">进行中</span>
-                </div>
-                <div class="list-item">
-                    <div class="list-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="list-content">
-                        <div class="list-title">安排小组实训活动</div>
-                        <div class="list-desc">需要分配角色和准备场景</div>
-                    </div>
-                    <span class="tag tag-primary">进行中</span>
-                </div>
-                <div class="list-item">
-                    <div class="list-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="list-content">
-                        <div class="list-title">查看学生学习进度报告</div>
-                        <div class="list-desc">生成月度学习分析报告</div>
-                    </div>
-                    <span class="tag tag-success">已完成</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- 课程动态 -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">课程动态</div>
-                <div class="card-actions">
-                    <button class="btn btn-secondary">刷新</button>
-                </div>
-            </div>
-            <div class="activity-list">
-                <div class="list-item">
-                    <div class="list-icon">
-                        <i class="fas fa-user-check"></i>
-                    </div>
-                    <div class="list-content">
-                        <div class="list-title">学生李华提交了作业</div>
-                        <div class="list-desc">《物流管理》章节作业，刚刚提交</div>
+                    <div class="progress-info">
+                        <span>75% 已完成</span>
+                        <span>28/35名学生</span>
                     </div>
                 </div>
-                <div class="list-item">
-                    <div class="list-icon">
-                        <i class="fas fa-file-alt"></i>
+                <div class="progress-card">
+                    <div class="card-title">物流与配送管理</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 45%"></div>
                     </div>
-                    <div class="list-content">
-                        <div class="list-title">《供应链优化》考试已结束</div>
-                        <div class="list-desc">25名学生完成考试，待批改</div>
-                    </div>
-                </div>
-                <div class="list-item">
-                    <div class="list-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <div class="list-content">
-                        <div class="list-title">3名学生学习进度落后</div>
-                        <div class="list-desc">需要关注并发送提醒</div>
+                    <div class="progress-info">
+                        <span>45% 已完成</span>
+                        <span>15/35名学生</span>
                     </div>
                 </div>
-                <div class="list-item">
-                    <div class="list-icon">
-                        <i class="fas fa-rocket"></i>
+                <div class="progress-card">
+                    <div class="card-title">库存控制策略</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 30%"></div>
                     </div>
-                    <div class="list-content">
-                        <div class="list-title">系统备份已完成</div>
-                        <div class="list-desc">所有数据已安全备份</div>
+                    <div class="progress-info">
+                        <span>30% 已完成</span>
+                        <span>10/35名学生</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 课程进度 -->
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">课程进度</div>
-            <div class="card-actions">
-                <button class="btn btn-secondary">查看详情</button>
-            </div>
-        </div>
-        <div class="grid grid-3">
-            <div class="progress-card">
-                <div class="card-title">供应链管理基础</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 75%"></div>
-                </div>
-                <div class="progress-info">
-                    <span>75% 已完成</span>
-                    <span>28/35名学生</span>
-                </div>
-            </div>
-            <div class="progress-card">
-                <div class="card-title">物流与配送管理</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 45%"></div>
-                </div>
-                <div class="progress-info">
-                    <span>45% 已完成</span>
-                    <span>15/35名学生</span>
-                </div>
-            </div>
-            <div class="progress-card">
-                <div class="card-title">库存控制策略</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 30%"></div>
-                </div>
-                <div class="progress-info">
-                    <span>30% 已完成</span>
-                    <span>10/35名学生</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
+    <script>
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('教师工作台页面已加载');
+            
+            // 为所有带有data-page属性的元素添加点击事件
+            document.querySelectorAll('[data-page]').forEach(element => {
+                element.addEventListener('click', function() {
+                    const pageUrl = this.getAttribute('data-page');
+                    // 使用postMessage进行跨域通信
+                    try {
+                        if (window.parent) {
+                            window.parent.postMessage({
+                                type: 'loadPage',
+                                pageUrl: pageUrl
+                            }, '*');
+                        } else {
+                            console.error('无法访问父页面');
+                        }
+                    } catch (error) {
+                        console.error('跨域通信失败:', error);
+                    }
+                });
+            });
+            
+            // 为新建课程按钮添加特殊处理
+            const newCourseBtn = document.getElementById('new-course-btn');
+            if (newCourseBtn) {
+                newCourseBtn.addEventListener('click', function() {
+                    try {
+                        if (window.parent) {
+                            window.parent.postMessage({
+                                type: 'loadPage',
+                                pageUrl: 'beike.html'
+                            }, '*');
+                        } else {
+                            console.error('无法访问父页面');
+                        }
+                    } catch (error) {
+                        console.error('跨域通信失败:', error);
+                    }
+                });
+            }
+            
+            // 为刷新按钮添加功能
+            const refreshBtn = document.getElementById('refresh-activity');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', function() {
+                    refreshActivity();
+                });
+            }
+        });
+        
+        // 刷新活动列表
+        function refreshActivity() {
+            console.log('刷新课程动态');
+            // 显示加载状态
+            showLoadingState();
+            
+            // 模拟刷新过程
+            setTimeout(() => {
+                hideLoadingState();
+                alert('课程动态已刷新');
+            }, 1000);
+        }
+        
+        // 显示加载状态
+        function showLoadingState() {
+            try {
+                if (window.parent && window.parent.document) {
+                    const parentBody = window.parent.document.body;
+                    parentBody.style.opacity = '0.8';
+                    parentBody.style.cursor = 'wait';
+                }
+            } catch (error) {
+                console.warn('无法修改父页面样式:', error);
+            }
+        }
+        
+        // 隐藏加载状态
+        function hideLoadingState() {
+            try {
+                if (window.parent && window.parent.document) {
+                    const parentBody = window.parent.document.body;
+                    parentBody.style.opacity = '1';
+                    parentBody.style.cursor = 'default';
+                }
+            } catch (error) {
+                console.warn('无法修改父页面样式:', error);
+            }
+        }
+    </script>
 </body>
 </html>

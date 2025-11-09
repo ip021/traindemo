@@ -626,6 +626,122 @@
                 margin-bottom: 1rem;
             }
         }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .close {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: var(--dark-color);
+        }
+
+        .modal-body {
+            margin-bottom: 1rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.2);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* 通知样式 */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            color: white;
+            box-shadow: var(--box-shadow);
+            z-index: 1001;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background-color: var(--success-color);
+        }
+
+        .notification.error {
+            background-color: var(--danger-color);
+        }
+
+        .notification.warning {
+            background-color: var(--warning-color);
+        }
     </style>
 </head>
 <body>
@@ -647,23 +763,23 @@
                 <div class="filter-section">
                     <div class="filter-label">讲座状态</div>
                     <ul class="status-list">
-                        <li class="status-item active">
+                        <li class="status-item active" data-status="all">
                             <span>全部</span>
                             <span class="count">15</span>
                         </li>
-                        <li class="status-item">
+                        <li class="status-item" data-status="upcoming">
                             <span>即将开始</span>
                             <span class="count">4</span>
                         </li>
-                        <li class="status-item">
+                        <li class="status-item" data-status="live">
                             <span>正在直播</span>
                             <span class="count">3</span>
                         </li>
-                        <li class="status-item">
+                        <li class="status-item" data-status="completed">
                             <span>已结束</span>
                             <span class="count">3</span>
                         </li>
-                        <li class="status-item">
+                        <li class="status-item" data-status="recorded">
                             <span>录播回放</span>
                             <span class="count">5</span>
                         </li>
@@ -674,19 +790,19 @@
                 <div class="filter-section">
                     <div class="filter-label">讲座分类</div>
                     <ul class="category-list">
-                        <li class="category-item active">
+                        <li class="category-item active" data-category="all">
                             <span>全部</span>
                             <span class="count">15</span>
                         </li>
-                        <li class="category-item">
+                        <li class="category-item" data-category="ai">
                             <span>人工智能应用</span>
                             <span class="count">6</span>
                         </li>
-                        <li class="category-item">
+                        <li class="category-item" data-category="digital">
                             <span>数字化转型</span>
                             <span class="count">4</span>
                         </li>
-                        <li class="category-item">
+                        <li class="category-item" data-category="supplychain">
                             <span>供应链管理</span>
                             <span class="count">5</span>
                         </li>
@@ -697,9 +813,9 @@
                 <div class="filter-section">
                     <div class="filter-label">时间范围</div>
                     <div class="date-range">
-                        <input type="date" class="date-input">
-                        <input type="date" class="date-input">
-                        <button class="btn btn-primary btn-sm">
+                        <input type="date" class="date-input" id="startDate">
+                        <input type="date" class="date-input" id="endDate">
+                        <button class="btn btn-primary btn-sm" id="applyDateFilter">
                             <i class="fas fa-search"></i> 应用筛选
                         </button>
                     </div>
@@ -708,12 +824,12 @@
                 <!-- 搜索框 -->
                 <div class="filter-section">
                     <div class="filter-label">搜索</div>
-                    <input type="text" class="search-input" placeholder="输入讲座关键词...">
+                    <input type="text" class="search-input" id="searchInput" placeholder="输入讲座关键词...">
                 </div>
                 
                 <!-- 重置按钮 -->
                 <div class="filter-section">
-                    <button class="btn btn-outline">
+                    <button class="btn btn-outline" id="resetFilters">
                         <i class="fas fa-redo-alt"></i> 重置筛选条件
                     </button>
                 </div>
@@ -726,13 +842,13 @@
                     <div class="list-title">讲座列表</div>
                     
                     <div class="view-options">
-                        <div class="view-option active">
+                        <div class="view-option active" data-view="list">
                             <i class="fas fa-list"></i>
                         </div>
                         
                         <div class="sort-options">
                             <span>排序:</span>
-                            <select class="sort-select">
+                            <select class="sort-select" id="sortSelect">
                                 <option value="time">按时间</option>
                                 <option value="popularity">按人气</option>
                                 <option value="name">按名称</option>
@@ -742,241 +858,21 @@
                 </div>
                 
                 <!-- 讲座网格 -->
-                <div class="lecture-grid">
-                    <!-- 讲座卡片 1 -->
-                    <div class="lecture-card">
-                        <div class="card-header">
-                            <div class="card-title">人工智能在供应链中的应用</div>
-                            <div class="card-course">供应链管理基础</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="card-desc">
-                                本讲座将深入探讨人工智能技术在供应链预测、库存优化和物流路径规划中的实际应用场景，结合企业案例解析技术落地难点与解决方案。
-                            </div>
-                            <div class="card-meta">
-                                <div class="meta-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>主讲人: 李教授</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <span>开始: 2023-11-15 14:00</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-clock"></i>
-                                    <span>时长: 120分钟</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-users"></i>
-                                    <span>报名: 150人</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <span class="status-badge upcoming">即将开始</span>
-                            <button class="btn btn-primary btn-sm">
-                                <i class="fas fa-ticket-alt"></i> 立即报名
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- 讲座卡片 2 -->
-                    <div class="lecture-card">
-                        <div class="card-header">
-                            <div class="card-title">数字化转型战略与实践</div>
-                            <div class="card-course">数字化转型</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="card-desc">
-                                探讨企业数字化转型的核心战略、实施路径与成功要素，分享行业领先企业的转型案例与实践经验。
-                            </div>
-                            <div class="card-meta">
-                                <div class="meta-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>主讲人: 张总监</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <span>开始: 2023-11-12 10:00</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-clock"></i>
-                                    <span>时长: 90分钟</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-users"></i>
-                                    <span>报名: 85人</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <span class="status-badge upcoming">即将开始</span>
-                            <button class="btn btn-primary btn-sm">
-                                <i class="fas fa-ticket-alt"></i> 立即报名
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- 讲座卡片 3 -->
-                    <div class="lecture-card">
-                        <div class="card-header">
-                            <div class="card-title">智能物流路径优化算法</div>
-                            <div class="card-course">供应链优化</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="card-desc">
-                                详细讲解智能物流路径规划算法原理，包括遗传算法、模拟退火算法和蚁群算法，提供实际应用案例分析。
-                            </div>
-                            <div class="card-meta">
-                                <div class="meta-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>主讲人: 王博士</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <span>开始: 2023-11-10 10:00</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-clock"></i>
-                                    <span>时长: 60分钟</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-users"></i>
-                                    <span>报名: 120人</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <span class="status-badge live">正在直播</span>
-                            <button class="btn btn-primary btn-sm">
-                                <i class="fas fa-play"></i> 立即观看
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- 讲座卡片 4 -->
-                    <div class="lecture-card">
-                        <div class="card-header">
-                            <div class="card-title">区块链技术在供应链溯源中的应用</div>
-                            <div class="card-course">供应链管理前沿</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="card-desc">
-                                分析区块链技术如何提升供应链透明度和安全性，实现产品全生命周期溯源，降低欺诈风险。
-                            </div>
-                            <div class="card-meta">
-                                <div class="meta-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>主讲人: 刘教授</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <span>开始: 2023-11-05 16:00</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-clock"></i>
-                                    <span>时长: 120分钟</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-users"></i>
-                                    <span>报名: 95人</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <span class="status-badge completed">已结束</span>
-                            <button class="btn btn-primary btn-sm">
-                                <i class="fas fa-play-circle"></i> 观看回放
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- 讲座卡片 5 -->
-                    <div class="lecture-card">
-                        <div class="card-header">
-                            <div class="card-title">供应链风险管理策略</div>
-                            <div class="card-course">供应链战略管理</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="card-desc">
-                                学习如何识别、评估和应对供应链风险，建立弹性供应链体系，应对突发事件和市场波动。
-                            </div>
-                            <div class="card-meta">
-                                <div class="meta-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>主讲人: 陈经理</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <span>开始: 2023-10-28 15:00</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-clock"></i>
-                                    <span>时长: 90分钟</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-users"></i>
-                                    <span>报名: 110人</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <span class="status-badge recorded">录播回放</span>
-                            <button class="btn btn-primary btn-sm">
-                                <i class="fas fa-play-circle"></i> 观看回放
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- 讲座卡片 6 -->
-                    <div class="lecture-card">
-                        <div class="card-header">
-                            <div class="card-title">大数据分析在需求预测中的应用</div>
-                            <div class="card-course">供应链数据分析</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="card-desc">
-                                掌握大数据分析技术在需求预测中的应用方法，提高预测准确度，优化库存管理和生产计划。
-                            </div>
-                            <div class="card-meta">
-                                <div class="meta-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>主讲人: 吴博士</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <span>开始: 2023-10-20 14:00</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-clock"></i>
-                                    <span>时长: 100分钟</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-users"></i>
-                                    <span>报名: 75人</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <span class="status-badge recorded">录播回放</span>
-                            <button class="btn btn-primary btn-sm">
-                                <i class="fas fa-play-circle"></i> 观看回放
-                            </button>
-                        </div>
-                    </div>
+                <div class="lecture-grid" id="lectureGrid">
+                    <!-- 讲座卡片将通过JavaScript动态生成 -->
                 </div>
                 
                 <!-- 列表页脚 -->
                 <div class="list-footer">
-                    <div class="list-info">显示 1-6 条，共 15 条</div>
+                    <div class="list-info" id="listInfo">显示 1-6 条，共 15 条</div>
                     <div class="pagination">
-                        <button class="btn btn-outline btn-sm">上一页</button>
-                        <div class="page-numbers">
-                            <div class="page-number active">1</div>
-                            <div class="page-number">2</div>
-                            <div class="page-number">3</div>
+                        <button class="btn btn-outline btn-sm" id="prevPage">上一页</button>
+                        <div class="page-numbers" id="pageNumbers">
+                            <div class="page-number active" data-page="1">1</div>
+                            <div class="page-number" data-page="2">2</div>
+                            <div class="page-number" data-page="3">3</div>
                         </div>
-                        <button class="btn btn-outline btn-sm">下一页</button>
+                        <button class="btn btn-outline btn-sm" id="nextPage">下一页</button>
                     </div>
                 </div>
             </div>
@@ -985,124 +881,24 @@
             <div class="lecture-detail">
                 <div class="detail-header">
                     <div class="detail-title">讲座详情</div>
-                    <button class="btn btn-outline btn-sm">
+                    <button class="btn btn-outline btn-sm" id="expandDetail">
                         <i class="fas fa-expand"></i>
                     </button>
                 </div>
                 
-                <div class="detail-content">
-                    <div class="detail-section">
-                        <div class="detail-label">讲座标题</div>
-                        <div class="detail-value">人工智能在供应链中的应用</div>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <div class="detail-label">所属课程</div>
-                        <div class="detail-value">供应链管理基础</div>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <div class="detail-label">主讲讲师</div>
-                        <div class="detail-value">
-                            <div class="instructor-info">
-                                <div class="instructor-avatar">
-                                    <i class="fas fa-user-tie"></i>
-                                </div>
-                                <div class="instructor-details">
-                                    <div class="instructor-name">李教授</div>
-                                    <div class="instructor-title">清华大学供应链管理研究中心主任</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <div class="detail-label">开始时间</div>
-                        <div class="detail-value">2023-11-15 14:00</div>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <div class="detail-label">讲座时长</div>
-                        <div class="detail-value">120分钟</div>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <div class="detail-label">讲座状态</div>
-                        <div class="detail-value">
-                            <span class="status-badge upcoming">即将开始</span>
-                        </div>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <div class="detail-label">报名人数</div>
-                        <div class="detail-value">150人 / 300人</div>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <div class="detail-label">讲座描述</div>
-                        <div class="detail-value">
-                            本讲座将深入探讨人工智能技术在供应链预测、库存优化和物流路径规划中的实际应用场景，结合企业案例解析技术落地难点与解决方案。
-                        </div>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <div class="detail-label">讲座大纲</div>
-                        <div class="detail-value">
-                            <ul class="outline-list">
-                                <li>人工智能在供应链中的核心价值</li>
-                                <li>需求预测与库存优化AI模型</li>
-                                <li>智能物流路径规划算法</li>
-                                <li>企业案例分析与实践建议</li>
-                                <li>未来发展趋势与挑战</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <div class="detail-label">适合人群</div>
-                        <div class="detail-value">
-                            <div class="audience-tags">
-                                <span class="audience-tag">供应链管理者</span>
-                                <span class="audience-tag">物流从业者</span>
-                                <span class="audience-tag">技术研发人员</span>
-                                <span class="audience-tag">企业决策者</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <div class="detail-label">学习收获</div>
-                        <div class="detail-value">
-                            <div class="benefits-list">
-                                <div class="benefit-item">
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>掌握AI在供应链中的核心应用场景</span>
-                                </div>
-                                <div class="benefit-item">
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>学习企业AI转型成功案例</span>
-                                </div>
-                                <div class="benefit-item">
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>了解AI技术实施的关键挑战</span>
-                                </div>
-                                <div class="benefit-item">
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>获得实用工具与方法论</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="detail-content" id="lectureDetailContent">
+                    <!-- 讲座详情将通过JavaScript动态加载 -->
+                    <div class="loading"></div>
                 </div>
                 
                 <div class="detail-actions">
-                    <button class="btn btn-primary">
+                    <button class="btn btn-primary" id="registerBtn">
                         <i class="fas fa-ticket-alt"></i> 立即报名
                     </button>
-                    <button class="btn btn-outline">
+                    <button class="btn btn-outline" id="shareBtn">
                         <i class="fas fa-share-alt"></i> 分享讲座
                     </button>
-                    <button class="btn btn-outline">
+                    <button class="btn btn-outline" id="calendarBtn">
                         <i class="fas fa-calendar-plus"></i> 添加到日历
                     </button>
                 </div>
@@ -1110,7 +906,278 @@
         </div>
     </div>
 
-    <script>
+    <!-- 报名模态框 -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">讲座报名</div>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">姓名</label>
+                    <input type="text" class="form-input" id="registerName" placeholder="请输入您的姓名">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">邮箱</label>
+                    <input type="email" class="form-input" id="registerEmail" placeholder="请输入您的邮箱">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">手机号</label>
+                    <input type="tel" class="form-input" id="registerPhone" placeholder="请输入您的手机号">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">备注</label>
+                    <textarea class="form-textarea" id="registerNotes" placeholder="请输入备注信息（可选）"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelRegister">取消</button>
+                <button class="btn btn-primary" id="confirmRegister">确认报名</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分享模态框 -->
+    <div id="shareModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">分享讲座</div>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">分享链接</label>
+                    <input type="text" class="form-input" id="shareLink" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">分享到</label>
+                    <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                        <button class="btn btn-outline">
+                            <i class="fab fa-weixin"></i> 微信
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fab fa-qq"></i> QQ
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fab fa-weibo"></i> 微博
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="copyLink">复制链接</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知容器 -->
+    <div id="notification" class="notification"></div>
+
+        <script>
+        // 讲座数据
+        const lecturesData = [
+            {
+                id: 1,
+                title: "人工智能在供应链中的应用",
+                course: "供应链管理基础",
+                description: "本讲座将深入探讨人工智能技术在供应链预测、库存优化和物流路径规划中的实际应用场景，结合企业案例解析技术落地难点与解决方案。",
+                instructor: {
+                    name: "李教授",
+                    title: "清华大学供应链管理研究中心主任"
+                },
+                startTime: "2023-11-15 14:00",
+                duration: 120,
+                registrants: 150,
+                capacity: 300,
+                status: "upcoming",
+                category: "ai",
+                outline: [
+                    "人工智能在供应链中的核心价值",
+                    "需求预测与库存优化AI模型",
+                    "智能物流路径规划算法",
+                    "企业案例分析与实践建议",
+                    "未来发展趋势与挑战"
+                ],
+                audience: ["供应链管理者", "物流从业者", "技术研发人员", "企业决策者"],
+                benefits: [
+                    "掌握AI在供应链中的核心应用场景",
+                    "学习企业AI转型成功案例",
+                    "了解AI技术实施的关键挑战",
+                    "获得实用工具与方法论"
+                ]
+            },
+            {
+                id: 2,
+                title: "数字化转型战略与实践",
+                course: "数字化转型",
+                description: "探讨企业数字化转型的核心战略、实施路径与成功要素，分享行业领先企业的转型案例与实践经验。",
+                instructor: {
+                    name: "张总监",
+                    title: "某知名企业数字化转型负责人"
+                },
+                startTime: "2023-11-12 10:00",
+                duration: 90,
+                registrants: 85,
+                capacity: 200,
+                status: "upcoming",
+                category: "digital",
+                outline: [
+                    "数字化转型的核心概念",
+                    "制定转型战略的关键步骤",
+                    "技术选型与实施路径",
+                    "组织变革与文化建设",
+                    "成功案例分享"
+                ],
+                audience: ["企业管理者", "IT部门负责人", "业务流程负责人"],
+                benefits: [
+                    "理解数字化转型的本质",
+                    "掌握制定转型战略的方法",
+                    "学习成功企业的实践经验",
+                    "规避常见转型陷阱"
+                ]
+            },
+            {
+                id: 3,
+                title: "智能物流路径优化算法",
+                course: "供应链优化",
+                description: "详细讲解智能物流路径规划算法原理，包括遗传算法、模拟退火算法和蚁群算法，提供实际应用案例分析。",
+                instructor: {
+                    name: "王博士",
+                    title: "中科院计算所研究员"
+                },
+                startTime: "2023-11-10 10:00",
+                duration: 60,
+                registrants: 120,
+                capacity: 150,
+                status: "live",
+                category: "supplychain",
+                outline: [
+                    "物流路径优化问题概述",
+                    "遗传算法原理与应用",
+                    "模拟退火算法详解",
+                    "蚁群算法实现",
+                    "实际案例分析"
+                ],
+                audience: ["算法工程师", "物流规划师", "系统架构师"],
+                benefits: [
+                    "掌握主流路径优化算法",
+                    "理解算法适用场景",
+                    "学会算法调优技巧",
+                    "获得实际应用经验"
+                ]
+            },
+            {
+                id: 4,
+                title: "区块链技术在供应链溯源中的应用",
+                course: "供应链管理前沿",
+                description: "分析区块链技术如何提升供应链透明度和安全性，实现产品全生命周期溯源，降低欺诈风险。",
+                instructor: {
+                    name: "刘教授",
+                    title: "北京大学信息学院教授"
+                },
+                startTime: "2023-11-05 16:00",
+                duration: 120,
+                registrants: 95,
+                capacity: 200,
+                status: "completed",
+                category: "supplychain",
+                outline: [
+                    "区块链技术基础",
+                    "供应链溯源需求分析",
+                    "区块链溯源系统设计",
+                    "数据安全与隐私保护",
+                    "实施挑战与解决方案"
+                ],
+                audience: ["供应链管理者", "信息安全专家", "产品经理"],
+                benefits: [
+                    "理解区块链在溯源中的价值",
+                    "掌握系统设计要点",
+                    "了解实施难点与对策",
+                    "学习行业最佳实践"
+                ]
+            },
+            {
+                id: 5,
+                title: "供应链风险管理策略",
+                course: "供应链战略管理",
+                description: "学习如何识别、评估和应对供应链风险，建立弹性供应链体系，应对突发事件和市场波动。",
+                instructor: {
+                    name: "陈经理",
+                    title: "某跨国公司供应链总监"
+                },
+                startTime: "2023-10-28 15:00",
+                duration: 90,
+                registrants: 110,
+                capacity: 150,
+                status: "recorded",
+                category: "supplychain",
+                outline: [
+                    "供应链风险识别方法",
+                    "风险评估模型介绍",
+                    "风险应对策略",
+                    "弹性供应链构建",
+                    "案例分析与讨论"
+                ],
+                audience: ["供应链管理者", "风险控制专员", "采购经理"],
+                benefits: [
+                    "掌握风险识别方法",
+                    "学会风险评估技巧",
+                    "了解应对策略选择",
+                    "提升应急处理能力"
+                ]
+            },
+            {
+                id: 6,
+                title: "大数据分析在需求预测中的应用",
+                course: "供应链数据分析",
+                description: "掌握大数据分析技术在需求预测中的应用方法，提高预测准确度，优化库存管理和生产计划。",
+                instructor: {
+                    name: "吴博士",
+                    title: "某电商平台数据科学负责人"
+                },
+                startTime: "2023-10-20 14:00",
+                duration: 100,
+                registrants: 75,
+                capacity: 120,
+                status: "recorded",
+                category: "ai",
+                outline: [
+                    "需求预测基础理论",
+                    "大数据分析方法",
+                    "机器学习模型应用",
+                    "预测结果评估",
+                    "实际业务案例"
+                ],
+                audience: ["数据分析师", "供应链计划员", "产品经理"],
+                benefits: [
+                    "掌握需求预测方法",
+                    "学会大数据分析工具",
+                    "理解模型选择原则",
+                    "提升预测准确性"
+                ]
+            }
+        ];
+
+        // 当前选中的讲座
+        let selectedLecture = null;
+        
+        // 当前筛选条件
+        let currentFilters = {
+            status: 'all',
+            category: 'all',
+            startDate: '',
+            endDate: '',
+            search: ''
+        };
+        
+        // 当前排序方式
+        let currentSort = 'time';
+        
+        // 当前页码
+        let currentPage = 1;
+        const itemsPerPage = 6;
+        
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             // 初始化讲座页面
@@ -1122,8 +1189,13 @@
             // 设置事件监听器
             setupEventListeners();
             
-            // 初始化讲座卡片动画
-            initLectureCardAnimations();
+            // 渲染讲座列表
+            renderLectureList();
+            
+            // 显示第一个讲座的详情
+            if (lecturesData.length > 0) {
+                showLectureDetail(lecturesData[0]);
+            }
         }
         
         // 设置事件监听器
@@ -1142,6 +1214,12 @@
             
             // 设置分页事件监听器
             setupPaginationListeners();
+            
+            // 设置详情面板事件监听器
+            setupDetailPanelListeners();
+            
+            // 设置模态框事件监听器
+            setupModalListeners();
         }
         
         // 设置筛选器事件监听器
@@ -1150,11 +1228,17 @@
             const statusItems = document.querySelectorAll('.status-item');
             statusItems.forEach(item => {
                 item.addEventListener('click', function() {
+                    const status = this.getAttribute('data-status');
+                    currentFilters.status = status;
+                    
                     // 移除所有激活状态
                     statusItems.forEach(i => i.classList.remove('active'));
                     // 添加当前激活状态
                     this.classList.add('active');
-                    // 这里可以添加筛选逻辑
+                    
+                    // 重新渲染讲座列表
+                    currentPage = 1;
+                    renderLectureList();
                 });
             });
             
@@ -1162,72 +1246,125 @@
             const categoryItems = document.querySelectorAll('.category-item');
             categoryItems.forEach(item => {
                 item.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    currentFilters.category = category;
+                    
                     // 移除所有激活状态
                     categoryItems.forEach(i => i.classList.remove('active'));
                     // 添加当前激活状态
                     this.classList.add('active');
-                    // 这里可以添加筛选逻辑
+                    
+                    // 重新渲染讲座列表
+                    currentPage = 1;
+                    renderLectureList();
                 });
             });
             
             // 日期筛选应用按钮点击事件
-            const dateFilterBtn = document.querySelector('.date-range .btn');
+            const dateFilterBtn = document.getElementById('applyDateFilter');
             dateFilterBtn.addEventListener('click', function() {
-                // 这里可以添加日期筛选逻辑
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                
+                currentFilters.startDate = startDate;
+                currentFilters.endDate = endDate;
+                
+                // 重新渲染讲座列表
+                currentPage = 1;
+                renderLectureList();
             });
             
             // 重置筛选按钮点击事件
-            const resetFilterBtn = document.querySelector('.filter-section .btn:last-child');
+            const resetFilterBtn = document.getElementById('resetFilters');
             resetFilterBtn.addEventListener('click', function() {
+                // 重置筛选条件
+                currentFilters = {
+                    status: 'all',
+                    category: 'all',
+                    startDate: '',
+                    endDate: '',
+                    search: ''
+                };
+                
                 // 重置状态筛选
+                const statusItems = document.querySelectorAll('.status-item');
                 statusItems.forEach(i => i.classList.remove('active'));
                 statusItems[0].classList.add('active');
                 
                 // 重置分类筛选
+                const categoryItems = document.querySelectorAll('.category-item');
                 categoryItems.forEach(i => i.classList.remove('active'));
                 categoryItems[0].classList.add('active');
                 
                 // 重置日期输入
-                const dateInputs = document.querySelectorAll('.date-input');
-                dateInputs.forEach(input => {
-                    input.value = '';
-                });
+                document.getElementById('startDate').value = '';
+                document.getElementById('endDate').value = '';
                 
                 // 重置搜索输入
-                const searchInput = document.querySelector('.search-input');
-                searchInput.value = '';
+                document.getElementById('searchInput').value = '';
+                
+                // 重新渲染讲座列表
+                currentPage = 1;
+                renderLectureList();
             });
             
             // 搜索输入框事件
-            const searchInput = document.querySelector('.search-input');
+            const searchInput = document.getElementById('searchInput');
             searchInput.addEventListener('keyup', function(e) {
                 if (e.key === 'Enter') {
-                    // 这里可以添加搜索逻辑
+                    currentFilters.search = this.value.trim();
+                    
+                    // 重新渲染讲座列表
+                    currentPage = 1;
+                    renderLectureList();
                 }
             });
         }
         
         // 设置讲座卡片事件监听器
         function setupLectureCardListeners() {
-            const lectureCards = document.querySelectorAll('.lecture-card');
-            lectureCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    // 移除所有卡片的选中状态
-                    lectureCards.forEach(c => c.classList.remove('selected'));
-                    // 添加当前卡片的选中状态
-                    this.classList.add('selected');
+            // 事件委托处理讲座卡片点击
+            const lectureGrid = document.getElementById('lectureGrid');
+            lectureGrid.addEventListener('click', function(e) {
+                // 查找被点击的讲座卡片
+                let card = e.target.closest('.lecture-card');
+                if (card) {
+                    const lectureId = parseInt(card.getAttribute('data-id'));
+                    const lecture = lecturesData.find(l => l.id === lectureId);
                     
-                    // 这里可以添加加载讲座详情的逻辑
-                });
-            });
-            
-            // 为卡片内的按钮添加事件委托，防止冒泡触发卡片点击事件
-            const cardButtons = document.querySelectorAll('.lecture-card .btn');
-            cardButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.stopPropagation(); // 阻止事件冒泡
-                    // 这里可以添加按钮点击逻辑
-                });
+                    if (lecture) {
+                        // 移除所有卡片的选中状态
+                        document.querySelectorAll('.lecture-card').forEach(c => c.classList.remove('selected'));
+                        // 添加当前卡片的选中状态
+                        card.classList.add('selected');
+                        
+                        // 显示讲座详情
+                        showLectureDetail(lecture);
+                    }
+                }
+                
+                // 处理卡片内按钮点击
+                if (e.target.closest('.btn')) {
+                    e.stopPropagation(); // 阻止事件冒泡到卡片
+                    
+                    const button = e.target.closest('.btn');
+                    const card = button.closest('.lecture-card');
+                    const lectureId = parseInt(card.getAttribute('data-id'));
+                    const lecture = lecturesData.find(l => l.id === lectureId);
+                    
+                    if (lecture) {
+                        if (button.querySelector('.fa-ticket-alt')) {
+                            // 报名按钮
+                            openRegisterModal(lecture);
+                        } else if (button.querySelector('.fa-play')) {
+                            // 观看按钮
+                            watchLecture(lecture);
+                        } else if (button.querySelector('.fa-play-circle')) {
+                            // 回放按钮
+                            playRecording(lecture);
+                        }
+                    }
+                }
             });
         }
         
@@ -1241,73 +1378,615 @@
                     // 添加当前激活状态
                     this.classList.add('active');
                     
-                    // 这里可以添加视图切换逻辑
+                    const viewType = this.getAttribute('data-view');
+                    // 这里可以添加视图切换逻辑（目前只有一种视图）
                 });
             });
         }
         
         // 设置排序事件监听器
         function setupSortListeners() {
-            const sortSelect = document.querySelector('.sort-select');
+            const sortSelect = document.getElementById('sortSelect');
             sortSelect.addEventListener('change', function() {
-                // 这里可以添加排序逻辑
+                currentSort = this.value;
+                
+                // 重新渲染讲座列表
+                renderLectureList();
             });
         }
         
         // 设置分页事件监听器
         function setupPaginationListeners() {
-            const pageNumbers = document.querySelectorAll('.page-number');
-            pageNumbers.forEach(number => {
-                number.addEventListener('click', function() {
-                    // 移除所有激活状态
-                    pageNumbers.forEach(n => n.classList.remove('active'));
-                    // 添加当前激活状态
-                    this.classList.add('active');
-                    
-                    // 这里可以添加分页逻辑
-                });
+            // 页码点击事件（使用事件委托）
+            const pageNumbersContainer = document.getElementById('pageNumbers');
+            pageNumbersContainer.addEventListener('click', function(e) {
+                if (e.target.classList.contains('page-number')) {
+                    const page = parseInt(e.target.getAttribute('data-page'));
+                    goToPage(page);
+                }
             });
             
             // 上一页按钮点击事件
-            const prevBtn = document.querySelector('.pagination button:first-child');
+            const prevBtn = document.getElementById('prevPage');
             prevBtn.addEventListener('click', function() {
-                // 这里可以添加上一页逻辑
+                if (currentPage > 1) {
+                    goToPage(currentPage - 1);
+                }
             });
             
             // 下一页按钮点击事件
-            const nextBtn = document.querySelector('.pagination button:last-child');
+            const nextBtn = document.getElementById('nextPage');
             nextBtn.addEventListener('click', function() {
-                // 这里可以添加下一页逻辑
+                const totalPages = Math.ceil(getFilteredLectures().length / itemsPerPage);
+                if (currentPage < totalPages) {
+                    goToPage(currentPage + 1);
+                }
             });
         }
         
-        // 初始化讲座卡片动画
-        function initLectureCardAnimations() {
-            const lectureCards = document.querySelectorAll('.lecture-card');
-            lectureCards.forEach((card, index) => {
+        // 设置详情面板事件监听器
+        function setupDetailPanelListeners() {
+            // 展开详情按钮
+            const expandBtn = document.getElementById('expandDetail');
+            expandBtn.addEventListener('click', function() {
+                if (selectedLecture) {
+                    expandLectureDetail(selectedLecture);
+                }
+            });
+            
+            // 报名按钮
+            const registerBtn = document.getElementById('registerBtn');
+            registerBtn.addEventListener('click', function() {
+                if (selectedLecture) {
+                    openRegisterModal(selectedLecture);
+                }
+            });
+            
+            // 分享按钮
+            const shareBtn = document.getElementById('shareBtn');
+            shareBtn.addEventListener('click', function() {
+                if (selectedLecture) {
+                    openShareModal(selectedLecture);
+                }
+            });
+            
+            // 添加到日历按钮
+            const calendarBtn = document.getElementById('calendarBtn');
+            calendarBtn.addEventListener('click', function() {
+                if (selectedLecture) {
+                    addToCalendar(selectedLecture);
+                }
+            });
+        }
+        
+        // 设置模态框事件监听器
+        function setupModalListeners() {
+            // 获取所有模态框
+            const modals = document.querySelectorAll('.modal');
+            
+            // 关闭按钮事件
+            modals.forEach(modal => {
+                const closeBtn = modal.querySelector('.close');
+                closeBtn.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+            });
+            
+            // 点击模态框外部关闭
+            window.addEventListener('click', function(e) {
+                modals.forEach(modal => {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+            
+            // 报名模态框按钮事件
+            document.getElementById('cancelRegister').addEventListener('click', function() {
+                document.getElementById('registerModal').style.display = 'none';
+            });
+            
+            document.getElementById('confirmRegister').addEventListener('click', function() {
+                confirmRegistration();
+            });
+            
+            // 分享模态框按钮事件
+            document.getElementById('copyLink').addEventListener('click', function() {
+                copyShareLink();
+            });
+        }
+        
+        // 渲染讲座列表
+        function renderLectureList() {
+            const filteredLectures = getFilteredLectures();
+            const sortedLectures = sortLectures(filteredLectures);
+            const paginatedLectures = paginateLectures(sortedLectures);
+            
+            const lectureGrid = document.getElementById('lectureGrid');
+            lectureGrid.innerHTML = '';
+            
+            if (paginatedLectures.length === 0) {
+                lectureGrid.innerHTML = '<div class="no-results">没有找到符合条件的讲座</div>';
+                updatePaginationInfo(0);
+                return;
+            }
+            
+            paginatedLectures.forEach((lecture, index) => {
+                const card = createLectureCard(lecture);
+                lectureGrid.appendChild(card);
+                
+                // 添加动画效果
                 setTimeout(() => {
                     card.style.opacity = '1';
                     card.style.transform = 'translateY(0)';
                 }, 100 * index);
             });
+            
+            // 更新分页信息
+            updatePaginationInfo(sortedLectures.length);
+            
+            // 更新分页控件
+            updatePaginationControls(sortedLectures.length);
         }
         
-        // 报名功能
-        function registerForLecture(lectureId) {
-            // 这里可以添加报名逻辑
-            console.log('报名讲座:', lectureId);
+        // 获取筛选后的讲座
+        function getFilteredLectures() {
+            return lecturesData.filter(lecture => {
+                // 状态筛选
+                if (currentFilters.status !== 'all' && lecture.status !== currentFilters.status) {
+                    return false;
+                }
+                
+                // 分类筛选
+                if (currentFilters.category !== 'all' && lecture.category !== currentFilters.category) {
+                    return false;
+                }
+                
+                // 日期筛选
+                if (currentFilters.startDate || currentFilters.endDate) {
+                    const lectureDate = new Date(lecture.startTime);
+                    
+                    if (currentFilters.startDate && lectureDate < new Date(currentFilters.startDate)) {
+                        return false;
+                    }
+                    
+                    if (currentFilters.endDate && lectureDate > new Date(currentFilters.endDate + ' 23:59:59')) {
+                        return false;
+                    }
+                }
+                
+                // 搜索筛选
+                if (currentFilters.search) {
+                    const searchTerm = currentFilters.search.toLowerCase();
+                    if (!lecture.title.toLowerCase().includes(searchTerm) &&
+                        !lecture.course.toLowerCase().includes(searchTerm) &&
+                        !lecture.description.toLowerCase().includes(searchTerm)) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
         }
         
-        // 分享讲座功能
-        function shareLecture(lectureId) {
-            // 这里可以添加分享逻辑
-            console.log('分享讲座:', lectureId);
+        // 排序讲座
+        function sortLectures(lectures) {
+            return [...lectures].sort((a, b) => {
+                switch (currentSort) {
+                    case 'time':
+                        return new Date(a.startTime) - new Date(b.startTime);
+                    case 'popularity':
+                        return b.registrants - a.registrants;
+                    case 'name':
+                        return a.title.localeCompare(b.title);
+                    default:
+                        return 0;
+                }
+            });
         }
         
-        // 添加到日历功能
-        function addToCalendar(lectureId) {
-            // 这里可以添加添加到日历逻辑
-            console.log('添加到日历:', lectureId);
+        // 分页讲座
+        function paginateLectures(lectures) {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            return lectures.slice(startIndex, startIndex + itemsPerPage);
+        }
+        
+        // 创建讲座卡片
+        function createLectureCard(lecture) {
+            const card = document.createElement('div');
+            card.className = 'lecture-card fade-in-up';
+            card.setAttribute('data-id', lecture.id);
+            
+            // 根据状态获取状态文本和样式
+            let statusText, statusClass;
+            switch (lecture.status) {
+                case 'upcoming':
+                    statusText = '即将开始';
+                    statusClass = 'upcoming';
+                    break;
+                case 'live':
+                    statusText = '正在直播';
+                    statusClass = 'live';
+                    break;
+                case 'completed':
+                    statusText = '已结束';
+                    statusClass = 'completed';
+                    break;
+                case 'recorded':
+                    statusText = '录播回放';
+                    statusClass = 'recorded';
+                    break;
+                default:
+                    statusText = '未知状态';
+                    statusClass = '';
+            }
+            
+            // 根据状态确定按钮文本和图标
+            let buttonText, buttonIcon, buttonClass = 'btn btn-primary btn-sm';
+            switch (lecture.status) {
+                case 'upcoming':
+                    buttonText = '立即报名';
+                    buttonIcon = 'fa-ticket-alt';
+                    break;
+                case 'live':
+                    buttonText = '立即观看';
+                    buttonIcon = 'fa-play';
+                    break;
+                case 'completed':
+                case 'recorded':
+                    buttonText = '观看回放';
+                    buttonIcon = 'fa-play-circle';
+                    break;
+                default:
+                    buttonText = '查看详情';
+                    buttonIcon = 'fa-info-circle';
+            }
+            
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="card-title">${lecture.title}</div>
+<div class="card-course">${lecture.course}</div>
+                </div>
+                <div class="card-body">
+                    <div class="card-desc">
+                        ${lecture.description}
+                    </div>
+                    <div class="card-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-user-tie"></i>
+                            <span>主讲人: ${lecture.instructor.name}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>开始: ${lecture.startTime}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>时长: ${lecture.duration}分钟</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-users"></i>
+                            <span>报名: ${lecture.registrants}人</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span class="status-badge ${statusClass}">${statusText}</span>
+                    <button class="btn btn-primary btn-sm">
+                        <i class="fas ${buttonIcon}"></i> ${buttonText}
+                    </button>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        // 显示讲座详情
+        function showLectureDetail(lecture) {
+            selectedLecture = lecture;
+            
+            const detailContent = document.getElementById('lectureDetailContent');
+            
+            // 根据状态获取状态文本和样式
+            let statusText, statusClass;
+            switch (lecture.status) {
+                case 'upcoming':
+                    statusText = '即将开始';
+                    statusClass = 'upcoming';
+                    break;
+                case 'live':
+                    statusText = '正在直播';
+                    statusClass = 'live';
+                    break;
+                case 'completed':
+                    statusText = '已结束';
+                    statusClass = 'completed';
+                    break;
+                case 'recorded':
+                    statusText = '录播回放';
+                    statusClass = 'recorded';
+                    break;
+                default:
+                    statusText = '未知状态';
+                    statusClass = '';
+            }
+            
+            // 生成适合人群标签
+            const audienceTags = lecture.audience.map(tag => 
+                `<span class="audience-tag">${tag}</span>`
+            ).join('');
+            
+            // 生成学习收获列表
+            const benefitsList = lecture.benefits.map(benefit => 
+                `<div class="benefit-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>${benefit}</span>
+                </div>`
+            ).join('');
+            
+            // 生成讲座大纲列表
+            const outlineList = lecture.outline.map(item => 
+                `<li>${item}</li>`
+            ).join('');
+            
+            detailContent.innerHTML = `
+                <div class="detail-section">
+                    <div class="detail-label">讲座标题</div>
+                    <div class="detail-value">${lecture.title}</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">所属课程</div>
+                    <div class="detail-value">${lecture.course}</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">主讲讲师</div>
+                    <div class="detail-value">
+                        <div class="instructor-info">
+                            <div class="instructor-avatar">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div class="instructor-details">
+                                <div class="instructor-name">${lecture.instructor.name}</div>
+                                <div class="instructor-title">${lecture.instructor.title}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">开始时间</div>
+                    <div class="detail-value">${lecture.startTime}</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">讲座时长</div>
+                    <div class="detail-value">${lecture.duration}分钟</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">讲座状态</div>
+                    <div class="detail-value">
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">报名人数</div>
+                    <div class="detail-value">${lecture.registrants}人 / ${lecture.capacity}人</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">讲座描述</div>
+                    <div class="detail-value">
+                        ${lecture.description}
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">讲座大纲</div>
+                    <div class="detail-value">
+                        <ul class="outline-list">
+                            ${outlineList}
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">适合人群</div>
+                    <div class="detail-value">
+                        <div class="audience-tags">
+                            ${audienceTags}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">学习收获</div>
+                    <div class="detail-value">
+                        <div class="benefits-list">
+                            ${benefitsList}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 展开讲座详情
+        function expandLectureDetail(lecture) {
+            // 创建模态框显示详细信息
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content" style="width: 90%; max-width: 800px;">
+                    <div class="modal-header">
+                        <div class="modal-title">讲座详情 - ${lecture.title}</div>
+                        <span class="close">&times;</span>
+                    </div>
+                    <div class="modal-body" id="expandedDetailContent">
+                        <!-- 详情内容将在此处插入 -->
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline" id="closeExpandedDetail">关闭</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 显示详细内容
+            const expandedDetailContent = document.getElementById('expandedDetailContent');
+            expandedDetailContent.innerHTML = document.getElementById('lectureDetailContent').innerHTML;
+            
+            // 设置关闭事件
+            const closeBtn = modal.querySelector('.close');
+            closeBtn.addEventListener('click', function() {
+                document.body.removeChild(modal);
+            });
+            
+            const closeExpandedDetail = document.getElementById('closeExpandedDetail');
+            closeExpandedDetail.addEventListener('click', function() {
+                document.body.removeChild(modal);
+            });
+            
+            // 点击模态框外部关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+        
+        // 更新分页信息
+        function updatePaginationInfo(totalItems) {
+            const listInfo = document.getElementById('listInfo');
+            const startIndex = (currentPage - 1) * itemsPerPage + 1;
+            const endIndex = Math.min(currentPage * itemsPerPage, totalItems);
+            listInfo.textContent = `显示 ${startIndex}-${endIndex} 条，共 ${totalItems} 条`;
+        }
+        
+        // 更新分页控件
+        function updatePaginationControls(totalItems) {
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const pageNumbersContainer = document.getElementById('pageNumbers');
+            
+            // 清空现有页码
+            pageNumbersContainer.innerHTML = '';
+            
+            // 生成页码按钮
+            for (let i = 1; i <= totalPages; i++) {
+                const pageNumber = document.createElement('div');
+                pageNumber.className = 'page-number';
+                if (i === currentPage) {
+                    pageNumber.classList.add('active');
+                }
+                pageNumber.setAttribute('data-page', i);
+                pageNumber.textContent = i;
+                pageNumbersContainer.appendChild(pageNumber);
+            }
+            
+            // 更新上一页和下一页按钮状态
+            const prevBtn = document.getElementById('prevPage');
+            const nextBtn = document.getElementById('nextPage');
+            
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+        }
+        
+        // 跳转到指定页
+        function goToPage(page) {
+            currentPage = page;
+            renderLectureList();
+        }
+        
+        // 打开报名模态框
+        function openRegisterModal(lecture) {
+            selectedLecture = lecture;
+            const modal = document.getElementById('registerModal');
+            modal.style.display = 'block';
+            
+            // 清空表单
+            document.getElementById('registerName').value = '';
+            document.getElementById('registerEmail').value = '';
+            document.getElementById('registerPhone').value = '';
+            document.getElementById('registerNotes').value = '';
+        }
+        
+        // 确认报名
+        function confirmRegistration() {
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const phone = document.getElementById('registerPhone').value.trim();
+            
+            if (!name || !email || !phone) {
+                showNotification('请填写完整的报名信息', 'error');
+                return;
+            }
+            
+            // 这里可以添加实际的报名逻辑
+            console.log('报名讲座:', selectedLecture.title, '用户:', name);
+            
+            // 关闭模态框
+            document.getElementById('registerModal').style.display = 'none';
+            
+            // 显示成功通知
+            showNotification('报名成功！我们已发送确认邮件到您的邮箱。', 'success');
+        }
+        
+        // 观看讲座
+        function watchLecture(lecture) {
+            // 这里可以添加实际的观看逻辑
+            showNotification(`正在进入直播间: ${lecture.title}`, 'success');
+            console.log('观看讲座:', lecture.title);
+        }
+        
+        // 播放回放
+        function playRecording(lecture) {
+            // 跳转到视频播放页面，并传递讲座ID
+            window.location.href = `video-player.html?id=${lecture.id}`;
+        }
+        
+        // 打开分享模态框
+        function openShareModal(lecture) {
+            selectedLecture = lecture;
+            const modal = document.getElementById('shareModal');
+            const shareLink = document.getElementById('shareLink');
+            
+            // 生成分享链接（示例）
+            const link = `${window.location.origin}/lecture/${lecture.id}`;
+            shareLink.value = link;
+            
+            modal.style.display = 'block';
+        }
+        
+        // 复制分享链接
+        function copyShareLink() {
+            const shareLink = document.getElementById('shareLink');
+            shareLink.select();
+            document.execCommand('copy');
+            
+            showNotification('链接已复制到剪贴板', 'success');
+        }
+        
+        // 添加到日历
+        function addToCalendar(lecture) {
+            // 这里可以添加实际的日历集成逻辑
+            showNotification(`已添加到日历: ${lecture.title}`, 'success');
+            console.log('添加到日历:', lecture.title);
+        }
+        
+        // 显示通知
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            // 3秒后自动隐藏
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
         }
     </script>
 </body>
