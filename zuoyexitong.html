@@ -1,0 +1,3576 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作业系统 - 供应链实训系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4ade80;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --border-radius: 12px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8fafc;
+            color: var(--dark);
+            padding: 30px;
+        }
+
+        /* 顶部导航栏 */
+        .top-nav {
+            background: white;
+            box-shadow: var(--shadow);
+            padding: 15px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            font-size: 12px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* 主内容区 */
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+/* 侧边栏 */
+        .sidebar {
+            width: 250px;
+            background: white;
+            box-shadow: var(--shadow);
+            position: fixed;
+            left: 0;
+            top: 80px;
+            bottom: 0;
+            overflow-y: auto;
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+.nav-menu {
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: var(--dark);
+            transition: var(--transition);
+        }
+
+        .nav-item:hover {
+            background: var(--gray-light);
+        }
+
+        .nav-item.active {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .page-title p {
+            color: var(--gray);
+            font-size: 16px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        /* 作业系统布局 */
+        .assignment-system-layout {
+            display: flex;
+            gap: 20px;
+            height: calc(100vh - 180px);
+        }
+
+        /* 左侧筛选面板 */
+        .assignment-filters {
+            width: 300px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .filters-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .filters-search {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 40px 10px 16px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .filter-section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--dark);
+        }
+
+        .status-filters {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            justify-content: space-between;
+        }
+
+        .status-item:hover {
+            background: var(--gray-light);
+        }
+
+        .status-item.active {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+
+        .status-indicator.pending {
+            background: var(--warning);
+        }
+
+        .status-indicator.submitted {
+            background: var(--primary);
+        }
+
+        .status-indicator.graded {
+            background: var(--success);
+        }
+
+        .status-indicator.overdue {
+            background: var(--danger);
+        }
+
+        .status-text {
+            flex: 1;
+        }
+
+        .status-count {
+            background: var(--gray-light);
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+        }
+
+        .course-filters {
+            margin-bottom: 20px;
+        }
+
+        .course-list {
+            list-style: none;
+        }
+
+        .course-item {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .course-item:hover {
+            background: var(--gray-light);
+        }
+
+        .course-item.active {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .date-filters {
+            margin-bottom: 20px;
+        }
+
+        .date-range {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .date-input {
+            padding: 10px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+
+        .btn-secondary {
+            background: var(--gray-light);
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray-light);
+            color: var(--dark);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        /* 中间作业列表 */
+        .assignment-list {
+            flex: 1;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .list-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .view-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .view-option {
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: var(--gray-light);
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .view-option.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .list-tools {
+            display: flex;
+            gap: 10px;
+        }
+
+        .assignment-container {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .assignment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .assignment-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid var(--gray-light);
+        }
+
+        .assignment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .card-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card-course {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .card-footer {
+            padding: 16px;
+            border-top: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .status-badge.submitted {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .status-badge.graded {
+            background: rgba(74, 222, 128, 0.1);
+            color: var(--success);
+        }
+
+        .status-badge.overdue {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* 右侧作业详情面板 */
+        .assignment-detail {
+            width: 500px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .detail-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .detail-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .detail-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .detail-section {
+            margin-bottom: 20px;
+        }
+
+        .detail-label {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .detail-actions {
+            padding: 20px;
+            border-top: 1px solid var(--gray-light);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .assignment-system-layout {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .assignment-filters, .assignment-detail {
+                width: 100%;
+                height: 300px;
+            }
+            
+            .assignment-list {
+                min-height: 500px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .assignment-system-layout {
+                gap: 15px;
+            }
+            
+            .list-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .view-options, .list-tools {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .assignment-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+      <!-- 主内容区 -->
+    <div class="header">
+        <div class="page-title">
+            <h1>作业系统</h1>
+            <p>通管理和查看所有课程的作业情况</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-primary" onclick="openModal('newCaseModal')">
+                <i class="fas fa-plus"></i> 布置作业
+            </button>
+            <button class="btn btn-outline" onclick="openModal('importCaseModal')">
+                <i class="fas fa-download"></i> 导入作业
+            </button>
+        </div>
+    </div>
+    <!-- 作业系统布局 -->
+    <div class="assignment-system-layout">
+        <!-- 左侧筛选面板 -->
+        <div class="assignment-filters">
+            <div class="filters-header">
+                <div class="filters-title">作业筛选</div>
+                <button class="btn btn-outline btn-sm">
+                    <i class="fas fa-filter"></i>
+                </button>
+            </div>
+            
+            <div class="filters-search">
+                <input type="text" class="search-input" placeholder="搜索作业...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            
+            <div class="filter-section">
+                <div class="section-title">作业状态</div>
+                <div class="status-filters">
+                    <div class="status-item active">
+                        <div class="status-indicator"></div>
+                        <div class="status-text">全部作业</div>
+                        <div class="status-count">25</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator pending"></div>
+                        <div class="status-text">待提交</div>
+                        <div class="status-count">8</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator submitted"></div>
+                        <div class="status-text">已提交</div>
+                        <div class="status-count">12</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator graded"></div>
+                        <div class="status-text">已批改</div>
+                        <div class="status-count">9</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator overdue"></div>
+                        <div class="status-text">已逾期</div>
+                        <div class="status-count">3</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filter-section">
+                <div class="section-title">课程筛选</div>
+                <ul class="course-list">
+                    <li class="course-item active">
+                        <span>全部课程</span>
+                        <span class="status-count">25</span>
+                    </li>
+                    <li class="course-item">
+                        <span>供应链管理基础</span>
+                        <span class="status-count">8</span>
+                    </li>
+                    <li class="course-item">
+                        <span>物流与配送管理</span>
+                        <span class="status-count">6</span>
+                    </li>
+                    <li class="course-item">
+                        <span>库存控制策略</span>
+                        <span class="status-count">5</span>
+                    </li>
+                    <li class="course-item">
+                        <span>供应链优化</span>
+                        <span class="status-count">6</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="filter-section">
+                <div class="section-title">时间范围</div>
+                <div class="date-range">
+                    <input type="date" class="date-input" placeholder="开始日期">
+                    <input type="date" class="date-input" placeholder="结束日期">
+                    <button class="btn btn-outline btn-sm">
+                        <i class="fas fa-calendar"></i> 应用筛选
+                    </button>
+                </div>
+            </div>
+            
+            <div class="filter-section">
+                <div class="section-title">其他筛选</div>
+                <button class="btn btn-outline btn-sm" style="width: 100%;">
+                    <i class="fas fa-sync-alt"></i> 重置筛选条件
+                </button>
+            </div>
+        </div>
+        
+        <!-- 中间作业列表 -->
+        <div class="assignment-list">
+            <div class="list-header">
+                <div class="list-title">作业列表</div>
+                <div class="list-tools">
+                    <div class="view-options">
+                        <span class="view-option active">卡片视图</span>
+                        <span class="view-option">列表视图</span>
+                        <span class="view-option">日历视图</span>
+                    </div>
+                    <div class="sort-options">
+                        <select class="sort-select">
+                            <option>按截止日期排序</option>
+                            <option>按创建时间排序</option>
+                            <option>按课程名称排序</option>
+                            <option>按状态排序</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="assignment-container">
+                <div class="assignment-grid">
+                    <!-- 作业卡片 1 -->
+                    <div class="assignment-card">
+                        <div class="card-header">
+                            <div class="card-title">库存管理优化方案</div>
+                            <div class="card-course">供应链管理基础</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                分析企业库存管理现状，提出优化方案，包括ABC分类法应用和EOQ模型计算...
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>截止: 2023-11-05</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>预计: 2小时</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge pending">待提交</span>
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-pen"></i> 开始作业
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 作业卡片 2 -->
+                    <div class="assignment-card">
+                        <div class="card-header">
+                            <div class="card-title">物流配送路径优化</div>
+                            <div class="card-course">物流与配送管理</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                使用Dijkstra算法优化物流配送路径，计算最短路径和运输成本，提交分析报告...
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>截止: 2023-11-08</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>预计: 3小时</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge submitted">已提交</span>
+                            <button class="btn btn-outline btn-sm">
+                                <i class="fas fa-eye"></i> 查看
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 作业卡片 3 -->
+                    <div class="assignment-card">
+                        <div class="card-header">
+                            <div class="card-title">供应链风险评估</div>
+                            <div class="card-course">供应链优化</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                识别企业供应链中的潜在风险，评估风险等级，制定应对策略和应急预案...
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>截止: 2023-11-03</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>预计: 4小时</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge graded">已批改</span>
+                            <button class="btn btn-outline btn-sm">
+                                <i class="fas fa-star"></i> 查看评分
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 作业卡片 4 -->
+                    <div class="assignment-card">
+                        <div class="card-header">
+                            <div class="card-title">需求预测分析</div>
+                            <div class="card-course">库存控制策略</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                使用时间序列分析法进行需求预测，比较不同预测模型的准确性，提交预测报告...
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>截止: 2023-10-28</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>预计: 3小时</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge overdue">已逾期</span>
+                            <button class="btn btn-secondary btn-sm">
+                                <i class="fas fa-exclamation-circle"></i> 补交
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 作业卡片 5 -->
+                    <div class="assignment-card">
+                        <div class="card-header">
+                            <div class="card-title">供应商评估模型</div>
+                            <div class="card-course">供应链管理基础</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                建立供应商综合评估模型，包括质量、价格、交货期等指标，进行供应商分级...
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>截止: 2023-11-12</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>预计: 5小时</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge pending">待提交</span>
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-pen"></i> 开始作业
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 作业卡片 6 -->
+                    <div class="assignment-card">
+                        <div class="card-header">
+                            <div class="card-title">仓储布局优化</div>
+                            <div class="card-course">物流与配送管理</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                设计最优仓储布局方案，考虑货物流动路径、存储密度和操作效率等因素...
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>截止: 2023-11-15</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>预计: 4小时</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge pending">待提交</span>
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-pen"></i> 开始作业
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右侧作业详情面板 -->
+        <div class="assignment-detail">
+            <div class="detail-header">
+                <div class="detail-title">作业详情</div>
+            </div>
+            <div class="detail-content">
+                <div class="detail-section">
+                    <div class="detail-label">作业标题</div>
+                    <div class="detail-value">库存管理优化方案</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">所属课程</div>
+                    <div class="detail-value">供应链管理基础</div>
+                </div>
+                
+<div class="detail-section">
+                    <div class="detail-label">截止日期</div>
+                    <div class="detail-value">2023-11-05 23:59</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">预计耗时</div>
+                    <div class="detail-value">2小时</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">作业状态</div>
+                    <div class="detail-value">
+                        <span class="status-badge pending">待提交</span>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">作业描述</div>
+                    <div class="detail-value">
+                        分析企业库存管理现状，提出优化方案，包括ABC分类法应用和EOQ模型计算。需要提交完整的分析报告和计算过程。
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">附件</div>
+                    <div class="detail-value">
+                        <div class="attachment-list">
+                            <div class="attachment-item">
+                                <i class="fas fa-file-pdf"></i>
+                                <span>作业要求.pdf</span>
+                                <button class="btn btn-outline btn-sm">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                            <div class="attachment-item">
+                                <i class="fas fa-file-excel"></i>
+                                <span>数据模板.xlsx</span>
+                                <button class="btn btn-outline btn-sm">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">评分标准</div>
+                    <div class="detail-value">
+                        <div class="grading-criteria">
+                            <div class="criteria-item">
+                                <span>分析深度 (40%)</span>
+                                <div class="criteria-bar">
+                                    <div class="criteria-fill" style="width: 40%"></div>
+                                </div>
+                            </div>
+                            <div class="criteria-item">
+                                <span>计算准确性 (30%)</span>
+                                <div class="criteria-bar">
+                                    <div class="criteria-fill" style="width: 30%"></div>
+                                </div>
+                            </div>
+                            <div class="criteria-item">
+                                <span>方案可行性 (20%)</span>
+                                <div class="criteria-bar">
+                                    <div class="criteria-fill" style="width: 20%"></div>
+                                </div>
+                            </div>
+                            <div class="criteria-item">
+                                <span>报告规范性 (10%)</span>
+                                <div class="criteria-bar">
+                                    <div class="criteria-fill" style="width: 10%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">提交记录</div>
+                    <div class="detail-value">
+                        <div class="submission-history">
+                            <div class="submission-item">
+                                <i class="fas fa-clock"></i>
+                                <span>尚未提交</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-actions">
+                <button class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-paper-plane"></i> 提交作业
+                </button>
+                <button class="btn btn-outline" style="width: 100%; margin-top: 10px;">
+                    <i class="fas fa-download"></i> 下载作业模板
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript交互功能 -->
+    <script>
+        
+        // 添加全局变量来跟踪日历状态
+        let currentCalendarYear = new Date().getFullYear();
+        let currentCalendarMonth = new Date().getMonth();
+
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化页面
+            initializePage();
+            
+            // 设置事件监听器
+            setupEventListeners();
+            
+            // 加载初始数据
+            loadInitialData();
+        });
+        
+        // 初始化页面
+        function initializePage() {
+            // 设置当前日期为默认筛选日期
+            const today = new Date();
+            const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            
+            document.querySelectorAll('.date-input')[0].valueAsDate = today;
+            document.querySelectorAll('.date-input')[1].valueAsDate = nextWeek;
+            
+            // 高亮当前选中的作业
+            highlightSelectedAssignment();
+            
+            // 更新作业统计信息
+            updateAssignmentStats();
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 作业筛选功能
+            setupFilterListeners();
+            
+            // 作业卡片交互
+            setupAssignmentCardListeners();
+            
+            // 视图切换功能
+            setupViewToggleListeners();
+            
+            // 排序功能
+            setupSortingListeners();
+            
+            // 提交作业功能
+            setupSubmissionListeners();
+        }
+        
+        // 设置筛选监听器
+        function setupFilterListeners() {
+            // 状态筛选
+            document.querySelectorAll('.status-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.status-item').forEach(i => {
+                        i.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    const status = this.querySelector('.status-text').textContent;
+                    filterAssignmentsByStatus(status);
+                });
+            });
+            
+            // 课程筛选
+            document.querySelectorAll('.course-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.course-item').forEach(i => {
+                        i.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    const course = this.querySelector('span').textContent;
+                    filterAssignmentsByCourse(course);
+                });
+            });
+            
+            // 日期筛选
+            document.querySelector('.date-range .btn').addEventListener('click', function() {
+                const startDate = document.querySelectorAll('.date-input')[0].value;
+                const endDate = document.querySelectorAll('.date-input')[1].value;
+                
+                if (startDate && endDate) {
+                    filterAssignmentsByDate(startDate, endDate);
+                } else {
+                    alert('请选择开始和结束日期');
+                }
+            });
+            
+            // 搜索功能
+            document.querySelector('.search-input').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.trim();
+                if (searchTerm.length > 2) {
+                    searchAssignments(searchTerm);
+                } else if (searchTerm.length === 0) {
+                    resetFilters();
+                }
+            });
+            
+            // 重置筛选
+            document.querySelector('.filter-section .btn').addEventListener('click', resetFilters);
+        }
+        
+        // 设置作业卡片监听器
+       function setupAssignmentCardListeners() {
+            document.querySelectorAll('.assignment-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // 防止按钮点击触发卡片选择
+                    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'I') {
+                        return;
+                    }
+                    
+                    // 移除之前的选择
+                    document.querySelectorAll('.assignment-card').forEach(c => {
+                        c.classList.remove('selected');
+                    });
+                    
+                    // 添加当前选择
+                    this.classList.add('selected');
+                    
+                    // 更新详情面板
+                    updateAssignmentDetail(this);
+                });
+            });
+            
+            // 开始作业按钮
+            document.querySelectorAll('.btn-primary').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const card = this.closest('.assignment-card');
+                    startAssignment(card);
+                });
+            });
+            
+            // 查看作业按钮和附件下载按钮
+            document.addEventListener('click', function(e) {
+                // 查看作业按钮
+                if (e.target.closest('.btn-outline') && !e.target.closest('.download-btn')) {
+                    e.stopPropagation();
+                    const card = e.target.closest('.assignment-card');
+                    if (card) {
+                        viewAssignment(card);
+                    } else {
+                        // 处理详情面板中的查看按钮
+                        const detailActions = e.target.closest('.detail-actions');
+                        if (detailActions) {
+                            // 这是详情面板中的下载模板按钮
+                            downloadTemplate();
+                        }
+                    }
+                }
+                
+                // 补交作业按钮
+                if (e.target.closest('.btn-secondary')) {
+                    e.stopPropagation();
+                    const card = e.target.closest('.assignment-card');
+                    if (card) {
+                        submitLateAssignment(card);
+                    }
+                }
+                
+                // 附件下载按钮
+                if (e.target.closest('.download-btn')) {
+                    e.stopPropagation();
+                    const fileName = e.target.closest('.download-btn').getAttribute('data-file');
+                    downloadAttachment(fileName);
+                }
+            });
+        }
+        
+        // 设置视图切换监听器
+        function setupViewToggleListeners() {
+            document.querySelectorAll('.view-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.view-option').forEach(o => {
+                        o.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    const viewType = this.textContent;
+                    switchView(viewType);
+                });
+            });
+        }
+        
+        // 设置排序监听器
+        function setupSortingListeners() {
+            document.querySelector('.sort-select').addEventListener('change', function(e) {
+                const sortBy = e.target.value;
+                sortAssignments(sortBy);
+            });
+        }
+        
+        // 设置提交作业监听器
+        function setupSubmissionListeners() {
+            document.querySelector('.detail-actions .btn-primary').addEventListener('click', function() {
+                submitAssignment();
+            });
+        }
+        
+        // 加载初始数据
+        function loadInitialData() {
+            // 模拟从服务器加载数据
+            console.log('加载作业数据...');
+            
+            // 这里可以添加实际的数据加载逻辑
+            // fetch('/api/assignments')
+            //   .then(response => response.json())
+            //   .then(data => renderAssignments(data));
+        }
+        
+        // 高亮选中的作业
+        function highlightSelectedAssignment() {
+            // 默认选中第一个作业
+            const firstCard = document.querySelector('.assignment-card');
+            if (firstCard) {
+                firstCard.classList.add('selected');
+                updateAssignmentDetail(firstCard);
+            }
+        }
+        
+        // 更新作业统计信息
+        function updateAssignmentStats() {
+            // 这里可以添加从服务器获取统计信息的逻辑
+            const stats = {
+                total: 25,
+                pending: 8,
+                submitted: 12,
+                graded: 9,
+                overdue: 3
+            };
+            
+            // 更新状态计数
+            document.querySelectorAll('.status-count').forEach((element, index) => {
+                const values = Object.values(stats);
+                if (index < values.length) {
+                    element.textContent = values[index];
+                }
+            });
+        }
+        
+        // 按状态筛选作业
+        function filterAssignmentsByStatus(status) {
+            console.log('按状态筛选:', status);
+            
+            document.querySelectorAll('.assignment-card').forEach(card => {
+                const cardStatus = card.querySelector('.status-badge').textContent;
+                
+                if (status === '全部作业') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = cardStatus === status ? 'block' : 'none';
+                }
+            });
+            
+            // 更新筛选结果计数
+            updateFilterResults();
+        }
+        
+        // 按课程筛选作业
+        function filterAssignmentsByCourse(course) {
+            console.log('按课程筛选:', course);
+            
+            document.querySelectorAll('.assignment-card').forEach(card => {
+                const cardCourse = card.querySelector('.card-course').textContent;
+                
+                if (course === '全部课程') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = cardCourse === course ? 'block' : 'none';
+                }
+            });
+            
+            // 更新筛选结果计数
+            updateFilterResults();
+        }
+        
+        // 按日期筛选作业
+        function filterAssignmentsByDate(startDate, endDate) {
+            console.log('按日期筛选:', startDate, '至', endDate);
+            
+            // 这里可以添加实际的日期筛选逻辑
+            // 目前只是模拟
+            document.querySelectorAll('.assignment-card').forEach(card => {
+                const dueDate = card.querySelector('.meta-item:nth-child(1) span').textContent.split(': ')[1];
+                
+                // 简单的日期比较（实际应用中需要更复杂的逻辑）
+                if (dueDate >= startDate && dueDate <= endDate) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 更新筛选结果计数
+            updateFilterResults();
+        }
+        
+        // 搜索作业
+        function searchAssignments(searchTerm) {
+            console.log('搜索作业:', searchTerm);
+            
+            document.querySelectorAll('.assignment-card').forEach(card => {
+                const title = card.querySelector('.card-title').textContent;
+                const desc = card.querySelector('.card-desc').textContent;
+                const course = card.querySelector('.card-course').textContent;
+                
+                if (title.includes(searchTerm) || desc.includes(searchTerm) || course.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 更新筛选结果计数
+            updateFilterResults();
+        }
+        
+        // 重置筛选
+        function resetFilters() {
+            console.log('重置筛选条件');
+            
+            // 重置状态筛选
+            document.querySelectorAll('.status-item').forEach((item, index) => {
+                if (index === 0) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // 重置课程筛选
+            document.querySelectorAll('.course-item').forEach((item, index) => {
+                if (index === 0) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // 重置搜索框
+            document.querySelector('.search-input').value = '';
+            
+            // 显示所有作业
+            document.querySelectorAll('.assignment-card').forEach(card => {
+                card.style.display = 'block';
+            });
+            
+            // 更新筛选结果计数
+            updateFilterResults();
+        }
+        
+        // 更新筛选结果计数
+        function updateFilterResults() {
+            const visibleCards = document.querySelectorAll('.assignment-card[style="display: block"]').length;
+            const totalCards = document.querySelectorAll('.assignment-card').length;
+            
+            document.querySelector('.list-title').textContent = 
+                `作业列表 (${visibleCards}/${totalCards})`;
+        }
+        
+        // 更新作业详情
+        function updateAssignmentDetail(card) {
+            const title = card.querySelector('.card-title').textContent;
+            const course = card.querySelector('.card-course').textContent;
+            const dueDate = card.querySelector('.meta-item:nth-child(1) span').textContent.split(': ')[1];
+            const estimatedTime = card.querySelector('.meta-item:nth-child(2) span').textContent.split(': ')[1];
+            const status = card.querySelector('.status-badge').textContent;
+            const description = card.querySelector('.card-desc').textContent;
+            
+            // 更新详情面板
+            document.querySelector('.detail-section:nth-child(1) .detail-value').textContent = title;
+            document.querySelector('.detail-section:nth-child(2) .detail-value').textContent = course;
+            document.querySelector('.detail-section:nth-child(3) .detail-value').textContent = dueDate;
+            document.querySelector('.detail-section:nth-child(4) .detail-value').textContent = estimatedTime;
+            
+            // 更新状态
+            const statusBadge = document.querySelector('.detail-section:nth-child(5) .status-badge');
+            statusBadge.textContent = status;
+            statusBadge.className = 'status-badge ' + getStatusClass(status);
+            
+            document.querySelector('.detail-section:nth-child(6) .detail-value').textContent = description;
+            
+            // 更新提交按钮状态
+            const submitButton = document.querySelector('.detail-actions .btn-primary');
+            if (status === '待提交' || status === '已逾期') {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-paper-plane"></i> ' + 
+                    (status === '已逾期' ? '补交作业' : '提交作业');
+            } else {
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-check"></i> 已提交';
+            }
+        }
+        
+        // 获取状态对应的CSS类
+        function getStatusClass(status) {
+            switch(status) {
+                case '待提交': return 'pending';
+                case '已提交': return 'submitted';
+                case '已批改': return 'graded';
+                case '已逾期': return 'overdue';
+                default: return 'pending';
+            }
+        }
+        
+        // 开始作业
+        function startAssignment(card) {
+            const title = card.querySelector('.card-title').textContent;
+            const course = card.querySelector('.card-course').textContent;
+            const dueDate = card.querySelector('.meta-item:nth-child(1) span').textContent.split(': ')[1];
+            const estimatedTime = card.querySelector('.meta-item:nth-child(2) span').textContent.split(': ')[1];
+            const description = card.querySelector('.card-desc').textContent;
+            
+            console.log('开始作业:', title);
+            
+            // 创建开始作业的模态框
+            createStartAssignmentModal(title, course, dueDate, estimatedTime, description);
+        }
+
+        // 创建开始作业模态框
+        function createStartAssignmentModal(title, course, dueDate, estimatedTime, description) {
+            // 如果模态框已存在，则移除
+            const existingModal = document.querySelector('.start-assignment-modal');
+            if (existingModal) {
+                document.body.removeChild(existingModal);
+            }
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal start-assignment-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>开始作业</h3>
+                        <button class="modal-close">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="assignment-info">
+                            <h4>${title}</h4>
+                            <p><strong>课程:</strong> ${course}</p>
+                            <p><strong>截止日期:</strong> ${dueDate}</p>
+                            <p><strong>预计耗时:</strong> ${estimatedTime}</p>
+                        </div>
+                        <div class="instructions">
+                            <h4>作业说明</h4>
+                            <p>${description}</p>
+                            <div class="tips">
+                                <h5>完成提示</h5>
+                                <ul>
+                                    <li>请仔细阅读作业要求并按要求完成</li>
+                                    <li>作业提交截止时间前可以多次修改</li>
+                                    <li>请确保作业内容完整、格式规范</li>
+                                    <li>如有疑问可联系任课教师</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>预计完成时间</label>
+                            <select class="time-estimate">
+                                <option value="1">1小时</option>
+                                <option value="2">2小时</option>
+                                <option value="3">3小时</option>
+                                <option value="4">4小时</option>
+                                <option value="5">5小时以上</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary modal-cancel">取消</button>
+                        <button class="btn btn-primary start-btn">开始完成</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 添加模态框样式（如果尚未添加）
+            addModalStyles();
+            
+            // 模态框交互
+            const closeModal = function() {
+                document.body.removeChild(modal);
+            };
+            
+            modal.querySelector('.modal-close').addEventListener('click', closeModal);
+            modal.querySelector('.modal-cancel').addEventListener('click', closeModal);
+            
+            modal.querySelector('.start-btn').addEventListener('click', function() {
+                alert(`开始完成作业: ${title}`);
+                closeModal();
+                // 这里可以添加实际开始作业的逻辑，比如跳转到作业编辑页面
+            });
+        }
+                
+        // 查看作业
+        function viewAssignment(card) {
+            const title = card.querySelector('.card-title').textContent;
+            const course = card.querySelector('.card-course').textContent;
+            const dueDate = card.querySelector('.meta-item:nth-child(1) span').textContent.split(': ')[1];
+            const estimatedTime = card.querySelector('.meta-item:nth-child(2) span').textContent.split(': ')[1];
+            const status = card.querySelector('.status-badge').textContent;
+            const description = card.querySelector('.card-desc').textContent;
+            
+            console.log('查看作业:', title);
+            
+            // 创建查看作业的模态框
+            createViewAssignmentModal(title, course, dueDate, estimatedTime, status, description);
+        }
+
+// 显示作业详情
+        function showAssignmentDetail(card) {
+            const title = card.querySelector('.card-title').textContent;
+            const course = card.querySelector('.card-course').textContent;
+            const dueDate = card.querySelector('.meta-item:nth-child(1) span').textContent.split(': ')[1];
+            const status = card.querySelector('.status-badge').textContent;
+            
+            // 模拟点击卡片显示详情
+            card.click();
+            
+            console.log(`显示作业详情: ${title}`);
+        }
+        
+        // 页面加载完成后恢复用户的视图偏好
+        document.addEventListener('DOMContentLoaded', function() {
+            const preferredView = localStorage.getItem('preferredView');
+            if (preferredView) {
+                // 延迟执行以确保DOM完全加载
+                setTimeout(() => {
+                    switchView(preferredView);
+                    
+                    // 更新视图选择器的状态
+                    const viewButtons = document.querySelectorAll('.view-options .btn');
+                    viewButtons.forEach(btn => {
+                        if (btn.textContent.includes(preferredView)) {
+                            btn.classList.add('active');
+                        } else {
+                            btn.classList.remove('active');
+}
+                    });
+                }, 100);
+            }
+        });
+        
+        // 显示作业详情
+        function showAssignmentDetail(card) {
+            const title = card.querySelector('.card-title').textContent;
+            const course = card.querySelector('.card-course').textContent;
+            const dueDate = card.querySelector('.meta-item:nth-child(1) span').textContent.split(': ')[1];
+            const status = card.querySelector('.status-badge').textContent;
+            
+            // 模拟点击卡片显示详情
+            card.click();
+            
+            console.log(`显示作业详情: ${title}`);
+        }
+        
+        // 页面加载完成后恢复用户的视图偏好
+        document.addEventListener('DOMContentLoaded', function() {
+            const preferredView = localStorage.getItem('preferredView');
+            if (preferredView) {
+                // 延迟执行以确保DOM完全加载
+                setTimeout(() => {
+                    switchView(preferredView);
+                    
+                    // 更新视图选择器的状态
+                    const viewButtons = document.querySelectorAll('.view-options .btn');
+                    viewButtons.forEach(btn => {
+                        if (btn.textContent.includes(preferredView)) {
+                            btn.classList.add('active');
+                        } else {
+                            btn.classList.remove('active');
+                        }
+                    });
+                }, 100);
+            }
+        });
+        
+        // 创建查看作业模态框
+        function createViewAssignmentModal(title, course, dueDate, estimatedTime, status, description) {
+            // 如果模态框已存在，则移除
+            const existingModal = document.querySelector('.view-assignment-modal');
+            if (existingModal) {
+                document.body.removeChild(existingModal);
+            }
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal view-assignment-modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="width: 700px;">
+                    <div class="modal-header">
+                        <h3>作业详情</h3>
+                        <button class="modal-close">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="assignment-detail-view">
+                            <div class="detail-section">
+                                <div class="detail-label">作业标题</div>
+                                <div class="detail-value">${title}</div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <div class="detail-label">所属课程</div>
+                                <div class="detail-value">${course}</div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <div class="detail-label">截止日期</div>
+                                <div class="detail-value">${dueDate}</div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <div class="detail-label">预计耗时</div>
+                                <div class="detail-value">${estimatedTime}</div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <div class="detail-label">作业状态</div>
+                                <div class="detail-value">
+                                    <span class="status-badge ${getStatusClass(status)}">${status}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <div class="detail-label">作业描述</div>
+                                <div class="detail-value">${description}</div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <div class="detail-label">附件</div>
+                                <div class="detail-value">
+                                    <div class="attachment-list">
+                                        <div class="attachment-item">
+                                            <i class="fas fa-file-pdf"></i>
+                                            <span>作业要求.pdf</span>
+                                            <button class="btn btn-outline btn-sm download-btn" data-file="作业要求.pdf">
+                                                <i class="fas fa-download"></i> 下载
+                                            </button>
+                                        </div>
+                                        <div class="attachment-item">
+                                            <i class="fas fa-file-excel"></i>
+                                            <span>数据模板.xlsx</span>
+                                            <button class="btn btn-outline btn-sm download-btn" data-file="数据模板.xlsx">
+                                                <i class="fas fa-download"></i> 下载
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <div class="detail-label">评分标准</div>
+                                <div class="detail-value">
+                                    <div class="grading-criteria">
+                                        <div class="criteria-item">
+                                            <span>分析深度 (40%)</span>
+                                            <div class="criteria-bar">
+                                                <div class="criteria-fill" style="width: 40%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="criteria-item">
+                                            <span>计算准确性 (30%)</span>
+                                            <div class="criteria-bar">
+                                                <div class="criteria-fill" style="width: 30%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="criteria-item">
+                                            <span>方案可行性 (20%)</span>
+                                            <div class="criteria-bar">
+                                                <div class="criteria-fill" style="width: 20%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="criteria-item">
+                                            <span>报告规范性 (10%)</span>
+                                            <div class="criteria-bar">
+                                                <div class="criteria-fill" style="width: 10%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary modal-cancel">关闭</button>
+                        <button class="btn btn-primary start-btn" style="display: ${(status === '待提交' || status === '已逾期') ? 'inline-block' : 'none'}">
+                            <i class="fas fa-pen"></i> ${status === '已逾期' ? '补交作业' : '开始作业'}
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 添加模态框样式（如果尚未添加）
+            addModalStyles();
+            
+            // 模态框交互
+            const closeModal = function() {
+                document.body.removeChild(modal);
+            };
+            
+            modal.querySelector('.modal-close').addEventListener('click', closeModal);
+            modal.querySelector('.modal-cancel').addEventListener('click', closeModal);
+            
+            // 下载按钮事件
+            modal.querySelectorAll('.download-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const fileName = this.getAttribute('data-file');
+                    downloadAttachment(fileName);
+                });
+            });
+            
+            // 开始作业按钮事件（如果存在）
+            const startBtn = modal.querySelector('.start-btn');
+            if (startBtn) {
+                startBtn.addEventListener('click', function() {
+                    closeModal();
+                    // 这里可以添加实际开始作业的逻辑
+                    alert(`开始完成作业: ${title}`);
+                });
+            }
+        }
+        // 切换视图
+        function switchView(viewType) {
+            console.log('切换视图:', viewType);
+            
+            const assignmentContainer = document.querySelector('.assignment-container');
+            const assignmentGrid = document.querySelector('.assignment-grid');
+            const existingCalendar = document.querySelector('.calendar-view-container');
+            
+            // 移除现有的日历视图
+            if (existingCalendar) {
+                existingCalendar.remove();
+            }
+            
+            // 重置所有卡片样式
+            document.querySelectorAll('.assignment-card').forEach(card => {
+                card.style.width = '';
+                card.style.marginBottom = '';
+                card.style.display = 'block';
+            });
+            
+            if (viewType === '卡片视图') {
+                assignmentGrid.style.display = 'grid';
+                assignmentGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
+                assignmentGrid.style.gap = '20px';
+                
+            } else if (viewType === '列表视图') {
+                assignmentGrid.style.display = 'block';
+                assignmentGrid.style.gap = '0';
+                
+                document.querySelectorAll('.assignment-card').forEach(card => {
+                    card.style.width = '100%';
+                    card.style.marginBottom = '15px';
+                    card.style.display = 'flex';
+                    card.style.flexDirection = 'row';
+                    card.style.alignItems = 'center';
+                    card.style.padding = '15px';
+                });
+                
+            } else if (viewType === '日历视图') {
+                assignmentGrid.style.display = 'none';
+                
+                // 重置日历状态为当前月份
+                currentCalendarYear = new Date().getFullYear();
+                currentCalendarMonth = new Date().getMonth();
+                
+                // 渲染日历视图
+                renderCalendarView();
+            }
+            
+            // 保存用户偏好到localStorage
+            localStorage.setItem('preferredView', viewType);
+            
+            console.log(`视图已切换到: ${viewType}`);
+        }
+
+        
+        // 渲染日历视图
+        function renderCalendarView() {
+            const assignmentContainer = document.querySelector('.assignment-container');
+            
+            // 移除现有的日历视图和详情区域
+            const existingCalendar = document.querySelector('.calendar-view-container');
+            if (existingCalendar) {
+                existingCalendar.remove();
+            }
+            const existingDetails = document.querySelector('.calendar-details-container');
+            if (existingDetails) {
+                existingDetails.remove();
+            }
+            
+            // 创建主容器（日历和详情并排显示）
+            const mainContainer = document.createElement('div');
+            mainContainer.style.display = 'flex';
+            mainContainer.style.gap = '20px';
+            
+            // 创建日历视图容器
+            const calendarViewContainer = document.createElement('div');
+            calendarViewContainer.className = 'calendar-view-container';
+            calendarViewContainer.style.padding = '20px';
+            calendarViewContainer.style.background = 'white';
+            calendarViewContainer.style.borderRadius = '8px';
+            calendarViewContainer.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+            calendarViewContainer.style.flex = '2';
+            
+            // 创建详情区域容器
+            const detailsContainer = document.createElement('div');
+            detailsContainer.className = 'calendar-details-container';
+            detailsContainer.style.padding = '20px';
+            detailsContainer.style.background = 'white';
+            detailsContainer.style.borderRadius = '8px';
+            detailsContainer.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+            detailsContainer.style.flex = '1';
+            detailsContainer.style.minWidth = '300px';
+            
+            // 详情区域标题
+            const detailsTitle = document.createElement('h3');
+            detailsTitle.textContent = '作业详情';
+            detailsTitle.style.marginBottom = '15px';
+            detailsTitle.style.color = '#1e293b';
+            detailsContainer.appendChild(detailsTitle);
+            
+            // 详情内容区域
+            const detailsContent = document.createElement('div');
+            detailsContent.id = 'calendar-details-content';
+            detailsContent.innerHTML = '<p style="color: #64748b; text-align: center;">点击日历中的作业标题查看详情</p>';
+            detailsContainer.appendChild(detailsContent);
+            
+            // 使用全局变量获取当前月份信息
+            const year = currentCalendarYear;
+            const month = currentCalendarMonth;
+            
+            // 创建日历头部
+            const calendarHeader = document.createElement('div');
+            calendarHeader.style.display = 'flex';
+            calendarHeader.style.justifyContent = 'space-between';
+            calendarHeader.style.alignItems = 'center';
+            calendarHeader.style.marginBottom = '20px';
+            
+            const prevButton = document.createElement('button');
+            prevButton.className = 'btn btn-outline';
+            prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevButton.onclick = () => navigateCalendar(-1);
+            prevButton.title = '上一月';
+            
+            const monthYear = document.createElement('div');
+            monthYear.style.fontWeight = 'bold';
+            monthYear.style.fontSize = '18px';
+            monthYear.textContent = `${year}年${month + 1}月`;
+            
+            const nextButton = document.createElement('button');
+            nextButton.className = 'btn btn-outline';
+            nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextButton.onclick = () => navigateCalendar(1);
+            nextButton.title = '下一月';
+            
+            const todayButton = document.createElement('button');
+            todayButton.className = 'btn btn-primary';
+            todayButton.innerHTML = '<i class="fas fa-calendar-day"></i> 今天';
+            todayButton.onclick = () => {
+                currentCalendarYear = new Date().getFullYear();
+                currentCalendarMonth = new Date().getMonth();
+                renderCalendarView();
+            };
+            
+            calendarHeader.appendChild(prevButton);
+            calendarHeader.appendChild(monthYear);
+            calendarHeader.appendChild(nextButton);
+            calendarHeader.appendChild(todayButton);
+            
+            // 创建日历表格
+            const calendarTable = document.createElement('div');
+            calendarTable.style.display = 'grid';
+            calendarTable.style.gridTemplateColumns = 'repeat(7, 1fr)';
+            calendarTable.style.gap = '1px';
+            calendarTable.style.backgroundColor = '#e2e8f0';
+            calendarTable.style.borderRadius = '4px';
+            calendarTable.style.overflow = 'hidden';
+            
+            // 创建星期标题
+            const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+            weekdays.forEach(day => {
+                const dayCell = document.createElement('div');
+                dayCell.style.padding = '12px';
+                dayCell.style.textAlign = 'center';
+                dayCell.style.fontWeight = 'bold';
+                dayCell.style.backgroundColor = '#f1f5f9';
+                dayCell.textContent = day;
+                calendarTable.appendChild(dayCell);
+            });
+            
+            // 获取月份的第一天和总天数
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // 添加上个月的日期
+            const prevMonthDays = new Date(year, month, 0).getDate();
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const emptyCell = document.createElement('div');
+                emptyCell.style.padding = '12px';
+                emptyCell.style.backgroundColor = '#f8fafc';
+                emptyCell.style.color = '#94a3b8';
+                emptyCell.style.fontSize = '12px';
+                emptyCell.textContent = prevMonthDays - i;
+                calendarTable.appendChild(emptyCell);
+            }
+            
+            // 添加当前月份的日期
+            const assignments = getAllAssignments();
+            const today = new Date();
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateCell = document.createElement('div');
+                dateCell.style.padding = '12px';
+                dateCell.style.backgroundColor = 'white';
+                dateCell.style.minHeight = '100px';
+                dateCell.style.position = 'relative';
+                dateCell.style.border = '1px solid #f1f5f9';
+                
+                // 标记今天
+                if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
+                    dateCell.style.backgroundColor = '#f0f4ff';
+                    dateCell.style.border = '2px solid #4361ee';
+                }
+                
+                const dateNumber = document.createElement('div');
+                dateNumber.style.fontWeight = 'bold';
+                dateNumber.style.marginBottom = '5px';
+                dateNumber.style.color = '#1e293b';
+                dateNumber.textContent = day;
+                
+                // 添加该日期的作业
+                const assignmentsForDay = getAssignmentsForDate(assignments, year, month, day);
+                const assignmentsContainer = document.createElement('div');
+                assignmentsContainer.style.maxHeight = '60px';
+                assignmentsContainer.style.overflowY = 'auto';
+                
+                assignmentsForDay.forEach(assignment => {
+                    const assignmentItem = document.createElement('div');
+                    assignmentItem.style.fontSize = '11px';
+                    assignmentItem.style.padding = '2px 4px';
+                    assignmentItem.style.marginBottom = '2px';
+                    assignmentItem.style.borderRadius = '3px';
+                    assignmentItem.style.backgroundColor = getStatusColor(assignment.status);
+                    assignmentItem.style.color = 'white';
+                    assignmentItem.style.cursor = 'pointer';
+                    assignmentItem.style.whiteSpace = 'nowrap';
+                    assignmentItem.style.overflow = 'hidden';
+                    assignmentItem.style.textOverflow = 'ellipsis';
+                    assignmentItem.textContent = assignment.title;
+                    assignmentItem.title = `${assignment.title} - ${assignment.course}`;
+                    assignmentItem.onclick = (e) => {
+                        e.stopPropagation(); // 阻止事件冒泡到日期单元格
+                        showCalendarAssignmentDetail(assignment);
+                    };
+                    
+                    assignmentsContainer.appendChild(assignmentItem);
+                });
+                
+                // 显示作业数量
+                if (assignmentsForDay.length > 2) {
+                    const moreIndicator = document.createElement('div');
+                    moreIndicator.style.fontSize = '10px';
+                    moreIndicator.style.color = '#64748b';
+                    moreIndicator.style.textAlign = 'center';
+                    moreIndicator.style.marginTop = '2px';
+                    moreIndicator.textContent = `+${assignmentsForDay.length - 2} 更多`;
+                    assignmentsContainer.appendChild(moreIndicator);
+                }
+                
+                dateCell.appendChild(dateNumber);
+                dateCell.appendChild(assignmentsContainer);
+                calendarTable.appendChild(dateCell);
+            }
+            
+            // 添加下个月的日期填充
+            const remainingCells = 42 - (firstDay + daysInMonth);
+            for (let day = 1; day <= remainingCells; day++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.style.padding = '12px';
+                emptyCell.style.backgroundColor = '#f8fafc';
+                emptyCell.style.color = '#94a3b8';
+                emptyCell.style.fontSize = '12px';
+                emptyCell.textContent = day;
+                calendarTable.appendChild(emptyCell);
+            }
+            
+            // 组装日历视图
+            calendarViewContainer.appendChild(calendarHeader);
+            calendarViewContainer.appendChild(calendarTable);
+            
+            assignmentContainer.appendChild(calendarViewContainer);
+            
+            console.log(`日历视图已渲染: ${year}年${month + 1}月`);
+        }
+
+        // 获取所有作业数据
+        function getAllAssignments() {
+            const assignments = [];
+            document.querySelectorAll('.assignment-card').forEach(card => {
+                const title = card.querySelector('.card-title').textContent;
+                const course = card.querySelector('.card-course').textContent;
+                const dueDateText = card.querySelector('.meta-item:nth-child(1) span').textContent.split(': ')[1];
+                const status = card.querySelector('.status-badge').textContent;
+                
+                assignments.push({
+                    id: card.dataset.id || Math.random().toString(36).substr(2, 9),
+                    title: title,
+                    course: course,
+                    dueDate: dueDateText,
+                    status: status
+                });
+            });
+            
+            // 添加示例作业数据
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            // 示例作业1：销售数据分析报告（今天截止）
+            assignments.push({
+                id: 'sample_assignment_1',
+                title: '销售数据分析报告',
+                course: '数据分析',
+                dueDate: today.toLocaleDateString('zh-CN'),
+                status: '待提交'
+            });
+            
+            // 示例作业2：Python爬虫程序设计（明天截止）
+            assignments.push({
+                id: 'sample_assignment_2',
+                title: 'Python爬虫程序设计',
+                course: 'Python编程',
+                dueDate: tomorrow.toLocaleDateString('zh-CN'),
+                status: '待提交'
+            });
+            
+            return assignments;
+        }
+
+        // 获取指定日期的作业
+        function getAssignmentsForDate(assignments, year, month, day) {
+            return assignments.filter(assignment => {
+                const dueDate = new Date(assignment.dueDate);
+                return dueDate.getFullYear() === year && 
+                    dueDate.getMonth() === month && 
+                    dueDate.getDate() === day;
+            });
+        }
+
+        // 获取状态颜色
+        function getStatusColor(status) {
+            switch(status) {
+                case '待提交': return '#f59e0b';
+                case '已提交': return '#4361ee';
+                case '已批改': return '#4ade80';
+                case '已逾期': return '#ef4444';
+                default: return '#64748b';
+            }
+        }
+
+        // 高亮选中的作业
+        function highlightAssignment(assignmentId) {
+            // 实现高亮选中作业的逻辑
+            console.log('选中作业ID:', assignmentId);
+            
+            // 找到对应的作业卡片并高亮显示
+            const assignmentCards = document.querySelectorAll('.assignment-card');
+            assignmentCards.forEach(card => {
+                if (card.dataset.id === assignmentId) {
+                    // 添加高亮效果
+                    card.style.border = '2px solid #4361ee';
+                    card.style.boxShadow = '0 0 10px rgba(67, 97, 238, 0.3)';
+                    card.style.transform = 'scale(1.02)';
+                    
+                    // 滚动到该卡片
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // 3秒后移除高亮效果
+                    setTimeout(() => {
+                        card.style.border = '';
+                        card.style.boxShadow = '';
+                        card.style.transform = '';
+                    }, 3000);
+                    
+                    // 显示作业详情
+                    showAssignmentDetail(card);
+                }
+            });
+        }
+
+        // 日历导航
+        function navigateCalendar(direction) {
+            // 更新当前月份
+            currentCalendarMonth += direction;
+            
+            // 处理年份变化
+            if (currentCalendarMonth < 0) {
+                currentCalendarMonth = 11;
+                currentCalendarYear--;
+            } else if (currentCalendarMonth > 11) {
+                currentCalendarMonth = 0;
+                currentCalendarYear++;
+            }
+            
+            // 重新渲染日历视图
+            const existingCalendar = document.querySelector('.calendar-view-container');
+            if (existingCalendar) {
+                existingCalendar.remove();
+            }
+            
+            // 重新渲染日历
+            renderCalendarView();
+            
+            console.log(`导航到: ${currentCalendarYear}年${currentCalendarMonth + 1}月`);
+        }
+        
+        // 显示日历视图中的作业详情
+        function showCalendarAssignmentDetail(assignment) {
+            const detailsContent = document.getElementById('calendar-details-content');
+            if (!detailsContent) return;
+            
+            // 创建作业详情HTML
+            detailsContent.innerHTML = `
+                <div class="detail-section">
+                    <div class="detail-label">作业标题</div>
+                    <div class="detail-value">${assignment.title}</div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-label">课程名称</div>
+                    <div class="detail-value">${assignment.course}</div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-label">截止日期</div>
+                    <div class="detail-value">${assignment.dueDate}</div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-label">状态</div>
+                    <div class="detail-value">
+                        <span style="color: ${getStatusColor(assignment.status)}; font-weight: bold;">
+                            ${assignment.status}
+                        </span>
+                    </div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-label">作业描述</div>
+                    <div class="detail-value">${assignment.description || '暂无详细描述'}</div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-label">附件</div>
+                    <div class="detail-value">
+                        ${assignment.attachments && assignment.attachments.length > 0 ? 
+                            assignment.attachments.map(att => 
+                                `<div style="margin-bottom: 5px;">
+                                    <i class="fas fa-paperclip"></i>
+                                    <span style="margin-left: 5px;">${att}</span>
+                                    <button class="btn btn-sm btn-outline" onclick="downloadAttachment('${att}')" style="margin-left: 10px;">
+                                        <i class="fas fa-download"></i> 下载
+                                    </button>
+                                </div>`
+                            ).join('') : 
+                            '暂无附件'
+                        }
+                    </div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-label">操作</div>
+                    <div class="detail-value">
+                        <button class="btn btn-primary" onclick="submitAssignment()">
+                            <i class="fas fa-upload"></i> 提交作业
+                        </button>
+                        <button class="btn btn-outline" onclick="highlightAssignment('${assignment.id}')" style="margin-left: 10px;">
+                            <i class="fas fa-search"></i> 定位作业
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            console.log('显示作业详情:', assignment.title);
+        }
+        
+                
+        // 下载作业模板
+        function downloadTemplate() {
+            // 模拟下载作业模板
+            console.log('下载作业模板');
+            
+            // 实际应用中，这里会触发文件下载
+            // 例如:
+            // window.location.href = '/download/template.xlsx';
+            
+            // 创建一个模拟的下载链接
+            const link = document.createElement('a');
+            link.href = 'data:text/plain;charset=utf-8,这是作业模板文件的内容';
+            link.download = '作业模板.xlsx';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // 显示下载提示
+            alert('作业模板已开始下载');
+        }
+
+        // 下载附件
+        function downloadAttachment(fileName) {
+            console.log('下载附件:', fileName);
+            
+            // 实际应用中，这里会触发文件下载
+            // 例如:
+            // window.location.href = `/download/${fileName}`;
+            
+            // 创建一个模拟的下载链接
+            const link = document.createElement('a');
+            link.href = 'data:text/plain;charset=utf-8,这是文件内容: ' + fileName;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // 显示下载提示
+            alert(`文件 "${fileName}" 已开始下载`);
+        }
+        
+        // 排序作业
+        function sortAssignments(sortBy) {
+            console.log('排序方式:', sortBy);
+            
+            // 这里可以添加实际的排序逻辑
+            // 目前只是模拟排序效果
+            const assignmentGrid = document.querySelector('.assignment-grid');
+            const cards = Array.from(document.querySelectorAll('.assignment-card'));
+            
+            // 简单模拟排序动画
+            assignmentGrid.style.opacity = '0.5';
+            setTimeout(() => {
+                cards.sort(() => Math.random() - 0.5);
+                
+                // 清空当前网格
+                while (assignmentGrid.firstChild) {
+                    assignmentGrid.removeChild(assignmentGrid.firstChild);
+                }
+                
+                // 添加排序后的卡片
+                cards.forEach(card => {
+                    assignmentGrid.appendChild(card);
+                });
+                
+                assignmentGrid.style.opacity = '1';
+            }, 300);
+        }
+        
+       
+        // 提交作业
+        function submitAssignment() {
+            const title = document.querySelector('.detail-section:nth-child(1) .detail-value').textContent;
+            console.log('提交作业:', title);
+            
+            // 创建提交模态框
+            const modal = document.createElement('div');
+            modal.className = 'modal submit-assignment-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>提交作业</h3>
+                        <button class="modal-close">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>您即将提交作业: <strong>${title}</strong></p>
+                        <div class="upload-area" style="border: 2px dashed #cbd5e0; border-radius: 8px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s ease;">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #cbd5e0; margin-bottom: 15px;"></i>
+                            <p style="color: #64748b; margin-bottom: 10px;">拖放文件到这里或点击上传</p>
+                            <p style="font-size: 12px; color: #94a3b8;">支持 PDF、DOC、DOCX、XLS、XLSX 格式，最大 10MB</p>
+                            <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" style="display: none;">
+                        </div>
+                        <div id="file-list" style="margin-top: 15px;"></div>
+                        <div class="form-group">
+                            <label>备注说明</label>
+                            <textarea placeholder="可选：添加提交备注..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 8px; resize: vertical; min-height: 80px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary modal-cancel">取消</button>
+                        <button class="btn btn-primary" disabled>确认提交</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 添加模态框样式
+            addModalStyles();
+            
+            // 模态框交互
+            const closeModal = function() {
+                document.body.removeChild(modal);
+            };
+            
+            modal.querySelector('.modal-close').addEventListener('click', closeModal);
+            modal.querySelector('.modal-cancel').addEventListener('click', closeModal);
+            
+            const uploadArea = modal.querySelector('.upload-area');
+            const fileInput = modal.querySelector('input[type="file"]');
+            const fileList = modal.querySelector('#file-list');
+            const submitBtn = modal.querySelector('.btn-primary');
+            let uploadedFiles = [];
+            
+            // 文件上传处理
+            uploadArea.addEventListener('click', () => fileInput.click());
+            
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#4361ee';
+                uploadArea.style.backgroundColor = '#f0f4ff';
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.borderColor = '#cbd5e0';
+                uploadArea.style.backgroundColor = '';
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#cbd5e0';
+                uploadArea.style.backgroundColor = '';
+                handleFiles(e.dataTransfer.files);
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+            
+            function handleFiles(files) {
+                Array.from(files).forEach(file => {
+                    if (validateFile(file)) {
+                        uploadedFiles.push(file);
+                        displayFile(file);
+                        submitBtn.disabled = false;
+                    }
+                });
+            }
+            
+            function validateFile(file) {
+                const validTypes = ['.pdf', '.doc', '.docx', '.xls', '.xlsx'];
+                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                const maxSize = 10 * 1024 * 1024; // 10MB
+                
+                if (!validTypes.includes(fileExtension)) {
+                    alert('不支持的文件格式，请选择 PDF、DOC、DOCX、XLS 或 XLSX 文件');
+                    return false;
+                }
+                
+                if (file.size > maxSize) {
+                    alert('文件大小不能超过 10MB');
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            function displayFile(file) {
+                const fileItem = document.createElement('div');
+                fileItem.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #f8fafc; border-radius: 6px; margin-bottom: 8px;';
+                fileItem.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <i class="fas fa-file" style="color: #4361ee; margin-right: 10px;"></i>
+                        <span style="font-size: 14px; color: #1e293b;">${file.name}</span>
+                        <span style="font-size: 12px; color: #64748b; margin-left: 10px;">(${formatFileSize(file.size)})</span>
+                    </div>
+                    <button class="btn-remove" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 5px;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                fileItem.querySelector('.btn-remove').addEventListener('click', () => {
+                    const index = uploadedFiles.indexOf(file);
+                    if (index > -1) {
+                        uploadedFiles.splice(index, 1);
+                        fileItem.remove();
+                        if (uploadedFiles.length === 0) {
+                            submitBtn.disabled = true;
+                        }
+                    }
+                });
+                
+                fileList.appendChild(fileItem);
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // 提交按钮事件
+            submitBtn.addEventListener('click', function() {
+                if (uploadedFiles.length === 0) {
+                    alert('请至少上传一个文件');
+                    return;
+                }
+                
+                // 模拟上传过程
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 上传中...';
+                submitBtn.disabled = true;
+                
+                setTimeout(() => {
+                    alert('作业提交成功！');
+                    closeModal();
+                    
+                    // 更新作业状态
+                    updateAssignmentStatus(title);
+                }, 2000);
+            });
+        }
+
+        // 更新作业状态
+        function updateAssignmentStatus(title) {
+            // 更新详情页状态
+            const statusBadge = document.querySelector('.detail-section:nth-child(5) .status-badge');
+            if (statusBadge) {
+                statusBadge.textContent = '已提交';
+                statusBadge.className = 'status-badge submitted';
+            }
+            
+            const submitButton = document.querySelector('.detail-actions .btn-primary');
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-check"></i> 已提交';
+            }
+            
+            // 更新卡片状态
+            const assignmentCards = document.querySelectorAll('.assignment-card');
+            assignmentCards.forEach(card => {
+                const cardTitle = card.querySelector('.card-title').textContent;
+                if (cardTitle === title) {
+                    const cardBadge = card.querySelector('.status-badge');
+                    if (cardBadge) {
+                        cardBadge.textContent = '已提交';
+                        cardBadge.className = 'status-badge submitted';
+                    }
+                    
+                    const cardButton = card.querySelector('.btn');
+                    if (cardButton) {
+                        cardButton.innerHTML = '<i class="fas fa-eye"></i> 查看';
+                        cardButton.className = 'btn btn-outline btn-sm';
+                    }
+                }
+            });
+            
+            console.log(`作业 "${title}" 状态已更新为已提交`);
+        }
+
+        // 补交作业
+        function submitLateAssignment(card) {
+            const title = card.querySelector('.card-title').textContent;
+            const course = card.querySelector('.card-meta').textContent;
+            const deadline = card.querySelector('.deadline') ? card.querySelector('.deadline').textContent : '已逾期';
+            
+            console.log('补交作业:', title);
+            
+            // 创建补交模态框
+            const modal = document.createElement('div');
+            modal.className = 'modal submit-late-assignment-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>补交作业</h3>
+                        <button class="modal-close">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="assignment-info">
+                            <h4>作业信息</h4>
+                            <p><strong>作业标题：</strong>${title}</p>
+                            <p><strong>课程：</strong>${course}</p>
+                            <p><strong>截止日期：</strong>${deadline}</p>
+                        </div>
+                        
+                        <div class="instructions">
+                            <h4>补交说明</h4>
+                            <p>您正在补交逾期的作业，请注意以下事项：</p>
+                            <ul>
+                                <li>补交的作业可能会被扣分</li>
+                                <li>请确保文件内容完整且符合要求</li>
+                                <li>建议添加说明解释延迟原因</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="upload-area" style="border: 2px dashed #f59e0b; border-radius: 8px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s ease; margin: 20px 0;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #f59e0b; margin-bottom: 15px;"></i>
+                            <p style="color: #64748b; margin-bottom: 10px;">拖放补交文件到这里或点击上传</p>
+                            <p style="font-size: 12px; color: #94a3b8;">支持 PDF、DOC、DOCX、XLS、XLSX 格式，最大 10MB</p>
+                            <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" style="display: none;">
+                        </div>
+                        <div id="late-file-list" style="margin-top: 15px;"></div>
+                        
+                        <div class="form-group">
+                            <label>补交说明（可选）</label>
+                            <textarea placeholder="请说明延迟提交的原因..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 8px; resize: vertical; min-height: 80px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary modal-cancel">取消</button>
+                        <button class="btn btn-warning" disabled>确认补交</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 添加模态框样式
+            addModalStyles();
+            
+            // 模态框交互
+            const closeModal = function() {
+                document.body.removeChild(modal);
+            };
+            
+            modal.querySelector('.modal-close').addEventListener('click', closeModal);
+            modal.querySelector('.modal-cancel').addEventListener('click', closeModal);
+            
+            const uploadArea = modal.querySelector('.upload-area');
+            const fileInput = modal.querySelector('input[type="file"]');
+            const fileList = modal.querySelector('#late-file-list');
+            const submitBtn = modal.querySelector('.btn-warning');
+            let uploadedFiles = [];
+            
+            // 文件上传处理
+            uploadArea.addEventListener('click', () => fileInput.click());
+            
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#f59e0b';
+                uploadArea.style.backgroundColor = '#fffbeb';
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.borderColor = '#f59e0b';
+                uploadArea.style.backgroundColor = '';
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#f59e0b';
+                uploadArea.style.backgroundColor = '';
+                handleFiles(e.dataTransfer.files);
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+            
+            function handleFiles(files) {
+                Array.from(files).forEach(file => {
+                    if (validateFile(file)) {
+                        uploadedFiles.push(file);
+                        displayFile(file);
+                        submitBtn.disabled = false;
+                    }
+                });
+            }
+            
+            function validateFile(file) {
+                const validTypes = ['.pdf', '.doc', '.docx', '.xls', '.xlsx'];
+                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                const maxSize = 10 * 1024 * 1024; // 10MB
+                
+                if (!validTypes.includes(fileExtension)) {
+                    alert('不支持的文件格式，请选择 PDF、DOC、DOCX、XLS 或 XLSX 文件');
+                    return false;
+                }
+                
+                if (file.size > maxSize) {
+                    alert('文件大小不能超过 10MB');
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            function displayFile(file) {
+                const fileItem = document.createElement('div');
+                fileItem.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #fef3c7; border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #f59e0b;';
+                fileItem.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <i class="fas fa-file" style="color: #f59e0b; margin-right: 10px;"></i>
+                        <span style="font-size: 14px; color: #1e293b;">${file.name}</span>
+                        <span style="font-size: 12px; color: #64748b; margin-left: 10px;">(${formatFileSize(file.size)})</span>
+                    </div>
+                    <button class="btn-remove" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 5px;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                fileItem.querySelector('.btn-remove').addEventListener('click', () => {
+                    const index = uploadedFiles.indexOf(file);
+                    if (index > -1) {
+                        uploadedFiles.splice(index, 1);
+                        fileItem.remove();
+                        if (uploadedFiles.length === 0) {
+                            submitBtn.disabled = true;
+                        }
+                    }
+                });
+                
+                fileList.appendChild(fileItem);
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // 提交按钮事件
+            submitBtn.addEventListener('click', function() {
+                if (uploadedFiles.length === 0) {
+                    alert('请至少上传一个文件');
+                    return;
+                }
+                
+                // 模拟上传过程
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 补交中...';
+                submitBtn.disabled = true;
+                
+                setTimeout(() => {
+                    alert('作业补交成功！请注意查看老师的反馈。');
+                    closeModal();
+                    
+                    // 更新作业状态
+                    updateLateAssignmentStatus(title);
+                }, 2000);
+            });
+        }
+        
+        // 更新补交作业状态
+        function updateLateAssignmentStatus(title) {
+            // 更新详情页状态
+            const statusBadge = document.querySelector('.detail-section:nth-child(5) .status-badge');
+            if (statusBadge) {
+                statusBadge.textContent = '已补交';
+                statusBadge.className = 'status-badge submitted';
+            }
+            
+            // 更新卡片状态
+            const assignmentCards = document.querySelectorAll('.assignment-card');
+            assignmentCards.forEach(card => {
+                const cardTitle = card.querySelector('.card-title').textContent;
+                if (cardTitle === title) {
+                    const cardBadge = card.querySelector('.status-badge');
+                    if (cardBadge) {
+                        cardBadge.textContent = '已补交';
+                        cardBadge.className = 'status-badge submitted';
+                    }
+                    
+                    const cardButton = card.querySelector('.btn-secondary');
+                    if (cardButton) {
+                        cardButton.innerHTML = '<i class="fas fa-eye"></i> 查看';
+                        cardButton.className = 'btn btn-outline btn-sm';
+                    }
+                }
+            });
+            
+            console.log(`作业 "${title}" 状态已更新为已补交`);
+        }
+
+
+        // 添加模态框样式
+        function addModalStyles() {
+            // 检查是否已添加样式
+            if (document.getElementById('enhanced-modal-styles')) {
+                return;
+            }
+            
+            const style = document.createElement('style');
+            style.id = 'enhanced-modal-styles';
+            style.textContent = `
+                .modal {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 1000;
+                }
+                
+                .modal-content {
+                    background: white;
+                    border-radius: 12px;
+                    width: 1000px;
+                    max-width: 90%;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+                }
+                
+                .modal-header {
+                    padding: 20px;
+                    border-bottom: 1px solid #e2e8f0;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                
+                .modal-header h3 {
+                    margin: 0;
+                    font-size: 18px;
+                }
+                
+                .modal-close {
+                    background: none;
+                    border: none;
+                    font-size: 20px;
+                    cursor: pointer;
+                    color: #64748b;
+                }
+                
+                .modal-close:hover {
+                    color: #ef4444;
+                }
+                
+                .modal-body {
+                    padding: 20px;
+                }
+                
+                .assignment-info h4 {
+                    margin-top: 0;
+                    margin-bottom: 15px;
+                    color: #1e293b;
+                }
+                
+                .assignment-info p {
+                    margin: 8px 0;
+                }
+                
+                .instructions {
+                    background: #f8fafc;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin: 15px 0;
+                }
+                
+                .instructions h4 {
+                    margin-top: 0;
+                    color: #1e293b;
+                }
+                
+                .instructions h5 {
+                    margin: 10px 0 5px 0;
+                    color: #1e293b;
+                }
+                
+                .instructions ul {
+                    padding-left: 20px;
+                    margin: 5px 0;
+                }
+                
+                .instructions li {
+                    margin-bottom: 5px;
+                }
+                
+                .form-group {
+                    margin-top: 20px;
+                }
+                
+                .form-group label {
+                    display: block;
+                    margin-bottom: 8px;
+                    font-weight: 600;
+                    color: #1e293b;
+                }
+                
+                .form-group select {
+                    width: 100%;
+                    padding: 10px;
+                    border: 1px solid #cbd5e0;
+                    border-radius: 8px;
+                    background-color: white;
+                }
+                
+                .modal-footer {
+                    padding: 20px;
+                    border-top: 1px solid #e2e8f0;
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 10px;
+                }
+                
+                .detail-section {
+                    margin-bottom: 20px;
+                }
+                
+                .detail-label {
+                    font-size: 14px;
+                    color: #64748b;
+                    margin-bottom: 8px;
+                }
+                
+                .detail-value {
+                    font-size: 16px;
+                    font-weight: 500;
+                    color: #1e293b;
+                }
+                
+                .attachment-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+                
+                .attachment-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 10px;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                }
+                
+                .attachment-item i {
+                    color: #4361ee;
+                }
+                
+                .attachment-item span {
+                    flex: 1;
+                }
+                
+                .grading-criteria {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 15px;
+                }
+                
+                .criteria-item {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 5px;
+                }
+                
+                .criteria-item span {
+                    font-size: 14px;
+                    color: #1e293b;
+                }
+                
+                .criteria-bar {
+                    height: 8px;
+                    background-color: #e2e8f0;
+                    border-radius: 4px;
+                    overflow: hidden;
+                }
+                
+                .criteria-fill {
+                    height: 100%;
+                    background-color: #4361ee;
+                    border-radius: 4px;
+                }
+            `;
+            
+            document.head.appendChild(style);
+        }
+
+        // 通用关闭模态框函数
+        function closeModal(modal) {
+            if (modal && modal.parentNode) {
+                modal.parentNode.removeChild(modal);
+            }
+        }
+
+        // 确保所有模态框的关闭按钮都能正常工作
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为所有模态框的关闭按钮添加事件监听器
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal-close') || 
+                    e.target.classList.contains('modal-cancel') ||
+                    e.target.classList.contains('btn-secondary')) {
+                    const modal = e.target.closest('.modal');
+                    if (modal) {
+                        closeModal(modal);
+                    }
+                }
+            });
+        });
+    // 实现openModal函数
+function openModal(modalId) {
+    // 如果模态框已存在，则先移除
+    const existingModal = document.querySelector(`.${modalId}`);
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // 根据不同的模态框ID创建不同的模态框
+    if (modalId === 'newCaseModal') {
+        createNewAssignmentModal();
+    } else if (modalId === 'importCaseModal') {
+        createImportAssignmentModal();
+    }
+}
+
+// 创建"布置作业"模态框
+function createNewAssignmentModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal newCaseModal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>布置作业</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>作业标题 <span style="color: #ef4444;">*</span></label>
+                    <input type="text" class="assignment-title" placeholder="请输入作业标题" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>所属课程 <span style="color: #ef4444;">*</span></label>
+                    <select class="assignment-course" required>
+                        <option value="">请选择课程</option>
+                        <option value="供应链管理基础">供应链管理基础</option>
+                        <option value="物流与配送管理">物流与配送管理</option>
+                        <option value="运营管理">运营管理</option>
+                        <option value="库存管理">库存管理</option>
+                        <option value="采购管理">采购管理</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>截止日期 <span style="color: #ef4444;">*</span></label>
+                    <input type="date" class="assignment-deadline" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>预计耗时</label>
+                    <select class="assignment-time">
+                        <option value="1">1小时</option>
+                        <option value="2" selected>2小时</option>
+                        <option value="3">3小时</option>
+                        <option value="4">4小时</option>
+                        <option value="5">5小时以上</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>作业描述 <span style="color: #ef4444;">*</span></label>
+                    <textarea class="assignment-description" rows="4" placeholder="请输入作业详细描述" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>添加附件</label>
+                    <div class="upload-area" style="border: 2px dashed #cbd5e0; border-radius: 8px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s ease;">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #94a3b8; margin-bottom: 15px;"></i>
+                        <p style="color: #64748b; margin-bottom: 10px;">拖放文件到这里或点击上传</p>
+                        <p style="font-size: 12px; color: #94a3b8;">支持 PDF、DOC、DOCX、XLS、XLSX、PPT、PPTX 格式，最大 20MB</p>
+                        <input type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" style="display: none;">
+                    </div>
+                    <div id="file-list" style="margin-top: 15px;"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>评分标准</label>
+                    <div class="grading-criteria-editor">
+                        <div class="criteria-item">
+                            <input type="text" placeholder="评估项名称" value="分析深度">
+                            <input type="number" min="1" max="100" value="40" placeholder="权重 (%)">
+                        </div>
+                        <div class="criteria-item">
+                            <input type="text" placeholder="评估项名称" value="计算准确性">
+                            <input type="number" min="1" max="100" value="30" placeholder="权重 (%)">
+                        </div>
+                        <div class="criteria-item">
+                            <input type="text" placeholder="评估项名称" value="方案可行性">
+                            <input type="number" min="1" max="100" value="20" placeholder="权重 (%)">
+                        </div>
+                        <div class="criteria-item">
+                            <input type="text" placeholder="评估项名称" value="报告规范性">
+                            <input type="number" min="1" max="100" value="10" placeholder="权重 (%)">
+                        </div>
+                        <button class="btn btn-outline btn-sm add-criteria">
+                            <i class="fas fa-plus"></i> 添加评估项
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-cancel">取消</button>
+                <button class="btn btn-primary" id="save-assignment-btn">保存并发布</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // 添加模态框样式
+    addModalStyles();
+    
+    // 添加表单输入样式
+    addFormStyles();
+    
+    // 模态框交互
+    const closeModal = function() {
+        modal.remove();
+    };
+    
+    modal.querySelector('.modal-close').addEventListener('click', closeModal);
+    modal.querySelector('.modal-cancel').addEventListener('click', closeModal);
+    
+    // 文件上传处理
+    const uploadArea = modal.querySelector('.upload-area');
+    const fileInput = modal.querySelector('input[type="file"]');
+    const fileList = modal.querySelector('#file-list');
+    let uploadedFiles = [];
+    
+    uploadArea.addEventListener('click', () => fileInput.click());
+    
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = '#4361ee';
+        uploadArea.style.backgroundColor = '#f0f4ff';
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.style.borderColor = '#cbd5e0';
+        uploadArea.style.backgroundColor = '';
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = '#cbd5e0';
+        uploadArea.style.backgroundColor = '';
+        handleFiles(e.dataTransfer.files);
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
+    
+    function handleFiles(files) {
+        Array.from(files).forEach(file => {
+            if (validateFile(file)) {
+                uploadedFiles.push(file);
+                displayFile(file);
+            }
+        });
+    }
+    
+    function validateFile(file) {
+        const validTypes = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'];
+        const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+        const maxSize = 20 * 1024 * 1024; // 20MB
+        
+        if (!validTypes.includes(fileExtension)) {
+            alert('不支持的文件格式，请选择 PDF、DOC、DOCX、XLS、XLSX、PPT 或 PPTX 文件');
+            return false;
+        }
+        
+        if (file.size > maxSize) {
+            alert('文件大小不能超过 20MB');
+            return false;
+        }
+        
+        // 检查是否已上传相同文件
+        if (uploadedFiles.some(f => f.name === file.name && f.size === file.size)) {
+            alert('该文件已上传');
+            return false;
+        }
+        
+        return true;
+    }
+    
+    function displayFile(file) {
+        const fileItem = document.createElement('div');
+        fileItem.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #f1f5f9; border-radius: 6px; margin-bottom: 8px;';
+        fileItem.innerHTML = `
+            <div style="display: flex; align-items: center;">
+                <i class="fas fa-file" style="color: #4361ee; margin-right: 10px;"></i>
+                <span style="font-size: 14px; color: #1e293b;">${file.name}</span>
+                <span style="font-size: 12px; color: #64748b; margin-left: 10px;">(${formatFileSize(file.size)})</span>
+            </div>
+            <button class="btn-remove" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 5px;">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        
+        fileItem.querySelector('.btn-remove').addEventListener('click', () => {
+            const index = uploadedFiles.indexOf(file);
+            if (index > -1) {
+                uploadedFiles.splice(index, 1);
+                fileItem.remove();
+            }
+        });
+        
+        fileList.appendChild(fileItem);
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // 添加评估项
+    modal.querySelector('.add-criteria').addEventListener('click', function() {
+        const criteriaContainer = modal.querySelector('.grading-criteria-editor');
+        const newCriteria = document.createElement('div');
+        newCriteria.className = 'criteria-item';
+        newCriteria.innerHTML = `
+            <input type="text" placeholder="评估项名称">
+            <input type="number" min="1" max="100" placeholder="权重 (%)">
+        `;
+        criteriaContainer.insertBefore(newCriteria, this);
+    });
+    
+    // 保存并发布作业
+    modal.querySelector('#save-assignment-btn').addEventListener('click', function() {
+        const title = modal.querySelector('.assignment-title').value;
+        const course = modal.querySelector('.assignment-course').value;
+        const deadline = modal.querySelector('.assignment-deadline').value;
+        const timeEstimate = modal.querySelector('.assignment-time').value + '小时';
+        const description = modal.querySelector('.assignment-description').value;
+        
+        // 验证必填字段
+        if (!title || !course || !deadline || !description) {
+            alert('请填写所有必填字段');
+            return;
+        }
+        
+        // 模拟提交过程
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发布中...';
+        this.disabled = true;
+        
+        setTimeout(() => {
+            alert('作业布置成功！');
+            closeModal();
+            
+            // 这里可以添加实际的发布逻辑，比如刷新作业列表
+            // 为了演示，我们可以在控制台打印作业信息
+            console.log('发布的作业信息:', {
+                title, course, deadline, timeEstimate, description,
+                files: uploadedFiles.map(f => ({name: f.name, size: f.size}))
+            });
+            
+            // 在实际应用中，这里应该调用API保存作业，然后刷新页面或更新列表
+        }, 2000);
+    });
+}
+
+// 创建"导入作业"模态框
+function createImportAssignmentModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal importCaseModal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>导入作业</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="instructions">
+                    <h5>导入说明</h5>
+                    <p>通过上传Excel或CSV文件批量导入作业信息。请按照模板格式填写作业数据。</p>
+                    <ul>
+                        <li>支持的文件格式：Excel (.xlsx) 和 CSV (.csv)</li>
+                        <li>文件大小限制：20MB</li>
+                        <li>单次导入最多支持100条作业记录</li>
+                    </ul>
+                </div>
+                
+                <div class="form-group">
+                    <label>下载导入模板</label>
+                    <div class="template-options">
+                        <button class="btn btn-outline btn-sm download-template">
+                            <i class="fas fa-download"></i> Excel模板
+                        </button>
+                        <button class="btn btn-outline btn-sm download-template">
+                            <i class="fas fa-download"></i> CSV模板
+                        </button>
+                        <button class="btn btn-outline btn-sm download-template">
+                            <i class="fas fa-file-alt"></i> 格式说明
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>上传作业文件 <span style="color: #ef4444;">*</span></label>
+                    <div class="upload-area" style="border: 2px dashed #cbd5e0; border-radius: 8px; padding: 50px; text-align: center; cursor: pointer; transition: all 0.3s ease; margin: 20px 0;">
+                        <i class="fas fa-file-import" style="font-size: 64px; color: #94a3b8; margin-bottom: 20px;"></i>
+                        <p style="color: #64748b; margin-bottom: 10px; font-size: 16px;">拖放文件到这里或点击上传</p>
+                        <p style="font-size: 12px; color: #94a3b8;">支持 XLSX、CSV 格式，最大 20MB</p>
+                        <input type="file" accept=".xlsx,.csv" style="display: none;">
+                    </div>
+                    <div id="import-file-info" style="display: none; padding: 15px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #4ade80; margin-top: 15px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center;">
+                                <i class="fas fa-check-circle" style="color: #4ade80; margin-right: 10px;"></i>
+                                <div>
+                                    <p style="font-weight: 500; color: #1e293b; margin: 0;"><span id="import-file-name">示例文件.xlsx</span></p>
+                                    <p style="font-size: 12px; color: #64748b; margin: 2px 0 0 0;"><span id="import-file-size">1.2 MB</span> · <span id="import-file-records">15 条作业记录</span></p>
+                                </div>
+                            </div>
+                            <button class="btn-remove" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 5px;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>导入设置</label>
+                    <div class="import-settings">
+                        <label class="setting-item">
+                            <input type="checkbox" checked>
+                            <span>忽略已存在的作业</span>
+                        </label>
+                        <label class="setting-item">
+                            <input type="checkbox">
+                            <span>发送作业通知给学生</span>
+                        </label>
+                        <label class="setting-item">
+                            <input type="checkbox" checked>
+                            <span>导入完成后发送通知邮件</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-cancel">取消</button>
+                <button class="btn btn-primary" id="import-assignment-btn" disabled>开始导入</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // 添加模态框样式
+    addModalStyles();
+    
+    // 添加表单输入样式
+    addFormStyles();
+    
+    // 模态框交互
+    const closeModal = function() {
+        modal.remove();
+    };
+    
+    modal.querySelector('.modal-close').addEventListener('click', closeModal);
+    modal.querySelector('.modal-cancel').addEventListener('click', closeModal);
+    
+    // 文件上传处理
+    const uploadArea = modal.querySelector('.upload-area');
+    const fileInput = modal.querySelector('input[type="file"]');
+    const fileInfo = modal.querySelector('#import-file-info');
+    const fileName = modal.querySelector('#import-file-name');
+    const fileSize = modal.querySelector('#import-file-size');
+    const fileRecords = modal.querySelector('#import-file-records');
+    const importBtn = modal.querySelector('#import-assignment-btn');
+    let selectedFile = null;
+    
+    uploadArea.addEventListener('click', () => fileInput.click());
+    
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = '#4361ee';
+        uploadArea.style.backgroundColor = '#f0f4ff';
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.style.borderColor = '#cbd5e0';
+        uploadArea.style.backgroundColor = '';
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = '#cbd5e0';
+        uploadArea.style.backgroundColor = '';
+        if (e.dataTransfer.files.length > 0) {
+            handleImportFile(e.dataTransfer.files[0]);
+        }
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleImportFile(e.target.files[0]);
+        }
+    });
+    
+    function handleImportFile(file) {
+        const validTypes = ['.xlsx', '.csv'];
+        const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+        const maxSize = 20 * 1024 * 1024; // 20MB
+        
+        if (!validTypes.includes(fileExtension)) {
+            alert('不支持的文件格式，请选择 XLSX 或 CSV 文件');
+            return;
+        }
+        
+        if (file.size > maxSize) {
+            alert('文件大小不能超过 20MB');
+            return;
+        }
+        
+        selectedFile = file;
+        fileName.textContent = file.name;
+        fileSize.textContent = formatFileSize(file.size);
+        
+        // 模拟解析文件中的记录数（实际应用中需要真正解析文件）
+        const estimatedRecords = Math.floor(Math.random() * 50) + 10;
+        fileRecords.textContent = estimatedRecords + ' 条作业记录';
+        
+        fileInfo.style.display = 'block';
+        importBtn.disabled = false;
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // 移除已选文件
+    modal.querySelector('#import-file-info .btn-remove').addEventListener('click', function() {
+        selectedFile = null;
+        fileInfo.style.display = 'none';
+        fileInput.value = '';
+        importBtn.disabled = true;
+    });
+    
+    // 下载模板
+    modal.querySelectorAll('.download-template').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const templateType = this.textContent.trim();
+            console.log('下载模板:', templateType);
+            // 实际应用中这里应该触发文件下载
+            alert(`正在下载${templateType}...`);
+        });
+    });
+    
+    // 开始导入
+    modal.querySelector('#import-assignment-btn').addEventListener('click', function() {
+        if (!selectedFile) {
+            alert('请先选择要导入的文件');
+            return;
+        }
+        
+        // 获取导入设置
+        const ignoreExisting = modal.querySelectorAll('.import-settings input[type="checkbox"]')[0].checked;
+        const sendNotifications = modal.querySelectorAll('.import-settings input[type="checkbox"]')[1].checked;
+        const sendEmail = modal.querySelectorAll('.import-settings input[type="checkbox"]')[2].checked;
+        
+        // 模拟导入过程
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 导入中...';
+        this.disabled = true;
+        
+        // 显示导入进度
+        const progressBar = document.createElement('div');
+        progressBar.style.cssText = 'position: absolute; bottom: 0; left: 0; height: 4px; background: #4361ee; transition: width 0.3s ease;';
+        modal.querySelector('.modal-content').style.position = 'relative';
+        modal.querySelector('.modal-content').appendChild(progressBar);
+        
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 5;
+            progressBar.style.width = progress + '%';
+            
+            if (progress >= 100) {
+                clearInterval(interval);
+                
+                setTimeout(() => {
+                    alert('作业导入成功！');
+                    closeModal();
+                    
+                    // 在实际应用中，这里应该调用API导入作业，然后刷新页面或更新列表
+                    console.log('导入的作业文件:', {
+                        name: selectedFile.name,
+                        size: selectedFile.size,
+                        settings: {
+                            ignoreExisting,
+                            sendNotifications,
+                            sendEmail
+                        }
+                    });
+                }, 500);
+            }
+        }, 100);
+    });
+}
+
+// 添加表单元素样式
+function addFormStyles() {
+    // 检查是否已添加样式
+    if (document.getElementById('enhanced-form-styles')) {
+        return;
+    }
+    
+    const style = document.createElement('style');
+    style.id = 'enhanced-form-styles';
+    style.textContent = `
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input[type="text"]:focus,
+        .form-group input[type="date"]:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4361ee;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .template-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .import-settings {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .setting-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        .setting-item input[type="checkbox"] {
+            width: auto;
+        }
+        
+        .grading-criteria-editor {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .criteria-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .criteria-item input[type="text"] {
+            flex: 3;
+        }
+        
+        .criteria-item input[type="number"] {
+            flex: 1;
+            max-width: 100px;
+        }
+        
+        .add-criteria {
+            margin-top: 10px;
+            align-self: flex-start;
+        }
+    `;
+    
+    document.head.appendChild(style);
+}
+    
+    </script>
+
+</body>
+</html>

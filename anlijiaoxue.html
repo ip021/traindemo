@@ -1,0 +1,1801 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>案例教学 - 供应链实训系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --success: #4ade80;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --border-radius: 12px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 30px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+        
+        .page-title p {
+            color: var(--gray);
+            font-size: 15px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        /* 案例教学特有样式 */
+        .case-teaching-layout {
+            display: flex;
+            gap: 24px;
+            height: calc(100vh - 180px);
+        }
+        
+        .case-library {
+            width: 300px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        
+        .library-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .library-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .library-search {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 10px 40px 10px 16px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+        
+        .case-filters {
+            margin-bottom: 20px;
+        }
+        
+        .filter-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--dark);
+        }
+        
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .filter-tag {
+            padding: 6px 12px;
+            background: var(--gray-light);
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .filter-tag.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .case-categories {
+            margin-bottom: 20px;
+        }
+        
+        .category-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--dark);
+        }
+        
+        .category-list {
+            list-style: none;
+        }
+        
+        .category-item {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .category-item:hover {
+            background: var(--gray-light);
+        }
+        
+        .category-item.active {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .category-count {
+            background: var(--gray-light);
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+        }
+        
+        .case-list {
+            list-style: none;
+        }
+        
+        .case-item {
+            padding: 16px;
+            border-radius: var(--border-radius);
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+        
+        .case-item:hover {
+            background: var(--gray-light);
+        }
+        
+        .case-item.active {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+        
+        .case-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .case-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--primary-light);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .case-title {
+            font-size: 16px;
+            font-weight: 600;
+            flex: 1;
+        }
+        
+        .case-desc {
+            font-size: 13px;
+            color: var(--gray);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        
+        .case-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .case-tags {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .case-tag {
+            padding: 3px 8px;
+            background: var(--gray-light);
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .case-duration {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        /* 案例查看器 */
+        .case-viewer {
+            flex: 1;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .viewer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .viewer-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .viewer-tools {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .viewer-content {
+            flex: 1;
+        }
+        
+        .case-section {
+            margin-bottom: 32px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--dark);
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-light);
+        }
+        
+        .case-content {
+            padding-left: 8px;
+        }
+        
+        .case-content p {
+            margin-bottom: 16px;
+            line-height: 1.7;
+        }
+        
+        .case-content ul {
+            padding-left: 24px;
+            margin-bottom: 16px;
+        }
+        
+        .case-content li {
+            margin-bottom: 8px;
+        }
+        
+        .case-content h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 20px 0 12px 0;
+            color: var(--dark);
+        }
+        
+        .case-content img {
+            max-width: 100%;
+            border-radius: var(--border-radius);
+            margin: 16px 0;
+        }
+        
+        .analysis-chart {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .chart-container {
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .chart-placeholder {
+            text-align: center;
+            color: var(--gray);
+        }
+        
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .case-evaluation {
+            margin: 24px 0;
+        }
+        
+        .evaluation-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .evaluation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .evaluation-item {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .evaluation-label {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+        
+        .evaluation-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .analysis-tools {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .tool-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .tool-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        /* 讨论面板 */
+        .discussion-panel {
+            width: 350px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .discussion-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .discussion-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .discussion-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .discussion-tab {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        .discussion-tab.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .discussion-content {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        
+        .question-list {
+            list-style: none;
+        }
+        
+        .question-item {
+            padding: 16px;
+            border-radius: var(--border-radius);
+            margin-bottom: 12px;
+            background: var(--light);
+        }
+        
+        .question-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .question-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .question-info {
+            flex: 1;
+        }
+        
+        .question-author {
+            font-weight: 600;
+        }
+        
+        .question-time {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        .question-text {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .question-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .action-btn:hover {
+            color: var(--primary);
+        }
+        
+        .answer-list {
+            margin-top: 12px;
+            margin-left: 20px;
+            border-left: 2px solid var(--gray-light);
+            padding-left: 16px;
+        }
+        
+        .answer-item {
+            padding: 12px;
+            background: white;
+            border-radius: var(--border-radius);
+            margin-bottom: 8px;
+        }
+        
+        .answer-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .answer-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--success);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .answer-author {
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        .answer-time {
+            font-size: 11px;
+            color: var(--gray);
+        }
+        
+        .answer-text {
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .discussion-input {
+            padding: 20px;
+            border-top: 1px solid var(--gray-light);
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+        
+        .btn-secondary {
+            background: var(--gray-light);
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray-light);
+            color: var(--dark);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .case-teaching-layout {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .case-library, .discussion-panel {
+                width: 100%;
+                height: 300px;
+            }
+            
+            .case-viewer {
+                min-height: 500px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .case-teaching-layout {
+                gap: 15px;
+            }
+            
+            .viewer-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .viewer-tools {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        
+        .success-message {
+            padding: 15px;
+            background-color: #d1fae5;
+            border: 1px solid #10b981;
+            border-radius: 8px;
+            color: #065f46;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 主内容区 -->
+    <div class="header">
+        <div class="page-title">
+            <h1>案例教学</h1>
+            <p>通过真实案例提升学生的供应链管理能力</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-primary" onclick="openModal('newCaseModal')">
+                <i class="fas fa-plus"></i> 新建案例
+            </button>
+            <button class="btn btn-outline" onclick="openModal('importCaseModal')">
+                <i class="fas fa-download"></i> 导入案例
+            </button>
+        </div>
+    </div>
+
+    <!-- 案例教学布局 -->
+    <div class="case-teaching-layout">
+        <!-- 左侧案例库 -->
+        <div class="case-library">
+            <div class="library-header">
+                <div class="library-title">案例库</div>
+                <button class="btn btn-outline btn-sm">
+                    <i class="fas fa-filter"></i>
+                </button>
+            </div>
+            
+            <div class="library-search">
+                <input type="text" class="search-input" placeholder="搜索案例...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            
+            <div class="case-filters">
+                <div class="filter-title">案例类型</div>
+                <div class="filter-tags">
+                    <span class="filter-tag active">全部</span>
+                    <span class="filter-tag">供应链优化</span>
+                    <span class="filter-tag">库存管理</span>
+                    <span class="filter-tag">物流配送</span>
+                    <span class="filter-tag">风险管理</span>
+                </div>
+            </div>
+            
+            <div class="case-categories">
+                <div class="category-title">案例分类</div>
+                <ul class="category-list">
+                    <li class="category-item active">
+                        <span>企业实战案例</span>
+                        <span class="category-count">12</span>
+                    </li>
+                    <li class="category-item">
+                        <span>行业经典案例</span>
+                        <span class="category-count">8</span>
+                    </li>
+                    <li class="category-item">
+                        <span>失败案例分析</span>
+                        <span class="category-count">5</span>
+                    </li>
+                    <li class="category-item">
+                        <span>创新模式案例</span>
+                        <span class="category-count">7</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="case-list">
+                <div class="case-item active">
+                    <div class="case-header">
+                        <div class="case-icon">
+                            <i class="fas fa-warehouse"></i>
+                        </div>
+                        <div class="case-title">京东智能仓储优化案例</div>
+                    </div>
+                    <div class="case-desc">京东通过自动化仓储系统和AI算法优化库存管理，提升物流效率...</div>
+                    <div class="case-meta">
+                        <div class="case-tags">
+                            <span class="case-tag">库存管理</span>
+                            <span class="case-tag">自动化</span>
+                        </div>
+                        <div class="case-duration">
+                            <i class="fas fa-clock"></i>
+                            <span>45分钟</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="case-item">
+                    <div class="case-header">
+                        <div class="case-icon">
+                            <i class="fas fa-shipping-fast"></i>
+                        </div>
+                        <div class="case-title">顺丰速运物流网络优化</div>
+                    </div>
+                    <div class="case-desc">顺丰通过大数据分析优化物流路径，减少运输成本和提高时效性...</div>
+                    <div class="case-meta">
+                        <div class="case-tags">
+                            <span class="case-tag">物流优化</span>
+                            <span class="case-tag">大数据</span>
+                        </div>
+                        <div class="case-duration">
+                            <i class="fas fa-clock"></i>
+                            <span>60分钟</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="case-item">
+                    <div class="case-header">
+                        <div class="case-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="case-title">丰田供应链中断应对</div>
+                    </div>
+                    <div class="case-desc">丰田如何应对自然灾害导致的供应链中断，建立弹性供应链体系...</div>
+                    <div class="case-meta">
+                        <div class="case-tags">
+                            <span class="case-tag">风险管理</span>
+                            <span class="case-tag">弹性供应链</span>
+                        </div>
+                        <div class="case-duration">
+                            <i class="fas fa-clock"></i>
+                            <span>50分钟</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 中间案例查看器 -->
+        <div class="case-viewer">
+            <div class="viewer-header">
+                <div class="viewer-title">京东智能仓储优化案例</div>
+                <div class="viewer-tools">
+                    <button class="btn btn-secondary" onclick="openModal('editTeachingPlanModal')">
+                        <i class="fas fa-edit"></i> 编辑
+                    </button>
+                    <button class="btn btn-outline" onclick="openModal('previewTeachingPlanModal')">
+                        <i class="fas fa-eye"></i> 预览
+                    </button>
+                    <button class="btn btn-primary" onclick="openModal('shareTeachingPlanModal')">
+                        <i class="fas fa-share"></i> 分享
+                    </button>
+                </div>
+            </div>
+            
+            <div class="viewer-content">
+                <div class="case-tags">
+                    <span class="case-tag">库存管理</span>
+                    <span class="case-tag">自动化</span>
+                    <span class="case-tag">AI算法</span>
+                    <span class="case-tag">效率优化</span>
+                </div>
+                
+                <div class="case-section">
+                    <div class="section-title">案例背景</div>
+                    <div class="case-content">
+                        <p>随着电商业务的快速发展，京东面临着日益增长的订单处理压力和库存管理挑战。传统仓储模式已无法满足高效、精准的物流需求。京东决定通过技术创新，构建智能仓储系统，优化供应链效率。</p>
+                        
+                        <p>本案例分析了京东从2016年开始的智能仓储升级过程，重点研究了自动化设备引入、AI算法应用以及人机协同模式对供应链效率的提升效果。</p>
+                    </div>
+                </div>
+                
+                <div class="case-section">
+                    <div class="section-title">核心问题</div>
+                    <div class="case-content">
+                        <ul>
+                            <li>传统仓储人工分拣效率低，错误率高</li>
+                            <li>库存周转率不足，占用大量资金</li>
+                            <li>季节性需求波动大，库存预测困难</li>
+                            <li>物流配送时效性要求不断提高</li>
+                            <li>人力成本上升，自动化需求迫切</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="case-section">
+                    <div class="section-title">解决方案</div>
+                    <div class="case-content">
+                        <p>京东采取了以下创新措施解决上述问题：</p>
+                        
+                        <h4>1. 自动化仓储系统</h4>
+                        <p>引入AGV自动导引车、自动分拣机和智能货架，实现仓储作业的自动化。通过自动化系统，分拣效率提升300%，错误率降低至0.01%。</p>
+                        
+                        <h4>2. AI智能预测</h4>
+                        <p>利用机器学习算法分析历史销售数据、季节性因素和市场趋势，实现精准的需求预测。预测准确率从65%提升至92%。</p>
+                        
+                        <h4>3. 智能路径优化</h4>
+                        <p>基于实时数据和算法模型，动态优化仓储内物流路径，减少无效移动，提升作业效率。</p>
+                        
+                        <h4>4. 人机协同模式</h4>
+                        <p>设计新型的人机协作流程，充分发挥人类灵活性和机器高效率的优势。</p>
+                    </div>
+                </div>
+                
+                <div class="case-section">
+                    <div class="section-title">实施效果</div>
+                    <div class="case-content">
+                        <p>经过两年的智能仓储升级，京东取得了显著成效：</p>
+                        
+                        <div class="analysis-chart">
+                            <div class="chart-title">关键指标提升对比</div>
+                            <div class="chart-container">
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-chart-bar" style="font-size: 48px; margin-bottom: 16px; color: var(--primary);"></i>
+                                    <p>图表可视化：各项指标提升百分比</p>
+                                </div>
+                            </div>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #4361ee;"></div>
+                                    <span>分拣效率</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #4cc9f0;"></div>
+                                    <span>库存周转率</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #4ade80;"></div>
+                                    <span>预测准确率</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #f59e0b;"></div>
+                                    <span>成本降低</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="case-evaluation">
+                            <div class="evaluation-title">量化成果</div>
+                            <div class="evaluation-grid">
+                                <div class="evaluation-item">
+                                    <div class="evaluation-label">分拣效率提升</div>
+                                    <div class="evaluation-value">300%</div>
+                                </div>
+                                <div class="evaluation-item">
+                                    <div class="evaluation-label">库存周转率</div>
+                                    <div class="evaluation-value">提高2.5倍</div>
+                                </div>
+                                <div class="evaluation-item">
+                                    <div class="evaluation-label">预测准确率</div>
+                                    <div class="evaluation-value">92%</div>
+                                </div>
+                                <div class="evaluation-item">
+                                    <div class="evaluation-label">运营成本降低</div>
+                                    <div class="evaluation-value">35%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-tools">
+                    <div class="tool-title">案例分析工具</div>
+                    <div class="tool-buttons">
+                        <button class="btn btn-outline">
+                            <i class="fas fa-project-diagram"></i> SWOT分析
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fas fa-sitemap"></i> 价值链分析
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fas fa-balance-scale"></i> 成本效益分析
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fas fa-chart-line"></i> 数据可视化
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fas fa-file-export"></i> 生成报告
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右侧讨论面板 -->
+        <div class="discussion-panel">
+            <div class="discussion-header">
+                <div class="discussion-title">案例讨论</div>
+            </div>
+            <div class="discussion-tabs">
+                <button class="discussion-tab active">问题讨论</button>
+                <button class="discussion-tab">学生笔记</button>
+                <button class="discussion-tab">教师点评</button>
+            </div>
+            <div class="discussion-content">
+                <ul class="question-list">
+                    <li class="question-item">
+                        <div class="question-header">
+                            <div class="question-avatar">李</div>
+                            <div class="question-info">
+                                <div class="question-author">李同学</div>
+                                <div class="question-time">2023-10-26 14:30</div>
+                            </div>
+                        </div>
+                        <div class="question-text">
+                            京东的智能仓储系统在其他行业是否具有可复制性？比如制造业或零售业？
+                        </div>
+                        <div class="question-actions">
+                            <button class="action-btn">
+                                <i class="fas fa-thumbs-up"></i> 12
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-comment"></i> 回复
+                            </button>
+                        </div>
+                        <div class="answer-list">
+                            <div class="answer-item">
+                                <div class="answer-header">
+                                    <div class="answer-avatar">张</div>
+                                    <div class="answer-author">张老师</div>
+                                    <div class="answer-time">2023-03-26 15:15</div>
+                                </div>
+                                <div class="answer-text">
+                                    很好的问题！京东的模式在标准化程度高的行业具有较好的可复制性，但需要根据行业特点进行调整。制造业更注重生产流程，而零售业更注重终端配送。
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    
+                    <li class="question-item">
+                        <div class="question-header">
+                            <div class="question-avatar">王</div>
+                            <div class="question-info">
+                                <div class="question-author">王同学</div>
+                                <div class="question-time">2023-10-26 13:45</div>
+                            </div>
+                        </div>
+                        <div class="question-text">
+                            智能仓储系统的初始投资成本很高，中小企业如何平衡成本与效益？
+                        </div>
+                        <div class="question-actions">
+                            <button class="action-btn">
+                                <i class="fas fa-thumbs-up"></i> 8
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-comment"></i> 回复
+                            </button>
+                        </div>
+                    </li>
+                    
+                    <li class="question-item">
+                        <div class="question-header">
+                            <div class="question-avatar">赵</div>
+                            <div class="question-info">
+                                <div class="question-author">赵同学</div>
+                                <div class="question-time">2023-10-25 16:20</div>
+                            </div>
+                        </div>
+                        <div class="question-text">
+                            京东的AI预测模型如何处理突发性事件（如疫情）对需求的影响？
+                        </div>
+                        <div class="question-actions">
+                            <button class="action-btn">
+                                <i class="fas fa-thumbs-up"></i> 15
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-comment"></i> 回复
+                            </button>
+                        </div>
+                        <div class="answer-list">
+                            <div class="answer-item">
+                                <div class="answer-header">
+                                    <div class="answer-avatar">李</div>
+                                    <div class="answer-author">李教授</div>
+                                    <div class="answer-time">2023-10-26 09:30</div>
+                                </div>
+                                <div class="answer-text">
+                                    这是一个很好的观察。京东的模型确实在疫情期间面临挑战，后来他们引入了实时数据监控和异常检测机制，使模型能够更快适应变化。
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- 在讨论输入区域上方添加功能按钮 -->
+            <div class="discussion-tools">
+                <div class="tool-buttons" style="display: flex; gap: 10px; padding: 0 20px 15px 20px; border-bottom: 1px solid var(--gray-light);">
+                    <button class="btn btn-outline btn-sm" onclick="openModal('newQuestionModal')">
+                        <i class="fas fa-question-circle"></i> 提问
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="openModal('addNoteModal')">
+                        <i class="fas fa-sticky-note"></i> 笔记
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="openModal('addCommentModal')">
+                        <i class="fas fa-comment-dots"></i> 点评
+                    </button>
+                </div>
+            </div>
+            
+            <div class="discussion-input">
+                <textarea class="input-field" placeholder="提出您的问题或分享观点..."></textarea>
+                <button class="btn btn-primary" style="width: 100%;" onclick="publishDiscussion()">
+                    <i class="fas fa-paper-plane"></i> 发布讨论
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 新建案例模态框 -->
+    <div id="newCaseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">新建案例</div>
+                <button class="modal-close" onclick="closeModal('newCaseModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="success-message" id="newCaseSuccessMessage">
+                    案例创建成功！
+                </div>
+                <div class="form-group">
+                    <label class="form-label">案例标题</label>
+                    <input type="text" class="form-control" id="newCaseTitle" placeholder="请输入案例标题">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">案例描述</label>
+                    <textarea class="form-control" id="newCaseDescription" rows="3" placeholder="请输入案例描述"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">案例类型</label>
+                        <select class="form-control" id="newCaseType">
+                            <option value="">请选择案例类型</option>
+                            <option value="供应链优化">供应链优化</option>
+                            <option value="库存管理">库存管理</option>
+                            <option value="物流配送">物流配送</option>
+                            <option value="风险管理">风险管理</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">预计时长</label>
+                        <input type="text" class="form-control" id="newCaseDuration" placeholder="例如：45分钟">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">标签</label>
+                    <input type="text" class="form-control" id="newCaseTags" placeholder="请输入标签，多个标签用逗号分隔">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('newCaseModal')">取消</button>
+                <button class="btn btn-primary" onclick="createNewCase()">创建案例</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 导入案例模态框 -->
+    <div id="importCaseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">导入案例</div>
+                <button class="modal-close" onclick="closeModal('importCaseModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="success-message" id="importCaseSuccessMessage">
+                    案例导入成功！
+                </div>
+                <div class="form-group">
+                    <label class="form-label">选择文件</label>
+                    <input type="file" class="form-control" id="importCaseFile" accept=".doc,.docx,.pdf,.txt">
+                    <small class="form-text">支持格式：DOC, DOCX, PDF, TXT</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">案例标题</label>
+                    <input type="text" class="form-control" id="importCaseTitle" placeholder="请输入案例标题">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">案例描述</label>
+                    <textarea class="form-control" id="importCaseDescription" rows="3" placeholder="请输入案例描述"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('importCaseModal')">取消</button>
+                <button class="btn btn-primary" onclick="importCase()">导入案例</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 教案编辑模态框 -->
+    <div id="editTeachingPlanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">编辑教案</div>
+                <button class="modal-close" onclick="closeModal('editTeachingPlanModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="success-message" id="editTeachingPlanSuccessMessage">
+                    教案保存成功！
+                </div>
+                <div class="form-group">
+                    <label class="form-label">教案标题</label>
+                    <input type="text" class="form-control" id="editTeachingPlanTitle" value="京东智能仓储优化案例教案">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">教学目标</label>
+                    <textarea class="form-control" id="editTeachingPlanGoal" rows="3">通过本案例学习，学生能够理解智能仓储系统的核心技术及其在供应链管理中的应用价值。</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">教学内容</label>
+                    <textarea class="form-control" id="editTeachingPlanContent" rows="5">1. 案例背景介绍
+2. 核心问题分析
+3. 解决方案详解
+4. 实施效果评估
+5. 关键成功因素总结</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">教学方法</label>
+                    <select class="form-control" id="editTeachingPlanMethod">
+                        <option>案例讨论法</option>
+                        <option>小组合作学习</option>
+                        <option>角色扮演法</option>
+                        <option>项目驱动法</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('editTeachingPlanModal')">取消</button>
+                <button class="btn btn-primary" onclick="saveTeachingPlan()">保存教案</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 教案预览模态框 -->
+    <div id="previewTeachingPlanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">教案预览</div>
+                <button class="modal-close" onclick="closeModal('previewTeachingPlanModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h3 id="previewTeachingPlanTitle">京东智能仓储优化案例教案</h3>
+                <div class="form-group">
+                    <label class="form-label">教学目标</label>
+                    <p id="previewTeachingPlanGoal">通过本案例学习，学生能够理解智能仓储系统的核心技术及其在供应链管理中的应用价值。</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">教学内容</label>
+                    <ol id="previewTeachingPlanContent">
+                        <li>案例背景介绍</li>
+                        <li>核心问题分析</li>
+                        <li>解决方案详解</li>
+                        <li>实施效果评估</li>
+                        <li>关键成功因素总结</li>
+                    </ol>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">教学方法</label>
+                    <p id="previewTeachingPlanMethod">案例讨论法</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('previewTeachingPlanModal')">关闭</button>
+                <button class="btn btn-primary" onclick="exportTeachingPlanPDF()">导出PDF</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 教案分享模态框 -->
+    <div id="shareTeachingPlanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">分享教案</div>
+                <button class="modal-close" onclick="closeModal('shareTeachingPlanModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">分享方式</label>
+                    <div style="display: flex; gap: 15px; margin-top: 10px;">
+                        <button class="btn btn-outline" style="flex: 1; padding: 20px; flex-direction: column;" onclick="copyShareLink()">
+                            <i class="fas fa-link" style="font-size: 24px; margin-bottom: 10px;"></i>
+                            复制链接
+                        </button>
+                        <button class="btn btn-outline" style="flex: 1; padding: 20px; flex-direction: column;" onclick="shareToWeChat()">
+                            <i class="fab fa-weixin" style="font-size: 24px; margin-bottom: 10px; color: #07c160;"></i>
+                            微信好友
+                        </button>
+                        <button class="btn btn-outline" style="flex: 1; padding: 20px; flex-direction: column;" onclick="generateQRCode()">
+                            <i class="fas fa-qrcode" style="font-size: 24px; margin-bottom: 10px;"></i>
+                            二维码
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">分享链接</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" class="form-control" id="shareLinkInput" value="https://example.com/case/jd-smart-warehouse" readonly>
+                        <button class="btn btn-primary" onclick="copyShareLink()">复制</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('shareTeachingPlanModal')">取消</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 提问模态框 -->
+    <div id="newQuestionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">提出问题</div>
+                <button class="modal-close" onclick="closeModal('newQuestionModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="success-message" id="newQuestionSuccessMessage">
+                    问题发布成功！
+                </div>
+                <div class="form-group">
+                    <label class="form-label">问题内容</label>
+                    <textarea class="form-control" id="newQuestionContent" rows="4" placeholder="请输入您的问题"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">关联知识点</label>
+                    <input type="text" class="form-control" id="newQuestionKnowledge" placeholder="请输入关联的知识点">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('newQuestionModal')">取消</button>
+                <button class="btn btn-primary" onclick="publishQuestion()">发布问题</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 添加笔记模态框 -->
+    <div id="addNoteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">添加笔记</div>
+                <button class="modal-close" onclick="closeModal('addNoteModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="success-message" id="addNoteSuccessMessage">
+                    笔记保存成功！
+                </div>
+                <div class="form-group">
+                    <label class="form-label">笔记标题</label>
+                    <input type="text" class="form-control" id="addNoteTitle" placeholder="请输入笔记标题">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">笔记内容</label>
+                    <textarea class="form-control" id="addNoteContent" rows="5" placeholder="请输入笔记内容"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">标签</label>
+                    <input type="text" class="form-control" id="addNoteTags" placeholder="请输入标签，多个标签用逗号分隔">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('addNoteModal')">取消</button>
+                <button class="btn btn-primary" onclick="saveNote()">保存笔记</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 添加点评模态框 -->
+    <div id="addCommentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">添加点评</div>
+                <button class="modal-close" onclick="closeModal('addCommentModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="success-message" id="addCommentSuccessMessage">
+                    点评发布成功！
+                </div>
+                <div class="form-group">
+                    <label class="form-label">点评内容</label>
+                    <textarea class="form-control" id="addCommentContent" rows="5" placeholder="请输入您的点评"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">评分</label>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="btn btn-outline rating-btn" style="flex: 1;" onclick="setRating(1)">★</button>
+                        <button class="btn btn-outline rating-btn" style="flex: 1;" onclick="setRating(2)">★★</button>
+                        <button class="btn btn-outline rating-btn" style="flex: 1;" onclick="setRating(3)">★★★</button>
+                        <button class="btn btn-outline rating-btn" style="flex: 1;" onclick="setRating(4)">★★★★</button>
+                        <button class="btn btn-outline rating-btn" style="flex: 1;" onclick="setRating(5)">★★★★★</button>
+                    </div>
+                    <input type="hidden" id="commentRating" value="0">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('addCommentModal')">取消</button>
+                <button class="btn btn-primary" onclick="publishComment()">发布点评</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 打开模态框
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+        
+        // 关闭模态框
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            // 隐藏所有成功消息
+            const successMessages = document.querySelectorAll('.success-message');
+            successMessages.forEach(msg => {
+                msg.style.display = 'none';
+            });
+        }
+        
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+                // 隐藏所有成功消息
+                const successMessages = document.querySelectorAll('.success-message');
+                successMessages.forEach(msg => {
+                    msg.style.display = 'none';
+                });
+            }
+        }
+        
+        // 显示成功消息
+        function showSuccessMessage(messageId) {
+            const messageElement = document.getElementById(messageId);
+            if (messageElement) {
+                messageElement.style.display = 'block';
+                // 3秒后自动隐藏
+                setTimeout(() => {
+                    messageElement.style.display = 'none';
+                }, 3000);
+            }
+        }
+        
+        // 创建新案例
+        function createNewCase() {
+            const title = document.getElementById('newCaseTitle').value;
+            const description = document.getElementById('newCaseDescription').value;
+            const type = document.getElementById('newCaseType').value;
+            const duration = document.getElementById('newCaseDuration').value;
+            const tags = document.getElementById('newCaseTags').value;
+            
+            if (!title) {
+                alert('请输入案例标题');
+                return;
+            }
+            
+            // 这里应该是实际的保存逻辑，比如发送到服务器
+            console.log('创建新案例:', {title, description, type, duration, tags});
+            
+            // 显示成功消息
+            showSuccessMessage('newCaseSuccessMessage');
+            
+            // 清空表单
+            document.getElementById('newCaseTitle').value = '';
+            document.getElementById('newCaseDescription').value = '';
+            document.getElementById('newCaseType').value = '';
+            document.getElementById('newCaseDuration').value = '';
+            document.getElementById('newCaseTags').value = '';
+        }
+        
+        // 导入案例
+        function importCase() {
+            const fileInput = document.getElementById('importCaseFile');
+            const title = document.getElementById('importCaseTitle').value;
+            const description = document.getElementById('importCaseDescription').value;
+            
+            if (!fileInput.files.length) {
+                alert('请选择要导入的文件');
+                return;
+            }
+            
+            if (!title) {
+                alert('请输入案例标题');
+                return;
+            }
+            
+            // 这里应该是实际的导入逻辑
+            console.log('导入案例:', {fileName: fileInput.files[0].name, title, description});
+            
+            // 显示成功消息
+            showSuccessMessage('importCaseSuccessMessage');
+            
+            // 清空表单
+            fileInput.value = '';
+            document.getElementById('importCaseTitle').value = '';
+            document.getElementById('importCaseDescription').value = '';
+        }
+        
+        // 保存教案
+        function saveTeachingPlan() {
+            const title = document.getElementById('editTeachingPlanTitle').value;
+            const goal = document.getElementById('editTeachingPlanGoal').value;
+            const content = document.getElementById('editTeachingPlanContent').value;
+            const method = document.getElementById('editTeachingPlanMethod').value;
+            
+            // 这里应该是实际的保存逻辑
+            console.log('保存教案:', {title, goal, content, method});
+            
+            // 更新预览内容
+            document.getElementById('previewTeachingPlanTitle').textContent = title;
+            document.getElementById('previewTeachingPlanGoal').textContent = goal;
+            document.getElementById('previewTeachingPlanMethod').textContent = method;
+            
+            // 更新预览内容列表
+            const contentList = content.split('\n');
+            const contentOl = document.getElementById('previewTeachingPlanContent');
+            contentOl.innerHTML = '';
+            contentList.forEach(item => {
+                if (item.trim()) {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    contentOl.appendChild(li);
+                }
+            });
+            
+            // 显示成功消息
+            showSuccessMessage('editTeachingPlanSuccessMessage');
+        }
+        
+        // 导出教案为PDF
+        function exportTeachingPlanPDF() {
+            alert('教案已导出为PDF文件');
+        }
+        
+        // 复制分享链接
+        function copyShareLink() {
+            const shareLinkInput = document.getElementById('shareLinkInput');
+            shareLinkInput.select();
+            document.execCommand('copy');
+            alert('链接已复制到剪贴板');
+        }
+        
+        // 微信分享功能
+        function shareToWeChat() {
+            alert('已生成微信分享链接，请在微信中打开');
+        }
+        
+        // 生成二维码
+        function generateQRCode() {
+            alert('二维码已生成');
+        }
+        
+        // 设置评分
+        function setRating(rating) {
+            document.getElementById('commentRating').value = rating;
+            // 更新按钮样式
+            const ratingButtons = document.querySelectorAll('.rating-btn');
+            ratingButtons.forEach((btn, index) => {
+                if (index < rating) {
+                    btn.classList.add('btn-primary');
+                    btn.classList.remove('btn-outline');
+                } else {
+                    btn.classList.add('btn-outline');
+                    btn.classList.remove('btn-primary');
+                }
+            });
+        }
+        
+        // 发布问题
+        function publishQuestion() {
+            const content = document.getElementById('newQuestionContent').value;
+            const knowledge = document.getElementById('newQuestionKnowledge').value;
+            
+            if (!content) {
+                alert('请输入问题内容');
+                return;
+            }
+            
+            // 这里应该是实际的发布逻辑
+            console.log('发布问题:', {content, knowledge});
+            
+            // 显示成功消息
+            showSuccessMessage('newQuestionSuccessMessage');
+            
+            // 清空表单
+            document.getElementById('newQuestionContent').value = '';
+            document.getElementById('newQuestionKnowledge').value = '';
+        }
+        
+        // 保存笔记
+        function saveNote() {
+            const title = document.getElementById('addNoteTitle').value;
+            const content = document.getElementById('addNoteContent').value;
+            const tags = document.getElementById('addNoteTags').value;
+            
+            if (!title) {
+                alert('请输入笔记标题');
+                return;
+            }
+            
+            if (!content) {
+                alert('请输入笔记内容');
+                return;
+            }
+            
+            // 这里应该是实际的保存逻辑
+            console.log('保存笔记:', {title, content, tags});
+            
+            // 显示成功消息
+            showSuccessMessage('addNoteSuccessMessage');
+            
+            // 清空表单
+            document.getElementById('addNoteTitle').value = '';
+            document.getElementById('addNoteContent').value = '';
+            document.getElementById('addNoteTags').value = '';
+        }
+        
+        // 发布点评
+        function publishComment() {
+            const content = document.getElementById('addCommentContent').value;
+            const rating = document.getElementById('commentRating').value;
+            
+            if (!content) {
+                alert('请输入点评内容');
+                return;
+            }
+            
+            if (rating === '0') {
+                alert('请为案例评分');
+                return;
+            }
+            
+            // 这里应该是实际的发布逻辑
+            console.log('发布点评:', {content, rating});
+            
+            // 显示成功消息
+            showSuccessMessage('addCommentSuccessMessage');
+            
+            // 清空表单
+            document.getElementById('addCommentContent').value = '';
+            document.getElementById('commentRating').value = '0';
+            // 重置评分按钮
+            const ratingButtons = document.querySelectorAll('.rating-btn');
+            ratingButtons.forEach(btn => {
+                btn.classList.add('btn-outline');
+                btn.classList.remove('btn-primary');
+            });
+        }
+        
+        // 发布讨论
+        function publishDiscussion() {
+            const discussionInput = document.querySelector('.input-field');
+            const content = discussionInput.value.trim();
+            
+            if (!content) {
+                alert('请输入讨论内容');
+                return;
+            }
+            
+            // 这里应该是实际的发布逻辑
+            console.log('发布讨论:', content);
+            
+            // 清空输入框
+            discussionInput.value = '';
+            
+            alert('讨论发布成功！');
+        }
+        
+        // 讨论标签切换
+        document.querySelectorAll('.discussion-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 移除所有活动状态
+                document.querySelectorAll('.discussion-tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                // 添加当前活动状态
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

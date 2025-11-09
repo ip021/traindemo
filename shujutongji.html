@@ -1,0 +1,2220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教学数据统计 - 供应链实训课程系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* 全局样式定义 */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --success: #4ade80;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --border-radius: 12px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* 重置样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        /* 页面标题区域 */
+        .page-title-section {
+            margin-bottom: 24px;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+        
+        .page-description {
+            font-size: 16px;
+            color: var(--gray);
+        }
+        
+        /* 头部操作区域 */
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .header-actions-left {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .header-actions-right {
+            display: flex;
+            gap: 12px;
+        }
+        
+        /* 教学数据分析特有布局 */
+        .teaching-analysis-container {
+            margin-bottom: 32px;
+        }
+        
+        /* KPI指标卡片样式 */
+        .kpi-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            transition: var(--transition);
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        
+        .kpi-title {
+            font-size: 14px;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        .kpi-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(67, 97, 238, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+        
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+        
+        .kpi-trend {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .trend-up {
+            color: var(--success);
+        }
+        
+        .trend-down {
+            color: var(--danger);
+        }
+        
+        /* 数据分析筛选面板 */
+        .analysis-filter-panel {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .filter-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .filter-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+        
+        .date-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+        
+        .date-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .filter-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            transition: var(--transition);
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: var(--gray-light);
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d5db;
+            transform: translateY(-1px);
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        
+        /* 图表容器样式 */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            transition: var(--transition);
+        }
+        
+        .chart-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .chart-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .chart-action-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--gray-light);
+            border-radius: 6px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--gray);
+        }
+        
+        .chart-action-btn:hover {
+            background: var(--gray-light);
+            color: var(--dark);
+        }
+        
+        .chart-content {
+            height: 300px;
+            position: relative;
+        }
+        
+        .chart-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--gray);
+            border: 1px dashed var(--gray-light);
+            border-radius: 8px;
+        }
+        
+        /* 数据表格样式 */
+        .data-table-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .search-input {
+            padding: 8px 12px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 14px;
+            width: 200px;
+            transition: var(--transition);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .data-table th {
+            font-weight: 600;
+            color: var(--dark);
+            background: rgba(226, 232, 240, 0.5);
+        }
+        
+        .data-table tbody tr {
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .data-table tbody tr:hover {
+            background: rgba(67, 97, 238, 0.05);
+        }
+        
+        .table-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--gray-light);
+        }
+        
+        .table-info {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .pagination {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .page-item {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            color: var(--gray);
+        }
+        
+        .page-item:hover {
+            background: var(--gray-light);
+            color: var(--dark);
+        }
+        
+        .page-item.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .page-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* 洞察报告样式 */
+        .insights-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+        }
+        
+        .insights-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .insights-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .insights-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .insight-card {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-light);
+            transition: var(--transition);
+        }
+        
+        .insight-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .insight-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        }
+        
+        .insight-icon.success {
+            background: var(--success);
+        }
+        
+        .insight-icon.warning {
+            background: var(--warning);
+        }
+        
+        .insight-icon.info {
+            background: var(--primary);
+        }
+        
+        .insight-content {
+            flex: 1;
+        }
+        
+        .insight-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+        
+        .insight-description {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        
+        .insight-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .insight-action-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: none;
+            background: var(--gray-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--gray);
+        }
+        
+        .insight-action-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* 响应式设计 */
+        <script>
+            // 页面初始化
+            document.addEventListener('DOMContentLoaded', function() {
+                // 初始化图表
+                initializeCharts();
+                
+                // 初始化事件监听器
+                initializeEventListeners();
+                
+                // 高亮活动筛选条件
+                highlightActiveFilters();
+                
+                // 加载分析数据
+                loadAnalysisData();
+            });
+        
+            // 初始化事件监听器
+            function initializeEventListeners() {
+                console.log('初始化事件监听器...');
+                
+                // 为头部按钮添加事件监听
+                document.getElementById('generateReportBtn').addEventListener('click', generateReport);
+                document.getElementById('refreshDataBtn').addEventListener('click', refreshData);
+                document.getElementById('configureDashboardBtn').addEventListener('click', configureDashboard);
+                
+                // 为筛选面板按钮添加事件监听
+                document.querySelector('.analysis-filter-panel button').addEventListener('click', resetAllFilters);
+                document.getElementById('courseSelect').addEventListener('change', function() { filterByCourse(this.value); });
+                document.getElementById('examTypeSelect').addEventListener('change', function() { filterByExamType(this.value); });
+                document.getElementById('classSelect').addEventListener('change', function() { filterByClass(this.value); });
+                document.getElementById('granularitySelect').addEventListener('change', function() { changeDataGranularity(this.value); });
+            }
+        
+            // 生成报告功能实现
+            function generateReport() {
+                console.log('生成教学报告');
+                
+                // 显示加载状态
+                showLoadingState();
+                
+                // 模拟报告生成过程
+                setTimeout(() => {
+                    hideLoadingState();
+                    
+                    // 创建报告生成结果模态框
+                    createReportGenerationModal();
+                }, 2000);
+            }
+        
+            // 创建报告生成结果模态框
+            function createReportGenerationModal() {
+                // 检查是否已存在模态框
+                if (document.getElementById('reportModal')) {
+                    document.getElementById('reportModal').remove();
+                }
+                
+                // 创建模态框元素
+                const modal = document.createElement('div');
+                modal.id = 'reportModal';
+                modal.className = 'modal';
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 1000;
+                    font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+                `;
+                
+                // 创建模态框内容
+                const modalContent = document.createElement('div');
+                modalContent.style.cssText = `
+                    background: white;
+                    border-radius: 12px;
+                    padding: 32px;
+                    width: 90%;
+                    max-width: 500px;
+                    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                `;
+                
+                // 模态框标题
+                const modalTitle = document.createElement('h3');
+                modalTitle.textContent = '教学报告生成完成';
+                modalTitle.style.cssText = `
+                    margin-bottom: 24px;
+                    color: #1e293b;
+                    font-size: 20px;
+                    font-weight: 600;
+                `;
+                
+                // 模态框消息
+                const modalMessage = document.createElement('p');
+                modalMessage.textContent = '您的教学数据分析报告已成功生成，可以下载查看完整的分析结果。';
+                modalMessage.style.cssText = `
+                    margin-bottom: 24px;
+                    color: #64748b;
+                    line-height: 1.6;
+                `;
+                
+                // 报告选项
+                const reportOptions = document.createElement('div');
+                reportOptions.style.cssText = `
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                    margin-bottom: 24px;
+                `;
+                
+                // 选项1：完整报告
+                const fullReportOption = document.createElement('div');
+                fullReportOption.style.cssText = `
+                    display: flex;
+                    align-items: center;
+                    padding: 12px;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                `;
+                fullReportOption.onmouseover = function() { this.style.background = '#f8fafc'; };
+                fullReportOption.onmouseout = function() { this.style.background = 'white'; };
+                fullReportOption.onclick = function() {
+                    downloadReport('完整报告', 'pdf');
+                    closeModal('reportModal');
+                };
+                
+                const fullReportIcon = document.createElement('i');
+                fullReportIcon.className = 'fas fa-file-pdf';
+                fullReportIcon.style.cssText = `
+                    margin-right: 12px;
+                    color: #ef4444;
+                `;
+                
+                const fullReportText = document.createElement('span');
+                fullReportText.textContent = '教学数据统计完整报告 (PDF)';
+                fullReportText.style.cssText = `
+                    flex: 1;
+                    color: #1e293b;
+                `;
+                
+                fullReportOption.appendChild(fullReportIcon);
+                fullReportOption.appendChild(fullReportText);
+                
+                // 选项2：数据摘要
+                const summaryReportOption = document.createElement('div');
+                summaryReportOption.style.cssText = `
+                    display: flex;
+                    align-items: center;
+                    padding: 12px;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                `;
+                summaryReportOption.onmouseover = function() { this.style.background = '#f8fafc'; };
+                summaryReportOption.onmouseout = function() { this.style.background = 'white'; };
+                summaryReportOption.onclick = function() {
+                    downloadReport('数据摘要', 'excel');
+                    closeModal('reportModal');
+                };
+                
+                const summaryReportIcon = document.createElement('i');
+                summaryReportIcon.className = 'fas fa-file-excel';
+                summaryReportIcon.style.cssText = `
+                    margin-right: 12px;
+                    color: #4ade80;
+                `;
+                
+                const summaryReportText = document.createElement('span');
+                summaryReportText.textContent = '关键指标数据摘要 (Excel)';
+                summaryReportText.style.cssText = `
+                    flex: 1;
+                    color: #1e293b;
+                `;
+                
+                summaryReportOption.appendChild(summaryReportIcon);
+                summaryReportOption.appendChild(summaryReportText);
+                
+                // 添加选项到选项容器
+                reportOptions.appendChild(fullReportOption);
+                reportOptions.appendChild(summaryReportOption);
+                
+                // 模态框按钮
+                const modalButtons = document.createElement('div');
+                modalButtons.style.cssText = `
+                    display: flex;
+                    gap: 12px;
+                    justify-content: flex-end;
+                `;
+                
+                // 关闭按钮
+                const closeButton = document.createElement('button');
+                closeButton.textContent = '关闭';
+                closeButton.className = 'btn btn-secondary';
+                closeButton.style.cssText = `
+                    padding: 10px 16px;
+                    border: none;
+                    border-radius: 8px;
+                    background: #e2e8f0;
+                    color: #1e293b;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                `;
+                closeButton.onmouseover = function() { this.style.background = '#d1d5db'; };
+                closeButton.onclick = function() { closeModal('reportModal'); };
+                modalButtons.appendChild(closeButton);
+                
+                // 组装模态框
+                modalContent.appendChild(modalTitle);
+                modalContent.appendChild(modalMessage);
+                modalContent.appendChild(reportOptions);
+                modalContent.appendChild(modalButtons);
+                modal.appendChild(modalContent);
+                
+                // 添加到页面
+                document.body.appendChild(modal);
+            }
+        
+            // 下载报告
+            function downloadReport(reportType, format) {
+                console.log(`下载${reportType}，格式：${format}`);
+                
+                // 显示下载状态
+                showLoadingState();
+                
+                // 模拟下载过程
+                setTimeout(() => {
+                    hideLoadingState();
+                    alert(`${reportType}已开始下载，格式为${format.toUpperCase()}`);
+                }, 1500);
+            }
+        
+            // 关闭模态框
+            function closeModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.style.opacity = '0';
+                    modal.style.transition = 'opacity 0.3s';
+                    
+                    setTimeout(() => {
+                        modal.remove();
+                    }, 300);
+                }
+            }
+        
+            // 配置仪表板功能实现
+            function configureDashboard() {
+                console.log('配置仪表板');
+                
+                // 显示加载状态
+                showLoadingState();
+                
+                // 模拟配置页面加载
+                setTimeout(() => {
+                    hideLoadingState();
+                    createDashboardConfigurationModal();
+                }, 800);
+            }
+        
+            // 创建仪表板配置模态框
+            function createDashboardConfigurationModal() {
+                // 检查是否已存在模态框
+                if (document.getElementById('configModal')) {
+                    document.getElementById('configModal').remove();
+                }
+                
+                // 创建模态框元素
+                const modal = document.createElement('div');
+                modal.id = 'configModal';
+                modal.className = 'modal';
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 1000;
+                    font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+                `;
+                
+                // 创建模态框内容
+                const modalContent = document.createElement('div');
+                modalContent.style.cssText = `
+                    background: white;
+                    border-radius: 12px;
+                    padding: 32px;
+                    width: 90%;
+                    max-width: 600px;
+                    max-height: 80vh;
+                    overflow-y: auto;
+                    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                `;
+                
+                // 模态框标题
+                const modalTitle = document.createElement('h3');
+                modalTitle.textContent = '仪表板配置';
+                modalTitle.style.cssText = `
+                    margin-bottom: 24px;
+                    color: #1e293b;
+                    font-size: 20px;
+                    font-weight: 600;
+                `;
+                
+                // 配置选项容器
+                const configOptions = document.createElement('div');
+                configOptions.style.cssText = `
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px;
+                    margin-bottom: 24px;
+                `;
+                
+                // KPI卡片配置
+                const kpiConfigSection = document.createElement('div');
+                kpiConfigSection.style.cssText = `
+                    padding: 16px;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                `;
+                
+                const kpiConfigTitle = document.createElement('h4');
+                kpiConfigTitle.textContent = 'KPI指标卡片';
+                kpiConfigTitle.style.cssText = `
+                    margin-bottom: 12px;
+                    color: #1e293b;
+                    font-size: 16px;
+                    font-weight: 600;
+                `;
+                
+                // 平均分指标选项
+                const avgScoreOption = createCheckboxOption('显示平均分', 'avgScore');
+                const passRateOption = createCheckboxOption('显示及格率', 'passRate');
+                const excellentRateOption = createCheckboxOption('显示优秀率', 'excellentRate');
+                const practicalRateOption = createCheckboxOption('显示实训完成率', 'practicalRate');
+                
+                // 添加选项到KPI配置区域
+                kpiConfigSection.appendChild(kpiConfigTitle);
+                kpiConfigSection.appendChild(avgScoreOption);
+                kpiConfigSection.appendChild(passRateOption);
+                kpiConfigSection.appendChild(excellentRateOption);
+                kpiConfigSection.appendChild(practicalRateOption);
+                
+                // 图表配置
+                const chartConfigSection = document.createElement('div');
+                chartConfigSection.style.cssText = `
+                    padding: 16px;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                `;
+                
+                const chartConfigTitle = document.createElement('h4');
+                chartConfigTitle.textContent = '图表显示';
+                chartConfigTitle.style.cssText = `
+                    margin-bottom: 12px;
+                    color: #1e293b;
+                    font-size: 16px;
+                    font-weight: 600;
+                `;
+                
+                // 考试成绩分布图表选项
+                const scoreChartOption = createCheckboxOption('显示考试成绩分布', 'scoreChart');
+                const knowledgeChartOption = createCheckboxOption('显示知识点掌握情况', 'knowledgeChart');
+                const practicalChartOption = createCheckboxOption('显示实训成绩分析', 'practicalChart');
+                const comparisonChartOption = createCheckboxOption('显示历届学生成绩对比', 'comparisonChart');
+                
+                // 添加选项到图表配置区域
+                chartConfigSection.appendChild(chartConfigTitle);
+                chartConfigSection.appendChild(scoreChartOption);
+                chartConfigSection.appendChild(knowledgeChartOption);
+                chartConfigSection.appendChild(practicalChartOption);
+                chartConfigSection.appendChild(comparisonChartOption);
+                
+                // 添加配置区域到配置选项容器
+                configOptions.appendChild(kpiConfigSection);
+                configOptions.appendChild(chartConfigSection);
+                
+                // 模态框按钮
+                const modalButtons = document.createElement('div');
+                modalButtons.style.cssText = `
+                    display: flex;
+                    gap: 12px;
+                    justify-content: flex-end;
+                `;
+                
+                // 取消按钮
+                const cancelButton = document.createElement('button');
+                cancelButton.textContent = '取消';
+                cancelButton.className = 'btn btn-secondary';
+                cancelButton.style.cssText = `
+                    padding: 10px 16px;
+                    border: none;
+                    border-radius: 8px;
+                    background: #e2e8f0;
+                    color: #1e293b;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                `;
+                cancelButton.onmouseover = function() { this.style.background = '#d1d5db'; };
+                cancelButton.onclick = function() { closeModal('configModal'); };
+                
+                // 保存按钮
+                const saveButton = document.createElement('button');
+                saveButton.textContent = '保存配置';
+                saveButton.className = 'btn btn-primary';
+                saveButton.style.cssText = `
+                    padding: 10px 16px;
+                    border: none;
+                    border-radius: 8px;
+                    background: #4361ee;
+                    color: white;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                `;
+                saveButton.onmouseover = function() { this.style.background = '#3f37c9'; };
+                saveButton.onclick = function() {
+                    saveDashboardConfiguration();
+                    closeModal('configModal');
+                };
+                modalButtons.appendChild(cancelButton);
+                modalButtons.appendChild(saveButton);
+                
+                // 组装模态框
+                modalContent.appendChild(modalTitle);
+                modalContent.appendChild(configOptions);
+                modalContent.appendChild(modalButtons);
+                modal.appendChild(modalContent);
+                
+                // 添加到页面
+                document.body.appendChild(modal);
+            }
+        
+            // 创建复选框选项
+            function createCheckboxOption(labelText, optionId) {
+                const option = document.createElement('div');
+                option.style.cssText = `
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 8px;
+                `;
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = optionId;
+                checkbox.checked = true;
+                checkbox.style.cssText = `
+                    margin-right: 8px;
+                    width: 16px;
+                    height: 16px;
+                `;
+                
+                const label = document.createElement('label');
+                label.htmlFor = optionId;
+                label.textContent = labelText;
+                label.style.cssText = `
+                    cursor: pointer;
+                    color: #1e293b;
+                `;
+                
+                option.appendChild(checkbox);
+                option.appendChild(label);
+                
+                return option;
+            }
+        
+            // 保存仪表板配置
+            function saveDashboardConfiguration() {
+                console.log('保存仪表板配置');
+                
+                // 显示保存状态
+                showLoadingState();
+                
+                // 模拟保存过程
+                setTimeout(() => {
+                    hideLoadingState();
+                    alert('仪表板配置已保存');
+                    
+                    // 这里可以添加实际的配置应用逻辑
+                    // applyDashboardConfiguration();
+                }, 1000);
+            }
+        
+            // 应用仪表板配置
+            function applyDashboardConfiguration() {
+                // 读取配置并应用到页面
+                console.log('应用仪表板配置');
+                
+                // 这里可以根据保存的配置来显示或隐藏页面元素
+            }
+        
+            // 刷新数据功能实现
+            function refreshData() {
+                console.log('刷新数据');
+                
+                // 显示加载状态
+                showLoadingState();
+                
+                // 模拟数据刷新过程
+                setTimeout(() => {
+                    hideLoadingState();
+                    loadAnalysisData();
+                    alert('数据已刷新');
+                }, 1500);
+            }
+        
+        // ... 其余现有代码保持不变 ...
+    </script>
+        @media (max-width: 1024px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+            
+            .kpi-cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+            }
+            
+            .filter-group {
+                width: 100%;
+            }
+            
+            .header-actions,
+            .filter-header,
+            .chart-header,
+            .table-header,
+            .table-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .header-actions-left,
+            .header-actions-right,
+            .filter-actions,
+            .chart-actions,
+            .table-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 页面标题区域 -->
+    <div class="page-title-section">
+        <h1 class="page-title">教学数据统计</h1>
+        <p class="page-description">分析学生考试成绩、实训表现和知识点掌握情况，助力教学优化</p>
+    </div>
+
+    <!-- 头部操作区域 -->
+    <div class="header-actions">
+        <div class="header-actions-left">
+            <button class="btn-secondary btn-small" onclick="generateReport()">
+                    <i class="fas fa-file-pdf"></i> 生成教学报告
+                </button>
+            <button class="btn btn-secondary" onclick="refreshData()">
+                <i class="fas fa-sync-alt"></i> 刷新数据
+            </button>
+        </div>
+        <div class="header-actions-right">
+            <button class="btn btn-secondary" onclick="configureDashboard()">
+                <i class="fas fa-sliders-h"></i> 配置
+            </button>
+        </div>
+    </div>
+
+    <!-- KPI指标卡片 -->
+    <div class="kpi-cards-grid">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span class="kpi-title">平均分</span>
+                <div class="kpi-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+            </div>
+            <div class="kpi-value">82.5</div>
+            <div class="kpi-trend trend-up">
+                <i class="fas fa-arrow-up"></i>
+                <span>3.2%</span>
+            </div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span class="kpi-title">及格率</span>
+                <div class="kpi-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+            <div class="kpi-value">92.8%</div>
+            <div class="kpi-trend trend-up">
+                <i class="fas fa-arrow-up"></i>
+                <span>2.5%</span>
+            </div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span class="kpi-title">优秀率</span>
+                <div class="kpi-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+            </div>
+            <div class="kpi-value">38.6%</div>
+            <div class="kpi-trend trend-down">
+                <i class="fas fa-arrow-down"></i>
+                <span>1.2%</span>
+            </div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span class="kpi-title">实训完成率</span>
+                <div class="kpi-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+            </div>
+            <div class="kpi-value">89.4%</div>
+            <div class="kpi-trend trend-up">
+                <i class="fas fa-arrow-up"></i>
+                <span>4.1%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 数据分析筛选面板 -->
+    <div class="analysis-filter-panel">
+        <div class="filter-header">
+            <h3 class="filter-title">数据筛选</h3>
+            <div class="filter-actions">
+                <button class="btn btn-secondary btn-small" onclick="resetAllFilters()">
+                    <i class="fas fa-redo"></i> 重置
+                </button>
+            </div>
+        </div>
+        
+        <div class="filter-row">
+            <div class="filter-group">
+                <label class="filter-label">开始日期</label>
+                <input type="date" class="date-input" id="startDate">
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">结束日期</label>
+                <input type="date" class="date-input" id="endDate">
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">课程选择</label>
+                <select class="filter-select" id="courseSelect" onchange="filterByCourse(this.value)">
+                    <option value="全部课程">全部课程</option>
+                    <option value="供应链管理基础">供应链管理基础</option>
+                    <option value="物流与配送管理">物流与配送管理</option>
+                    <option value="库存控制策略">库存控制策略</option>
+                    <option value="采购管理">采购管理</option>
+                    <option value="供应链风险管理">供应链风险管理</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">考试类型</label>
+                <select class="filter-select" id="examTypeSelect" onchange="filterByExamType(this.value)">
+                    <option value="全部类型">全部类型</option>
+                    <option value="期中考试">期中考试</option>
+                    <option value="期末考试">期末考试</option>
+                    <option value="单元测验">单元测验</option>
+                    <option value="实训考核">实训考核</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="filter-row">
+            <div class="filter-group">
+                <label class="filter-label">班级选择</label>
+                <select class="filter-select" id="classSelect" onchange="filterByClass(this.value)">
+                    <option value="全部班级">全部班级</option>
+                    <option value="2022级供应链管理1班">2022级供应链管理1班</option>
+                    <option value="2022级供应链管理2班">2022级供应链管理2班</option>
+                    <option value="2023级物流管理1班">2023级物流管理1班</option>
+                    <option value="2023级物流管理2班">2023级物流管理2班</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">数据粒度</label>
+                <select class="filter-select" id="granularitySelect" onchange="changeDataGranularity(this.value)">
+                    <option value="学期">学期</option>
+                    <option value="月">月</option>
+                    <option value="周">周</option>
+                    <option value="天">天</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="filter-row" style="justify-content: flex-end;">
+            <button class="btn btn-primary" onclick="applyDateFilter()">
+                <i class="fas fa-filter"></i> 应用筛选
+            </button>
+        </div>
+    </div>
+
+    <!-- 图表可视化区域 -->
+    <div class="charts-container">
+        <!-- 考试成绩分布图表 -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">考试成绩分布分析</h3>
+                <div class="chart-actions">
+                    <button class="chart-action-btn" onclick="changeChartTimeRange(this.closest('.chart-card'), '近学期')">
+                        <i class="fas fa-calendar-alt"></i>
+                    </button>
+                    <button class="chart-action-btn" onclick="downloadChartData('考试成绩分布分析')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="chart-action-btn" onclick="expandChart(this.closest('.chart-card'))">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="chart-content">
+                <canvas id="scoreDistributionChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- 知识点掌握情况图表 -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">知识点掌握情况分析</h3>
+                <div class="chart-actions">
+                    <button class="chart-action-btn" onclick="changeChartTimeRange(this.closest('.chart-card'), '近学期')">
+                        <i class="fas fa-calendar-alt"></i>
+                    </button>
+                    <button class="chart-action-btn" onclick="downloadChartData('知识点掌握情况分析')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="chart-action-btn" onclick="expandChart(this.closest('.chart-card'))">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="chart-content">
+                <canvas id="knowledgeMasteryChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- 实训成绩分析图表 -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">实训成绩分析</h3>
+                <div class="chart-actions">
+                    <button class="chart-action-btn" onclick="changeChartTimeRange(this.closest('.chart-card'), '近学期')">
+                        <i class="fas fa-calendar-alt"></i>
+                    </button>
+                    <button class="chart-action-btn" onclick="downloadChartData('实训成绩分析')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="chart-action-btn" onclick="expandChart(this.closest('.chart-card'))">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="chart-content">
+                <canvas id="practicalScoreChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- 历届学生成绩对比图表 -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">历届学生成绩对比</h3>
+                <div class="chart-actions">
+                    <button class="chart-action-btn" onclick="changeChartTimeRange(this.closest('.chart-card'), '近3届')">
+                        <i class="fas fa-calendar-alt"></i>
+                    </button>
+                    <button class="chart-action-btn" onclick="downloadChartData('历届学生成绩对比')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="chart-action-btn" onclick="expandChart(this.closest('.chart-card'))">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="chart-content">
+                <canvas id="gradeComparisonChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 数据表格区域 -->
+    <div class="data-table-container">
+        <div class="table-header">
+            <h3 class="table-title">学生成绩明细表</h3>
+            <div class="table-actions">
+                <input type="text" class="search-input" placeholder="搜索学生姓名..." oninput="searchTableData(this.value)">
+                <select class="filter-select" style="width: 150px;" onchange="filterTableData(this.value)">
+                    <option value="全部">全部成绩</option>
+                    <option value="优秀">优秀 (≥90)</option>
+                    <option value="良好">良好 (80-89)</option>
+                    <option value="中等">中等 (70-79)</option>
+                    <option value="及格">及格 (60-69)</option>
+                    <option value="不及格">不及格 (<60)</option>
+                </select>
+            </div>
+        </div>
+        
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>学生姓名</th>
+                    <th>班级</th>
+                    <th>课程</th>
+                    <th>考试类型</th>
+                    <th>考试成绩</th>
+                    <th>实训成绩</th>
+                    <th>总成绩</th>
+                    <th>排名</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr onclick="viewDataDetails(this)">
+                    <td>张三</td>
+                    <td>2022级供应链管理1班</td>
+                    <td>供应链管理基础</td>
+                    <td>期末考试</td>
+                    <td>92</td>
+                    <td>95</td>
+                    <td>93.5</td>
+                    <td>1</td>
+                </tr>
+                <tr onclick="viewDataDetails(this)">
+                    <td>李四</td>
+                    <td>2022级供应链管理1班</td>
+                    <td>供应链管理基础</td>
+                    <td>期末考试</td>
+                    <td>88</td>
+                    <td>90</td>
+                    <td>89.0</td>
+                    <td>2</td>
+                </tr>
+                <tr onclick="viewDataDetails(this)">
+                    <td>王五</td>
+                    <td>2022级供应链管理1班</td>
+                    <td>供应链管理基础</td>
+                    <td>期末考试</td>
+                    <td>85</td>
+                    <td>88</td>
+                    <td>86.5</td>
+                    <td>3</td>
+                </tr>
+                <tr onclick="viewDataDetails(this)">
+                    <td>赵六</td>
+                    <td>2022级供应链管理2班</td>
+                    <td>供应链管理基础</td>
+                    <td>期末考试</td>
+                    <td>82</td>
+                    <td>84</td>
+                    <td>83.0</td>
+                    <td>4</td>
+                </tr>
+                <tr onclick="viewDataDetails(this)">
+                    <td>孙七</td>
+                    <td>2022级供应链管理2班</td>
+                    <td>供应链管理基础</td>
+                    <td>期末考试</td>
+                    <td>79</td>
+                    <td>82</td>
+                    <td>80.5</td>
+                    <td>5</td>
+                </tr>
+                <tr onclick="viewDataDetails(this)">
+                    <td>周八</td>
+                    <td>2022级供应链管理2班</td>
+                    <td>供应链管理基础</td>
+                    <td>期末考试</td>
+                    <td>76</td>
+                    <td>78</td>
+                    <td>77.0</td>
+                    <td>6</td>
+                </tr>
+                <tr onclick="viewDataDetails(this)">
+                    <td>吴九</td>
+                    <td>2023级物流管理1班</td>
+                    <td>供应链管理基础</td>
+                    <td>期中考试</td>
+                    <td>90</td>
+                    <td>92</td>
+                    <td>91.0</td>
+                    <td>1</td>
+                </tr>
+                <tr onclick="viewDataDetails(this)">
+                    <td>郑十</td>
+                    <td>2023级物流管理1班</td>
+                    <td>供应链管理基础</td>
+                    <td>期中考试</td>
+                    <td>78</td>
+                    <td>76</td>
+                    <td>77.0</td>
+                    <td>7</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="table-footer">
+            <div class="table-info">显示 1-8 条，共 145 条记录</div>
+            <div class="pagination">
+                <div class="page-item disabled" onclick="navigateToPrevPage()">
+                    <i class="fas fa-chevron-left"></i>
+                </div>
+                <div class="page-item active" onclick="navigateToPage(1)">1</div>
+                <div class="page-item" onclick="navigateToPage(2)">2</div>
+                <div class="page-item" onclick="navigateToPage(3)">3</div>
+                <div class="page-item" onclick="navigateToPage(4)">4</div>
+                <div class="page-item" onclick="navigateToPage(5)">5</div>
+                <div class="page-item" onclick="navigateToNextPage()">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 智能洞察报告区域 -->
+    <div class="insights-container">
+        <div class="insights-header">
+            <h3 class="insights-title">教学洞察报告</h3>
+            <div class="insights-actions">
+                <button class="btn-secondary btn-small" onclick="configureInsights()">
+                    <i class="fas fa-sliders-h"></i> 配置
+                </button>
+            </div>
+        </div>
+
+        <div class="insights-grid">
+            <div class="insight-card">
+                <div class="insight-icon success">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="insight-content">
+                    <h4 class="insight-title">供应链管理知识点掌握率提升</h4>
+                    <p class="insight-description">本学期学生对供应链管理核心知识点的掌握率提升了15.3%，达到82.7%，高于课程平均水平。</p>
+                    <div class="insight-actions">
+                        <button class="insight-action-btn" onclick="handleInsightAction('供应链管理知识点掌握率提升', 'fa-chart-line')">
+                            <i class="fas fa-chart-line"></i>
+                        </button>
+                        <button class="insight-action-btn" onclick="handleInsightAction('供应链管理知识点掌握率提升', 'fa-book')">
+                            <i class="fas fa-book"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insight-card">
+                <div class="insight-icon warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="insight-content">
+                    <h4 class="insight-title">运输路线优化知识点薄弱</h4>
+                    <p class="insight-description">数据分析显示，运输路线优化相关知识点的掌握率仅为65.8%，低于课程平均水平，建议加强教学。</p>
+                    <div class="insight-actions">
+                        <button class="insight-action-btn" onclick="handleInsightAction('运输路线优化知识点薄弱', 'fa-map-marker-alt')">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </button>
+                        <button class="insight-action-btn" onclick="handleInsightAction('运输路线优化知识点薄弱', 'fa-tasks')">
+                            <i class="fas fa-tasks"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insight-card">
+                <div class="insight-icon info">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <div class="insight-content">
+                    <h4 class="insight-title">实训与理论成绩相关性显著</h4>
+                    <p class="insight-description">数据表明，实训成绩优秀的学生理论考试成绩平均高出15.2分，建议增加实训教学比重。</p>
+                    <div class="insight-actions">
+                        <button class="insight-action-btn" onclick="handleInsightAction('实训与理论成绩相关性显著', 'fa-link')">
+                            <i class="fas fa-link"></i>
+                        </button>
+                        <button class="insight-action-btn" onclick="handleInsightAction('实训与理论成绩相关性显著', 'fa-cogs')">
+                            <i class="fas fa-cogs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insight-card">
+                <div class="insight-icon warning">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="insight-content">
+                    <h4 class="insight-title">部分学生成绩波动较大</h4>
+                    <p class="insight-description">监测到12名学生的成绩波动超过20%，建议教师进行针对性辅导和学习方法指导。</p>
+                    <div class="insight-actions">
+                        <button class="insight-action-btn" onclick="handleInsightAction('部分学生成绩波动较大', 'fa-user-graduate')">
+                            <i class="fas fa-user-graduate"></i>
+                        </button>
+                        <button class="insight-action-btn" onclick="handleInsightAction('部分学生成绩波动较大', 'fa-comment')">
+                            <i class="fas fa-comment"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化图表
+            initializeCharts();
+            
+            // 初始化事件监听器
+            initializeEventListeners();
+            
+            // 高亮活动筛选条件
+            highlightActiveFilters();
+            
+            // 加载分析数据
+            loadAnalysisData();
+        });
+
+        // 初始化事件监听器
+        function initializeEventListeners() {
+            console.log('初始化事件监听器...');
+            // 这里可以添加更多事件监听器的初始化逻辑
+        }
+
+        // 初始化图表
+        function initializeCharts() {
+            // 考试成绩分布图表
+            const scoreDistributionCtx = document.getElementById('scoreDistributionChart').getContext('2d');
+            const scoreDistributionChart = new Chart(scoreDistributionCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['0-59', '60-69', '70-79', '80-89', '90-100'],
+                    datasets: [{
+                        label: '学生人数',
+                        data: [12, 28, 45, 42, 18],
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(66, 153, 225, 0.7)',
+                            'rgba(52, 211, 153, 0.7)',
+                            'rgba(67, 97, 238, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(239, 68, 68, 1)',
+                            'rgba(245, 158, 11, 1)',
+                            'rgba(66, 153, 225, 1)',
+                            'rgba(52, 211, 153, 1)',
+                            'rgba(67, 97, 238, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '学生人数'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '分数段'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 知识点掌握情况图表
+            const knowledgeMasteryCtx = document.getElementById('knowledgeMasteryChart').getContext('2d');
+            const knowledgeMasteryChart = new Chart(knowledgeMasteryCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['供应链基础', '库存管理', '采购管理', '运输优化', '需求预测', '风险管理'],
+                    datasets: [{
+                        label: '掌握率(%)',
+                        data: [89, 83, 78, 66, 72, 75],
+                        backgroundColor: 'rgba(67, 97, 238, 0.2)',
+                        borderColor: 'rgba(67, 97, 238, 1)',
+                        pointBackgroundColor: 'rgba(67, 97, 238, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(67, 97, 238, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    }
+                }
+            });
+
+            // 实训成绩分析图表
+            const practicalScoreCtx = document.getElementById('practicalScoreChart').getContext('2d');
+            const practicalScoreChart = new Chart(practicalScoreCtx, {
+                type: 'line',
+                data: {
+                    labels: ['第1周', '第2周', '第3周', '第4周', '第5周', '第6周'],
+                    datasets: [{
+                        label: '平均分',
+                        data: [75, 78, 72, 79, 85, 89],
+                        backgroundColor: 'rgba(52, 211, 153, 0.2)',
+                        borderColor: 'rgba(52, 211, 153, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            suggestedMin: 60,
+                            suggestedMax: 100,
+                            title: {
+                                display: true,
+                                text: '分数'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '实训周数'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 历届学生成绩对比图表
+            const gradeComparisonCtx = document.getElementById('gradeComparisonChart').getContext('2d');
+            const gradeComparisonChart = new Chart(gradeComparisonCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['2021级', '2022级', '2023级'],
+                    datasets: [{
+                        label: '平均分',
+                        data: [78.5, 81.2, 82.5],
+                        backgroundColor: 'rgba(67, 97, 238, 0.7)',
+                        borderColor: 'rgba(67, 97, 238, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: '及格率(%)',
+                        data: [89.2, 90.5, 92.8],
+                        backgroundColor: 'rgba(52, 211, 153, 0.7)',
+                        borderColor: 'rgba(52, 211, 153, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            suggestedMin: 60,
+                            title: {
+                                display: true,
+                                text: '分数/百分比'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '年级'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 加载分析数据
+        function loadAnalysisData() {
+            console.log('加载数据分析...');
+            
+            // 模拟加载状态
+            showLoadingState();
+            
+            // 模拟从服务器加载数据的延迟
+            setTimeout(() => {
+                hideLoadingState();
+                updateKPIMetrics();
+                updateDataTable();
+            }, 1500);
+        }
+
+        // 更新KPI指标
+        function updateKPIMetrics() {
+            // 模拟从服务器获取KPI数据
+            const kpiData = {
+                averageScore: {
+                    value: 82.5,
+                    trend: 'up',
+                    change: 3.2
+                },
+                passRate: {
+                    value: 92.8,
+                    trend: 'up',
+                    change: 2.5
+                },
+                excellentRate: {
+                    value: 38.6,
+                    trend: 'down',
+                    change: 1.2
+                },
+                practicalCompletionRate: {
+                    value: 89.4,
+                    trend: 'up',
+                    change: 4.1
+                }
+            };
+            
+            // 更新KPI卡片
+            document.querySelectorAll('.kpi-card').forEach((card, index) => {
+                const metrics = Object.values(kpiData)[index];
+                
+                // 格式化显示值
+                let displayValue = metrics.value;
+                if (index === 1 || index === 2) { // 及格率和优秀率显示百分比
+                    displayValue = `${displayValue}%`;
+                }
+                
+                card.querySelector('.kpi-value').textContent = displayValue;
+                
+                const trendElement = card.querySelector('.kpi-trend');
+                trendElement.className = `kpi-trend trend-${metrics.trend}`;
+                trendElement.innerHTML = `
+                    <i class="fas fa-arrow-${metrics.trend}"></i>
+                    <span>${metrics.change}%</span>
+                `;
+            });
+        }
+
+        // 高亮活动筛选条件
+        function highlightActiveFilters() {
+            // 默认选中"全部课程"和"全部类型"
+            document.getElementById('courseSelect').value = '全部课程';
+            document.getElementById('examTypeSelect').value = '全部类型';
+            document.getElementById('classSelect').value = '全部班级';
+            document.getElementById('granularitySelect').value = '学期';
+        }
+
+        // 应用日期筛选
+        function applyDateFilter() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (!startDate || !endDate) {
+                alert('请选择开始和结束日期');
+                return;
+            }
+            
+            console.log('应用日期筛选:', startDate, '至', endDate);
+            
+            // 显示加载状态
+            showLoadingState();
+            
+            // 模拟数据加载
+            setTimeout(() => {
+                hideLoadingState();
+                alert(`已筛选 ${startDate} 至 ${endDate} 的数据`);
+            }, 1000);
+        }
+
+        // 重置所有筛选
+        function resetAllFilters() {
+            console.log('重置所有筛选条件');
+            
+            // 重置日期输入
+            const today = new Date();
+            const sixMonthsAgo = new Date(today.getTime() - 180 * 24 * 60 * 60 * 1000);
+            
+            document.getElementById('startDate').valueAsDate = sixMonthsAgo;
+            document.getElementById('endDate').valueAsDate = today;
+            
+            // 重置下拉选择
+            document.getElementById('courseSelect').value = '全部课程';
+            document.getElementById('examTypeSelect').value = '全部类型';
+            document.getElementById('classSelect').value = '全部班级';
+            document.getElementById('granularitySelect').value = '学期';
+            
+            // 重置搜索框
+            document.querySelector('.search-input').value = '';
+            
+            // 显示加载状态
+            showLoadingState();
+            
+            // 模拟数据重置
+            setTimeout(() => {
+                hideLoadingState();
+                alert('已重置所有筛选条件');
+            }, 1000);
+        }
+
+        // 按课程筛选
+        function filterByCourse(course) {
+            console.log('按课程筛选:', course);
+            
+            // 显示加载状态
+            showLoadingState();
+            
+            // 模拟数据加载
+            setTimeout(() => {
+                hideLoadingState();
+                updateFilterResults(course);
+            }, 800);
+        }
+
+        // 按考试类型筛选
+        function filterByExamType(examType) {
+            console.log('按考试类型筛选:', examType);
+            
+            // 显示加载状态
+            showLoadingState();
+            
+            // 模拟数据加载
+            setTimeout(() => {
+                hideLoadingState();
+                updateFilterResults(examType);
+            }, 800);
+        }
+
+        // 按班级筛选
+        function filterByClass(className) {
+            console.log('按班级筛选:', className);
+            
+            // 显示加载状态
+            showLoadingState();
+            
+            // 模拟数据加载
+            setTimeout(() => {
+                hideLoadingState();
+                updateFilterResults(className);
+            }, 800);
+        }
+
+        // 更改数据粒度
+        function changeDataGranularity(granularity) {
+            console.log('更改数据粒度:', granularity);
+            
+            // 显示加载状态
+            showLoadingState();
+            
+            // 模拟数据加载
+            setTimeout(() => {
+                hideLoadingState();
+                
+                // 更新图表标题显示当前粒度
+                document.querySelectorAll('.chart-title').forEach(title => {
+                    const originalTitle = title.textContent.replace(/\s\((学期|月|周|天)\)$/, '');
+                    title.textContent = `${originalTitle} (${granularity})`;
+                });
+                
+                alert(`已切换到${granularity}数据视图`);
+            }, 800);
+        }
+
+        // 下载图表数据
+        function downloadChartData(chartTitle) {
+            console.log('下载图表数据:', chartTitle);
+            
+            // 模拟下载
+            alert(`正在下载${chartTitle}数据...`);
+            
+            // 模拟下载完成
+            setTimeout(() => {
+                alert(`${chartTitle}数据下载完成`);
+            }, 1500);
+        }
+
+        // 展开图表
+        function expandChart(chartCard) {
+            const chartTitle = chartCard.querySelector('.chart-title').textContent;
+            console.log('展开图表:', chartTitle);
+            
+            // 切换展开状态
+            chartCard.classList.toggle('expanded');
+            
+            if (chartCard.classList.contains('expanded')) {
+                alert(`${chartTitle}已进入全屏模式`);
+            } else {
+                alert(`${chartTitle}已退出全屏模式`);
+            }
+        }
+
+        // 更改图表时间范围
+        function changeChartTimeRange(chartCard, timeRange) {
+            const chartTitle = chartCard.querySelector('.chart-title').textContent;
+            console.log('更改图表时间范围:', chartTitle, timeRange);
+            
+            // 显示加载状态
+            showLoadingState();
+            
+            // 模拟数据加载
+            setTimeout(() => {
+                hideLoadingState();
+                alert(`${chartTitle}已切换到${timeRange}视图`);
+            }, 800);
+        }
+
+        // 搜索表格数据
+        function searchTableData(searchTerm) {
+            console.log('搜索表格数据:', searchTerm);
+            
+            if (searchTerm.length > 2) {
+                // 模拟搜索逻辑
+                const rows = document.querySelectorAll('.data-table tbody tr');
+                let matchCount = 0;
+                
+                rows.forEach(row => {
+                    const rowText = row.textContent.toLowerCase();
+                    if (rowText.includes(searchTerm.toLowerCase())) {
+                        row.style.display = '';
+                        matchCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+                
+                // 更新表格信息
+                document.querySelector('.table-info').textContent = 
+                    `找到 ${matchCount} 条匹配记录`;
+            } else if (searchTerm.length === 0) {
+                // 重置搜索
+                document.querySelectorAll('.data-table tbody tr').forEach(row => {
+                    row.style.display = '';
+                });
+                
+                document.querySelector('.table-info').textContent = 
+                    `显示 1-8 条，共 145 条记录`;
+            }
+        }
+
+        // 筛选表格数据
+        function filterTableData(filterType) {
+            console.log('筛选表格数据:', filterType);
+            
+            // 显示加载状态
+            showLoadingState();
+            
+            // 模拟数据加载
+            setTimeout(() => {
+                hideLoadingState();
+                alert(`已筛选${filterType}数据`);
+            }, 800);
+        }
+
+        // 导航到上一页
+        function navigateToPrevPage() {
+            console.log('导航到上一页');
+            
+            // 模拟分页逻辑
+            const currentPage = parseInt(document.querySelector('.page-item.active').textContent);
+            if (currentPage > 1) {
+                navigateToPage(currentPage - 1);
+            }
+        }
+
+        // 导航到下一页
+        function navigateToNextPage() {
+            console.log('导航到下一页');
+            
+            // 模拟分页逻辑
+            const currentPage = parseInt(document.querySelector('.page-item.active').textContent);
+            if (currentPage < 5) { // 假设有5页
+                navigateToPage(currentPage + 1);
+            }
+        }
+
+        // 导航到指定页
+        function navigateToPage(pageNum) {
+            console.log('导航到页面:', pageNum);
+            
+            // 更新分页状态
+            document.querySelectorAll('.page-item').forEach(item => {
+                if (item.textContent === pageNum.toString()) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // 显示加载状态
+            showLoadingState();
+            
+            // 模拟数据加载
+            setTimeout(() => {
+                hideLoadingState();
+                
+                // 更新表格信息
+                const startRecord = (pageNum - 1) * 8 + 1;
+                const endRecord = Math.min(pageNum * 8, 145);
+                
+                document.querySelector('.table-info').textContent = 
+                    `显示 ${startRecord}-${endRecord} 条，共 145 条记录`;
+                
+                alert(`已加载第${pageNum}页数据`);
+            }, 800);
+        }
+
+        // 查看数据详情
+        function viewDataDetails(row) {
+            const studentName = row.cells[0].textContent;
+            const className = row.cells[1].textContent;
+            const courseName = row.cells[2].textContent;
+            console.log('查看数据详情:', studentName, className, courseName);
+            
+            // 模拟查看详情
+            alert(`查看 ${studentName} (${className}) 在 ${courseName} 的详细成绩数据`);
+        }
+
+        // 配置洞察
+        function configureInsights() {
+            console.log('配置洞察报告');
+            
+            // 模拟配置
+            alert('洞察报告配置功能即将推出');
+        }
+
+        // 生成报告
+        function generateReport() {
+            console.log('生成教学报告');
+            
+            // 模拟报告生成
+            alert('正在生成教学PDF报告...');
+            
+            // 模拟报告生成完成
+            setTimeout(() => {
+                alert('教学报告生成完成，已保存到下载文件夹');
+            }, 2000);
+        }
+
+        // 刷新数据
+        function refreshData() {
+            console.log('刷新数据');
+            
+            // 显示加载状态
+            showLoadingState();
+            
+            // 模拟数据刷新
+            setTimeout(() => {
+                hideLoadingState();
+                loadAnalysisData();
+                alert('数据已刷新');
+            }, 1500);
+        }
+
+        // 配置仪表板
+        function configureDashboard() {
+            console.log('配置仪表板');
+            
+            // 模拟配置
+            alert('仪表板配置功能即将推出');
+        }
+
+        // 处理洞察操作
+        function handleInsightAction(insightTitle, actionType) {
+            console.log('处理洞察操作:', insightTitle, actionType);
+            
+            // 根据操作类型执行相应操作
+            if (actionType.includes('fa-chart-line')) {
+                alert(`查看${insightTitle}的详细图表`);
+            } else if (actionType.includes('fa-book')) {
+                alert(`查看${insightTitle}相关知识点的教学资料`);
+            } else if (actionType.includes('fa-map-marker-alt')) {
+                alert(`查看${insightTitle}的详细分析`);
+            } else if (actionType.includes('fa-tasks')) {
+                alert(`为${insightTitle}创建专项练习`);
+            } else if (actionType.includes('fa-link')) {
+                alert(`查看${insightTitle}的相关性分析`);
+            } else if (actionType.includes('fa-cogs')) {
+                alert(`调整${insightTitle}相关的实训设置`);
+            } else if (actionType.includes('fa-user-graduate')) {
+                alert(`查看${insightTitle}的学生列表`);
+            } else if (actionType.includes('fa-comment')) {
+                alert(`联系${insightTitle}的相关学生`);
+            }
+        }
+
+        // 显示加载状态
+        function showLoadingState() {
+            document.body.style.opacity = '0.8';
+            document.body.style.cursor = 'wait';
+        }
+
+        // 隐藏加载状态
+        function hideLoadingState() {
+            document.body.style.opacity = '1';
+            document.body.style.cursor = 'default';
+        }
+
+        // 更新筛选结果
+        function updateFilterResults(filterType) {
+            // 更新表格信息
+            document.querySelector('.table-info').textContent = 
+                `已筛选${filterType}，显示 1-8 条，共 145 条记录`;
+        }
+
+        // 更新数据表格
+        function updateDataTable() {
+            console.log('更新数据表格...');
+            // 这里可以添加实际的表格数据更新逻辑
+        }
+    </script>
+</body>
+</html>

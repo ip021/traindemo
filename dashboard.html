@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教师工作台 - 供应链实训课程系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --success: #4ade80;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --border-radius: 12px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+        
+        .page-title h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+        
+        .page-title p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        /* 主内容区域 */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            max-height: calc(100vh - 120px);
+            padding-right: 8px;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            margin-bottom: 24px;
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 15px;
+            gap: 8px;
+        }
+        
+        .btn-secondary {
+            background: var(--gray-light);
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+        
+        /* 网格布局 */
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+        
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+        
+        /* 快速操作卡片 */
+        .quick-action-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .quick-action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(67, 97, 238, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 24px;
+        }
+        
+        .action-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .action-desc {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        /* 进度条 */
+        .progress-bar {
+            height: 8px;
+            background: var(--gray-light);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        /* 标签 */
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--gray-light);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray);
+        }
+        
+        .tag-primary {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+        
+        .tag-success {
+            background: rgba(74, 222, 128, 0.1);
+            color: var(--success);
+        }
+        
+        .tag-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        /* 列表项 */
+        .list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .list-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+        
+        .list-content {
+            flex: 1;
+        }
+        
+        .list-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .list-desc {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="page-title">
+            <h1>教师工作台</h1>
+            <p>欢迎回来，张老师！今天是2023年10月26日</p>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- 快速操作 -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">快速操作</div>
+            <div class="card-actions">
+                <button class="btn btn-secondary">
+                    <i class="fas fa-plus"></i> 新建课程
+                </button>
+            </div>
+        </div>
+        <div class="grid grid-4">
+            <div class="quick-action-card" onclick="parent.loadPage('beike.html')">
+                <div class="action-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div class="action-title">备课中心</div>
+                <div class="action-desc">创建和管理课程内容</div>
+            </div>
+            <div class="quick-action-card" onclick="parent.loadPage('jiaoan.html')">
+                <div class="action-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="action-title">教案管理</div>
+                <div class="action-desc">设计和分享教学方案</div>
+            </div>
+            <div class="quick-action-card" onclick="parent.loadPage('zuoyexitong.html')">
+                <div class="action-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="action-title">作业系统</div>
+                <div class="action-desc">布置和批改学生作业</div>
+            </div>
+            <div class="quick-action-card" onclick="parent.loadPage('shujufenxi.html')">
+                <div class="action-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="action-title">数据分析</div>
+                <div class="action-desc">查看学习效果分析</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-2">
+        <!-- 待办事项 -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">待办事项</div>
+                <div class="card-actions">
+                    <button class="btn btn-secondary">查看全部</button>
+                </div>
+            </div>
+            <div class="todo-list">
+                <div class="list-item">
+                    <div class="list-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <div class="list-content">
+                        <div class="list-title">批改《供应链基础》作业</div>
+                        <div class="list-desc">3份作业待批改，截止明天</div>
+                    </div>
+                    <span class="tag tag-warning">待处理</span>
+                </div>
+                <div class="list-item">
+                    <div class="list-icon">
+                        <i class="fas fa-calendar"></i>
+                    </div>
+                    <div class="list-content">
+                        <div class="list-title">准备下周库存管理教案</div>
+                        <div class="list-desc">需要准备教学资源和案例</div>
+                    </div>
+                    <span class="tag tag-primary">进行中</span>
+                </div>
+                <div class="list-item">
+                    <div class="list-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="list-content">
+                        <div class="list-title">安排小组实训活动</div>
+                        <div class="list-desc">需要分配角色和准备场景</div>
+                    </div>
+                    <span class="tag tag-primary">进行中</span>
+                </div>
+                <div class="list-item">
+                    <div class="list-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="list-content">
+                        <div class="list-title">查看学生学习进度报告</div>
+                        <div class="list-desc">生成月度学习分析报告</div>
+                    </div>
+                    <span class="tag tag-success">已完成</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 课程动态 -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">课程动态</div>
+                <div class="card-actions">
+                    <button class="btn btn-secondary">刷新</button>
+                </div>
+            </div>
+            <div class="activity-list">
+                <div class="list-item">
+                    <div class="list-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="list-content">
+                        <div class="list-title">学生李华提交了作业</div>
+                        <div class="list-desc">《物流管理》章节作业，刚刚提交</div>
+                    </div>
+                </div>
+                <div class="list-item">
+                    <div class="list-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="list-content">
+                        <div class="list-title">《供应链优化》考试已结束</div>
+                        <div class="list-desc">25名学生完成考试，待批改</div>
+                    </div>
+                </div>
+                <div class="list-item">
+                    <div class="list-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="list-content">
+                        <div class="list-title">3名学生学习进度落后</div>
+                        <div class="list-desc">需要关注并发送提醒</div>
+                    </div>
+                </div>
+                <div class="list-item">
+                    <div class="list-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="list-content">
+                        <div class="list-title">系统备份已完成</div>
+                        <div class="list-desc">所有数据已安全备份</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 课程进度 -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">课程进度</div>
+            <div class="card-actions">
+                <button class="btn btn-secondary">查看详情</button>
+            </div>
+        </div>
+        <div class="grid grid-3">
+            <div class="progress-card">
+                <div class="card-title">供应链管理基础</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 75%"></div>
+                </div>
+                <div class="progress-info">
+                    <span>75% 已完成</span>
+                    <span>28/35名学生</span>
+                </div>
+            </div>
+            <div class="progress-card">
+                <div class="card-title">物流与配送管理</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 45%"></div>
+                </div>
+                <div class="progress-info">
+                    <span>45% 已完成</span>
+                    <span>15/35名学生</span>
+                </div>
+            </div>
+            <div class="progress-card">
+                <div class="card-title">库存控制策略</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 30%"></div>
+                </div>
+                <div class="progress-info">
+                    <span>30% 已完成</span>
+                    <span>10/35名学生</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

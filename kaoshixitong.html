@@ -1,0 +1,3304 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>考试系统 - 供应链实训课程系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --success: #4ade80;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --border-radius: 12px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 30px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+        
+        .page-title p {
+            color: var(--gray);
+            font-size: 15px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        /* 考试系统特有样式 */
+        .exam-system-layout {
+            display: flex;
+            gap: 24px;
+            height: calc(100vh - 180px);
+        }
+        
+        .exam-filters {
+            width: 300px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .filters-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .filters-search {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 10px 40px 10px 16px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+        
+        .filter-section {
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--dark);
+        }
+        
+        .status-filters {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .status-item:hover {
+            background: var(--gray-light);
+        }
+        
+        .status-item.active {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+        
+        .status-indicator.upcoming {
+            background: var(--primary);
+        }
+        
+        .status-indicator.in-progress {
+            background: var(--warning);
+        }
+        
+        .status-indicator.completed {
+            background: var(--success);
+        }
+        
+        .status-indicator.expired {
+            background: var(--danger);
+        }
+        
+        .status-text {
+            flex: 1;
+        }
+        
+        .status-count {
+            background: var(--gray-light);
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+        }
+        
+        .course-filters {
+            margin-bottom: 20px;
+        }
+        
+        .course-list {
+            list-style: none;
+        }
+        
+        .course-item {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .course-item:hover {
+            background: var(--gray-light);
+        }
+        
+        .course-item.active {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .date-filters {
+            margin-bottom: 20px;
+        }
+        
+        .date-range {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .date-input {
+            padding: 10px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .date-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+        
+        .btn-secondary {
+            background: var(--gray-light);
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray-light);
+            color: var(--dark);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        
+        .exam-list {
+            flex: 1;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .list-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .list-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .view-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .view-option {
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: var(--gray-light);
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .view-option.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .list-tools {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .exam-container {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .exam-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .exam-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid var(--gray-light);
+        }
+        
+        .exam-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .card-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .card-course {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .card-body {
+            padding: 16px;
+        }
+        
+        .card-desc {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--gray);
+        }
+        
+        .card-footer {
+            padding: 16px;
+            border-top: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-badge.upcoming {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+        
+        .status-badge.in-progress {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        .status-badge.completed {
+            background: rgba(74, 222, 128, 0.1);
+            color: var(--success);
+        }
+        
+        .status-badge.expired {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .exam-detail {
+            width: 600px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .detail-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .detail-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .detail-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .detail-section {
+            margin-bottom: 20px;
+        }
+        
+        .detail-label {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+        
+        .detail-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .detail-actions {
+            padding: 20px;
+            border-top: 1px solid var(--gray-light);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .exam-system-layout {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .exam-filters, .exam-detail {
+                width: 100%;
+                height: 300px;
+            }
+            
+            .exam-list {
+                min-height: 500px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .exam-system-layout {
+                gap: 15px;
+            }
+            
+            .list-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .view-options, .list-tools {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .exam-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 主内容区 -->
+    <div class="header">
+        <div class="page-title">
+            <h1>考试系统</h1>
+            <p>管理在线考试，评估学生学习成果</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-primary">
+                <i class="fas fa-plus"></i> 新建考试
+            </button>
+            <button class="btn btn-outline">
+                <i class="fas fa-download"></i> 导入题库
+            </button>
+        </div>
+    </div>
+
+    <!-- 考试系统布局 -->
+    <div class="exam-system-layout">
+        <!-- 左侧筛选面板 -->
+        <div class="exam-filters">
+            <div class="filters-header">
+                <div class="filters-title">考试筛选</div>
+                <button class="btn btn-outline btn-sm">
+                    <i class="fas fa-filter"></i>
+                </button>
+            </div>
+            
+            <div class="filters-search">
+                <input type="text" class="search-input" placeholder="搜索考试...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            
+            <div class="filter-section">
+                <div class="section-title">考试状态</div>
+                <div class="status-filters">
+                    <div class="status-item active">
+                        <div class="status-indicator"></div>
+                        <div class="status-text">全部考试</div>
+                        <div class="status-count">15</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator upcoming"></div>
+                        <div class="status-text">即将开始</div>
+                        <div class="status-count">5</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator in-progress"></div>
+                        <div class="status-text">进行中</div>
+                        <div class="status-count">3</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator completed"></div>
+                        <div class="status-text">已完成</div>
+                        <div class="status-count">6</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator expired"></div>
+                        <div class="status-text">已过期</div>
+                        <div class="status-count">1</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filter-section">
+                <div class="section-title">课程筛选</div>
+                <ul class="course-list">
+                    <li class="course-item active">
+                        <span>全部课程</span>
+                        <span class="status-count">15</span>
+                    </li>
+                    <li class="course-item">
+                        <span>供应链管理基础</span>
+                        <span class="status-count">5</span>
+                    </li>
+                    <li class="course-item">
+                        <span>物流与配送管理</span>
+                        <span class="status-count">4</span>
+                    </li>
+                    <li class="course-item">
+                        <span>库存控制策略</span>
+                        <span class="status-count">3</span>
+                    </li>
+                    <li class="course-item">
+                        <span>供应链优化</span>
+                        <span class="status-count">3</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="filter-section">
+                <div class="section-title">时间范围</div>
+                <div class="date-range">
+                    <input type="date" class="date-input" placeholder="开始日期">
+                    <input type="date" class="date-input" placeholder="结束日期">
+                    <button class="btn btn-outline btn-sm">
+                        <i class="fas fa-calendar"></i> 应用筛选
+                    </button>
+                </div>
+            </div>
+            
+            <div class="filter-section">
+                <div class="section-title">其他筛选</div>
+                <button class="btn btn-outline btn-sm" style="width: 100%;">
+                    <i class="fas fa-sync-alt"></i> 重置筛选条件
+                </button>
+            </div>
+        </div>
+        
+        <!-- 中间考试列表 -->
+        <div class="exam-list">
+            <div class="list-header">
+                <div class="list-title">考试列表</div>
+                <div class="list-tools">
+                    <div class="view-options">
+                        <span class="view-option active">卡片视图</span>
+                        <span class="view-option">列表视图</span>
+                        <span class="view-option">日历视图</span>
+                    </div>
+                    <div class="sort-options">
+                        <select class="sort-select">
+                            <option>按开始时间排序</option>
+                            <option>按截止时间排序</option>
+                            <option>按课程名称排序</option>
+                            <option>按状态排序</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="exam-container">
+                <div class="exam-grid">
+                    <!-- 考试卡片 1 -->
+                    <div class="exam-card">
+                        <div class="card-header">
+                            <div class="card-title">供应链管理基础期中考试</div>
+                            <div class="card-course">供应链管理基础</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                涵盖供应链基本概念、库存管理原理和物流基础知识的期中考试，包含选择题、简答题和案例分析题...
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-play-circle"></i>
+                                    <span>开始: 2023-11-10 09:00</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-stop-circle"></i>
+                                    <span>截止: 2023-11-10 11:00</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>时长: 120分钟</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-question-circle"></i>
+                                    <span>题量: 50题</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge upcoming">即将开始</span>
+                            <button class="btn btn-outline btn-sm">
+                                <i class="fas fa-info-circle"></i> 详情
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 考试卡片 2 -->
+                    <div class="exam-card">
+                        <div class="card-header">
+                            <div class="card-title">物流配送优化期末考试</div>
+                            <div class="card-course">物流与配送管理</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                综合考核物流网络设计、配送路径优化和成本控制能力的期末考试，包含计算题和方案设计题...
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-play-circle"></i>
+                                    <span>开始: 2023-11-15 14:00</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-stop-circle"></i>
+                                    <span>截止: 2023-11-15 16:30</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>时长: 150分钟</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-question-circle"></i>
+                                    <span>题量: 45题</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge upcoming">即将开始</span>
+                            <button class="btn btn-outline btn-sm">
+                                <i class="fas fa-info-circle"></i> 详情
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 考试卡片 3 -->
+                    <div class="exam-card">
+                        <div class="card-header">
+                            <div class="card-title">库存控制策略单元测试</div>
+                            <div class="card-course">库存控制策略</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                测试ABC分类法、经济订货批量模型和安全库存计算的单元测试，主要包含计算题和应用题...
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-play-circle"></i>
+                                    <span>开始: 2023-11-05 10:00</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-stop-circle"></i>
+                                    <span>截止: 2023-11-05 11:00</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>时长: 60分钟</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-question-circle"></i>
+                                    <span>题量: 30题</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge in-progress">进行中</span>
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-play"></i> 继续考试
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 考试卡片 4 -->
+                    <div class="exam-card">
+                        <div class="card-header">
+                            <div class="card-title">供应链风险管理测验</div>
+                            <div class="card-course">供应链优化</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                评估供应链风险识别、评估和应对能力的测验，包含案例分析题和解决方案设计题...
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-play-circle"></i>
+                                    <span>开始: 2023-10-28 09:00</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-stop-circle"></i>
+                                    <span>截止: 2023-10-28 10:30</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>时长: 90分钟</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-question-circle"></i>
+                                    <span>题量: 35题</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge completed">已完成</span>
+                            <button class="btn btn-outline btn-sm">
+                                <i class="fas fa-chart-bar"></i> 查看成绩
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 考试卡片 5 -->
+                    <div class="exam-card">
+                        <div class="card-header">
+                            <div class="card-title">需求预测方法测试</div>
+                            <div class="card-course">库存控制策略</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                测试移动平均法、指数平滑法和回归分析等需求预测方法的掌握程度，主要包含计算题和应用题...
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-play-circle"></i>
+                                    <span>开始: 2023-10-25 14:00</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-stop-circle"></i>
+                                    <span>截止: 2023-10-25 15:00</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>时长: 60分钟</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-question-circle"></i>
+                                    <span>题量: 25题</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge completed">已完成</span>
+                            <button class="btn btn-outline btn-sm">
+                                <i class="fas fa-chart-bar"></i> 查看成绩
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 考试卡片 6 -->
+                    <div class="exam-card">
+                        <div class="card-header">
+                            <div class="card-title">物流成本分析测验</div>
+                            <div class="card-course">物流与配送管理</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                考核物流成本构成、计算方法和优化策略的测验，包含计算题和案例分析题...
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-play-circle"></i>
+                                    <span>开始: 2023-10-20 09:00</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-stop-circle"></i>
+                                    <span>截止: 2023-10-20 10:00</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>时长: 60分钟</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-question-circle"></i>
+                                    <span>题量: 28题</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge expired">已过期</span>
+                            <button class="btn btn-outline btn-sm">
+                                <i class="fas fa-info-circle"></i> 详情
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右侧考试详情面板 -->
+        <div class="exam-detail">
+            <div class="detail-header">
+                <div class="detail-title">考试详情</div>
+            </div>
+            <div class="detail-content">
+                <div class="detail-section">
+                    <div class="detail-label">考试标题</div>
+                    <div class="detail-value">供应链管理基础期中考试</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">所属课程</div>
+                    <div class="detail-value">供应链管理基础</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">开始时间</div>
+                    <div class="detail-value">2023-11-10 09:00</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">截止时间</div>
+                    <div class="detail-value">2023-11-10 11:00</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">考试时长</div>
+                    <div class="detail-value">120分钟</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">考试状态</div>
+                    <div class="detail-value">
+                        <span class="status-badge upcoming">即将开始</span>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">题目数量</div>
+                    <div class="detail-value">50题</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">总分</div>
+                    <div class="detail-value">100分</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">及格分数</div>
+                    <div class="detail-value">60分</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">考试描述</div>
+                    <div class="detail-value">
+                        本次考试涵盖供应链基本概念、库存管理原理和物流基础知识，包含选择题、简答题和案例分析题。请确保网络连接稳定，考试期间不得切换页面。
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">考试规则</div>
+                    <div class="detail-value">
+                        <ul class="rule-list">
+                            <li>考试开始后不允许中途退出</li>
+                            <li>禁止切换浏览器标签页或应用程序</li>
+                            <li>考试期间摄像头必须保持开启</li>
+                            <li>提交后无法修改答案</li>
+                            <li>超时自动提交</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">题目类型</div>
+                    <div class="detail-value">
+                        <div class="question-type-stats">
+                            <div class="type-item">
+                                <span class="type-name">单选题</span>
+                                <span class="type-count">30题 (60%)</span>
+                            </div>
+                            <div class="type-item">
+                                <span class="type-name">多选题</span>
+                                <span class="type-count">10题 (20%)</span>
+                            </div>
+                            <div class="type-item">
+                                <span class="type-name">简答题</span>
+                                <span class="type-count">5题 (10%)</span>
+                            </div>
+                            <div class="type-item">
+                                <span class="type-name">案例分析</span>
+                                <span class="type-count">5题 (10%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-actions">
+                <button class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-play"></i> 进入考试
+                </button>
+                <button class="btn btn-outline" style="width: 100%; margin-top: 10px;">
+                    <i class="fas fa-download"></i> 考试须知
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript交互功能 -->
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化页面
+            initializeExamPage();
+            
+            // 设置事件监听器
+            setupExamEventListeners();
+            
+            // 加载初始数据
+            loadExamData();
+        });
+        
+        // 初始化考试页面
+        function initializeExamPage() {
+            // 设置当前日期为默认筛选日期
+            const today = new Date();
+            const nextMonth = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+            
+            document.querySelectorAll('.date-input')[0].valueAsDate = today;
+            document.querySelectorAll('.date-input')[1].valueAsDate = nextMonth;
+            
+            // 高亮当前选中的考试
+            highlightSelectedExam();
+            
+            // 更新考试统计信息
+            updateExamStats();
+        }
+        
+        // 设置事件监听器
+        function setupExamEventListeners() {
+            // 考试筛选功能
+            setupExamFilterListeners();
+            
+            // 考试卡片交互
+            setupExamCardListeners();
+            
+            // 视图切换功能
+            setupViewToggleListeners();
+            
+            // 排序功能
+            setupSortingListeners();
+            
+            // 考试操作功能
+            setupExamActionListeners();
+        }
+        
+        // 设置筛选监听器
+        function setupExamFilterListeners() {
+            // 状态筛选
+            document.querySelectorAll('.status-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.status-item').forEach(i => {
+                        i.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    const status = this.querySelector('.status-text').textContent;
+                    filterExamsByStatus(status);
+                });
+            });
+            
+            // 课程筛选
+            document.querySelectorAll('.course-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.course-item').forEach(i => {
+                        i.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    const course = this.querySelector('span').textContent;
+                    filterExamsByCourse(course);
+                });
+            });
+            
+            // 日期筛选
+            document.querySelector('.date-range .btn').addEventListener('click', function() {
+                const startDate = document.querySelectorAll('.date-input')[0].value;
+                const endDate = document.querySelectorAll('.date-input')[1].value;
+                
+                if (startDate && endDate) {
+                    filterExamsByDate(startDate, endDate);
+                } else {
+                    alert('请选择开始和结束日期');
+                }
+            });
+            
+            // 搜索功能
+            document.querySelector('.search-input').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.trim();
+                if (searchTerm.length > 2) {
+                    searchExams(searchTerm);
+                } else if (searchTerm.length === 0) {
+                    resetExamFilters();
+                }
+            });
+            
+            // 重置筛选
+            document.querySelector('.filter-section .btn').addEventListener('click', resetExamFilters);
+        }
+        
+        // 设置考试卡片监听器
+        function setupExamCardListeners() {
+            document.querySelectorAll('.exam-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // 防止按钮点击触发卡片选择
+                    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'I') {
+                        return;
+                    }
+                    
+                    // 移除之前的选择
+                    document.querySelectorAll('.exam-card').forEach(c => {
+                        c.classList.remove('selected');
+                    });
+                    
+                    // 添加当前选择
+                    this.classList.add('selected');
+                    
+                    // 更新详情面板
+                    updateExamDetail(this);
+                });
+            });
+            
+            // 开始考试按钮
+            document.querySelectorAll('.btn-primary').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const card = this.closest('.exam-card');
+                    startExam(card);
+                });
+            });
+            
+            // 查看详情按钮
+            document.querySelectorAll('.btn-outline').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const card = this.closest('.exam-card');
+                    viewExamDetails(card);
+                });
+            });
+        }
+        
+        // 设置视图切换监听器
+        function setupViewToggleListeners() {
+            document.querySelectorAll('.view-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.view-option').forEach(o => {
+                        o.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    const viewType = this.textContent;
+                    switchExamView(viewType);
+                });
+            });
+        }
+        
+        // 设置排序监听器
+        function setupSortingListeners() {
+            document.querySelector('.sort-select').addEventListener('change', function(e) {
+                const sortBy = e.target.value;
+                sortExams(sortBy);
+            });
+        }
+        
+        // 设置考试操作监听器
+        function setupExamActionListeners() {
+            // 进入考试按钮
+            document.querySelector('.detail-actions .btn-primary').addEventListener('click', function() {
+                enterExam();
+            });
+            
+            // 下载考试须知按钮
+            document.querySelector('.detail-actions .btn-outline').addEventListener('click', function() {
+                downloadExamGuidelines();
+            });
+        }
+        
+        // 加载考试数据
+        function loadExamData() {
+            // 模拟从服务器加载数据
+            console.log('加载考试数据...');
+            
+            // 这里可以添加实际的数据加载逻辑
+            // fetch('/api/exams')
+            //   .then(response => response.json())
+            //   .then(data => renderExams(data));
+        }
+        
+        // 高亮选中的考试
+        function highlightSelectedExam() {
+            // 默认选中第一个考试
+            const firstCard = document.querySelector('.exam-card');
+            if (firstCard) {
+                firstCard.classList.add('selected');
+                updateExamDetail(firstCard);
+            }
+        }
+        
+        // 更新考试统计信息
+        function updateExamStats() {
+            // 这里可以添加从服务器获取统计信息的逻辑
+            const stats = {
+                total: 15,
+                upcoming: 5,
+                inProgress: 3,
+                completed: 6,
+                expired: 1
+            };
+            
+            // 更新状态计数
+            document.querySelectorAll('.status-count').forEach((element, index) => {
+                const values = Object.values(stats);
+                if (index < values.length) {
+                    element.textContent = values[index];
+                }
+            });
+        }
+        
+        // 按状态筛选考试
+        function filterExamsByStatus(status) {
+            console.log('按状态筛选:', status);
+            
+            document.querySelectorAll('.exam-card').forEach(card => {
+                const cardStatus = card.querySelector('.status-badge').textContent;
+                
+                if (status === '全部考试') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = cardStatus === status ? 'block' : 'none';
+                }
+            });
+            
+            // 更新筛选结果计数
+            updateFilterResults();
+        }
+        
+        // 按课程筛选考试
+        function filterExamsByCourse(course) {
+            console.log('按课程筛选:', course);
+            
+            document.querySelectorAll('.exam-card').forEach(card => {
+                const cardCourse = card.querySelector('.card-course').textContent;
+                
+                if (course === '全部课程') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = cardCourse === course ? 'block' : 'none';
+                }
+            });
+            
+            // 更新筛选结果计数
+            updateFilterResults();
+        }
+        
+        // 按日期筛选考试
+        function filterExamsByDate(startDate, endDate) {
+            console.log('按日期筛选:', startDate, '至', endDate);
+            
+            // 这里可以添加实际的日期筛选逻辑
+            // 目前只是模拟
+            document.querySelectorAll('.exam-card').forEach(card => {
+                const dueDate = card.querySelector('.meta-item:nth-child(2) span').textContent.split(': ')[1];
+                
+                // 简单的日期比较（实际应用中需要更复杂的逻辑）
+                if (dueDate >= startDate && dueDate <= endDate) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 更新筛选结果计数
+            updateFilterResults();
+        }
+        
+        // 搜索考试
+        function searchExams(searchTerm) {
+            console.log('搜索考试:', searchTerm);
+            
+            document.querySelectorAll('.exam-card').forEach(card => {
+                const title = card.querySelector('.card-title').textContent;
+                const desc = card.querySelector('.card-desc').textContent;
+                const course = card.querySelector('.card-course').textContent;
+                
+                if (title.includes(searchTerm) || desc.includes(searchTerm) || course.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 更新筛选结果计数
+            updateFilterResults();
+        }
+        
+        // 重置筛选
+        function resetExamFilters() {
+            console.log('重置筛选条件');
+            
+            // 重置状态筛选
+            document.querySelectorAll('.status-item').forEach((item, index) => {
+                if (index === 0) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // 重置课程筛选
+            document.querySelectorAll('.course-item').forEach((item, index) => {
+                if (index === 0) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // 重置搜索框
+            document.querySelector('.search-input').value = '';
+            
+            // 显示所有考试
+            document.querySelectorAll('.exam-card').forEach(card => {
+                card.style.display = 'block';
+            });
+            
+            // 更新筛选结果计数
+            updateFilterResults();
+        }
+        
+        // 更新筛选结果计数
+        function updateFilterResults() {
+            const visibleCards = document.querySelectorAll('.exam-card[style="display: block"]').length;
+            const totalCards = document.querySelectorAll('.exam-card').length;
+            
+            document.querySelector('.list-title').textContent = 
+                `考试列表 (${visibleCards}/${totalCards})`;
+        }
+        
+        // 更新考试详情
+        function updateExamDetail(card) {
+            const title = card.querySelector('.card-title').textContent;
+            const course = card.querySelector('.card-course').textContent;
+            const startDate = card.querySelector('.meta-item:nth-child(1) span').textContent.split(': ')[1];
+            const endDate = card.querySelector('.meta-item:nth-child(2) span').textContent.split(': ')[1];
+            const duration = card.querySelector('.meta-item:nth-child(3) span').textContent.split(': ')[1];
+            const questionCount = card.querySelector('.meta-item:nth-child(4) span').textContent.split(': ')[1];
+            const status = card.querySelector('.status-badge').textContent;
+            const description = card.querySelector('.card-desc').textContent;
+            
+            // 更新详情面板
+            document.querySelector('.detail-section:nth-child(1) .detail-value').textContent = title;
+            document.querySelector('.detail-section:nth-child(2) .detail-value').textContent = course;
+            document.querySelector('.detail-section:nth-child(3) .detail-value').textContent = startDate;
+            document.querySelector('.detail-section:nth-child(4) .detail-value').textContent = endDate;
+            document.querySelector('.detail-section:nth-child(5) .detail-value').textContent = duration;
+            
+            // 更新状态
+            const statusBadge = document.querySelector('.detail-section:nth-child(6) .status-badge');
+            statusBadge.textContent = status;
+            statusBadge.className = 'status-badge ' + getStatusClass(status);
+            
+            document.querySelector('.detail-section:nth-child(7) .detail-value').textContent = questionCount;
+            document.querySelector('.detail-section:nth-child(8) .detail-value').textContent = '100分';
+            document.querySelector('.detail-section:nth-child(9) .detail-value').textContent = '60分';
+            document.querySelector('.detail-section:nth-child(10) .detail-value').textContent = description;
+            
+            // 更新操作按钮状态
+            const enterButton = document.querySelector('.detail-actions .btn-primary');
+            if (status === '即将开始' || status === '进行中') {
+                enterButton.disabled = false;
+                enterButton.innerHTML = '<i class="fas fa-play"></i> ' + 
+                    (status === '即将开始' ? '进入考试' : '继续考试');
+            } else {
+                enterButton.disabled = true;
+                enterButton.innerHTML = '<i class="fas fa-check"></i> 已完成';
+            }
+        }
+        
+        // 获取状态对应的CSS类
+        function getStatusClass(status) {
+            switch(status) {
+                case '即将开始': return 'upcoming';
+                case '进行中': return 'in-progress';
+                case '已完成': return 'completed';
+                case '已过期': return 'expired';
+                default: return 'upcoming';
+            }
+        }
+        
+        // 开始考试
+        function startExam(card) {
+            const title = card.querySelector('.card-title').textContent;
+            console.log('开始考试:', title);
+            
+            // 这里可以添加实际开始考试的逻辑
+            // 比如打开考试界面或跳转到考试页面
+            showExamModal(title);
+        }
+        
+        // 查看考试详情
+        function viewExamDetails(card) {
+            const title = card.querySelector('.card-title').textContent;
+            console.log('查看考试详情:', title);
+            
+            // 这里可以添加实际查看考试详情的逻辑
+            // 比如打开考试详情页面或预览考试内容
+            alert(`查看考试详情: ${title}`);
+        }
+        
+        // 切换视图
+        // 切换视图
+        function switchExamView(viewType) {
+            console.log('切换视图:', viewType);
+            
+            const examContainer = document.querySelector('.exam-container');
+            const examGrid = document.querySelector('.exam-grid');
+            const calendarContainer = document.querySelector('.calendar-container');
+            
+            if (viewType === '卡片视图') {
+                examGrid.style.display = 'grid';
+                // 隐藏日历容器
+                if (calendarContainer) {
+                    calendarContainer.style.display = 'none';
+                }
+                document.querySelectorAll('.exam-card').forEach(card => {
+                    card.style.width = '';
+                    card.style.marginBottom = '';
+                });
+            } else if (viewType === '列表视图') {
+                examGrid.style.display = 'block';
+                // 隐藏日历容器
+                if (calendarContainer) {
+                    calendarContainer.style.display = 'none';
+                }
+                document.querySelectorAll('.exam-card').forEach(card => {
+                    card.style.width = '100%';
+                    card.style.marginBottom = '15px';
+                });
+            } else if (viewType === '日历视图') {
+                examGrid.style.display = 'none';
+                // 创建日历视图
+                renderCalendarView();
+            }
+        }
+        
+        // 排序考试
+        function sortExams(sortBy) {
+            console.log('排序方式:', sortBy);
+            
+            // 这里可以添加实际的排序逻辑
+            // 目前只是模拟排序效果
+            const examGrid = document.querySelector('.exam-grid');
+            const cards = Array.from(document.querySelectorAll('.exam-card'));
+            
+            // 简单模拟排序动画
+            examGrid.style.opacity = '0.5';
+            
+            setTimeout(() => {
+                cards.sort(() => Math.random() - 0.5);
+                
+                // 清空当前网格
+                while (examGrid.firstChild) {
+                    examGrid.removeChild(examGrid.firstChild);
+                }
+                
+                // 添加排序后的卡片
+                cards.forEach(card => {
+                    examGrid.appendChild(card);
+                });
+                
+                examGrid.style.opacity = '1';
+            }, 300);
+        }
+        
+        // 进入考试
+        function enterExam() {
+            const title = document.querySelector('.detail-section:nth-child(1) .detail-value').textContent;
+            console.log('进入考试:', title);
+            
+            // 这里可以添加实际进入考试的逻辑
+            // 比如打开考试界面或跳转到考试页面
+            showExamModal(title);
+        }
+        
+        // 下载考试须知
+        function downloadExamGuidelines() {
+            const title = document.querySelector('.detail-section:nth-child(1) .detail-value').textContent;
+            console.log('下载考试须知:', title);
+            
+            // 这里可以添加实际下载考试须知的逻辑
+            // 比如生成PDF文件或下载现有文件
+            alert(`下载考试须知: ${title}`);
+        }
+        
+        // 显示考试模态框
+        function showExamModal(title) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>考试准备</h3>
+                        <button class="modal-close">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>您即将开始考试: <strong>${title}</strong></p>
+                        <div class="exam-info">
+                            <div class="info-item">
+                                <i class="fas fa-clock"></i>
+                                <span>考试时长: 120分钟</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-question-circle"></i>
+                                <span>题目数量: 50题</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>及格分数: 60分</span>
+                            </div>
+                        </div>
+                        <div class="exam-rules">
+                            <h4>考试规则</h4>
+                            <ul>
+                                <li>考试开始后不允许中途退出</li>
+                                <li>禁止切换浏览器标签页或应用程序</li>
+                                <li>考试期间摄像头必须保持开启</li>
+                                <li>提交后无法修改答案</li>
+                                <li>超时自动提交</li>
+                            </ul>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" class="agree-checkbox">
+                                我已阅读并同意考试规则
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary">取消</button>
+                        <button class="btn btn-primary" disabled>开始考试</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 添加模态框样式
+            const style = document.createElement('style');
+            style.textContent = `
+                .modal {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 1000;
+                }
+                
+                .modal-content {
+                    background: white;
+                    border-radius: 12px;
+                    width: 500px;
+                    max-width: 90%;
+                    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+                }
+                
+                .modal-header {
+                    padding: 20px;
+                    border-bottom: 1px solid #e2e8f0;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                
+                .modal-header h3 {
+                    margin: 0;
+                    font-size: 18px;
+                }
+                
+                .modal-close {
+                    background: none;
+                    border: none;
+                    font-size: 20px;
+                    cursor: pointer;
+                }
+                
+                .modal-body {
+                    padding: 20px;
+                }
+                
+                .exam-info {
+                    background: #f8fafc;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin: 20px 0;
+                }
+                
+                .info-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    margin-bottom: 10px;
+                }
+                
+                .info-item:last-child {
+                    margin-bottom: 0;
+                }
+                
+                .exam-rules {
+                    margin: 20px 0;
+                }
+                
+                .exam-rules h4 {
+                    margin-bottom: 10px;
+                    font-size: 16px;
+                }
+                
+                .exam-rules ul {
+                    margin-left: 20px;
+                    color: #64748b;
+                }
+                
+                .exam-rules li {
+                    margin-bottom: 5px;
+                }
+                
+                .form-group {
+                    margin-top: 20px;
+                }
+                
+                .form-group label {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    cursor: pointer;
+                }
+                
+                .agree-checkbox {
+                    width: 16px;
+                    height: 16px;
+                }
+                
+                .modal-footer {
+                    padding: 20px;
+                    border-top: 1px solid #e2e8f0;
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 10px;
+                }
+            `;
+            
+            document.head.appendChild(style);
+            
+            // 模态框交互
+            modal.querySelector('.modal-close').addEventListener('click', function() {
+                document.body.removeChild(modal);
+                document.head.removeChild(style);
+            });
+            
+            modal.querySelector('.btn-secondary').addEventListener('click', function() {
+                document.body.removeChild(modal);
+                document.head.removeChild(style);
+            });
+            
+            // 同意复选框交互
+            modal.querySelector('.agree-checkbox').addEventListener('change', function() {
+                modal.querySelector('.btn-primary').disabled = !this.checked;
+            });
+            
+            modal.querySelector('.btn-primary').addEventListener('click', function() {
+                alert('考试开始！祝您好运！');
+                document.body.removeChild(modal);
+                document.head.removeChild(style);
+                
+                // 更新考试状态
+                const statusBadge = document.querySelector('.detail-section:nth-child(6) .status-badge');
+                statusBadge.textContent = '进行中';
+                statusBadge.className = 'status-badge in-progress';
+                
+                const enterButton = document.querySelector('.detail-actions .btn-primary');
+                enterButton.innerHTML = '<i class="fas fa-play"></i> 继续考试';
+                
+                // 更新卡片状态
+                const selectedCard = document.querySelector('.exam-card.selected');
+                if (selectedCard) {
+                    const cardBadge = selectedCard.querySelector('.status-badge');
+                    cardBadge.textContent = '进行中';
+                    cardBadge.className = 'status-badge in-progress';
+                    
+                    const cardButton = selectedCard.querySelector('.btn');
+                    cardButton.innerHTML = '<i class="fas fa-play"></i> 继续考试';
+                    cardButton.className = 'btn btn-primary btn-sm';
+                }
+            });
+        }
+
+        // ... existing code ...
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化页面
+            initializeExamPage();
+            
+            // 设置事件监听器
+            setupExamEventListeners();
+            
+            // 加载初始数据
+            loadExamData();
+            
+            // 绑定顶部按钮事件
+            setupHeaderButtons();
+        });
+        
+        // 初始化考试页面
+        function initializeExamPage() {
+            // 设置当前日期为默认筛选日期
+            const today = new Date();
+            const nextMonth = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+            
+            document.querySelectorAll('.date-input')[0].valueAsDate = today;
+            document.querySelectorAll('.date-input')[1].valueAsDate = nextMonth;
+            
+            // 高亮当前选中的考试
+            highlightSelectedExam();
+            
+            // 更新考试统计信息
+            updateExamStats();
+        }
+        
+        // 设置事件监听器
+        function setupExamEventListeners() {
+            // 考试筛选功能
+            setupExamFilterListeners();
+            
+            // 考试卡片交互
+            setupExamCardListeners();
+            
+            // 视图切换功能
+            setupViewToggleListeners();
+            
+            // 排序功能
+            setupSortingListeners();
+            
+            // 考试操作功能
+            setupExamActionListeners();
+        }
+        
+        // 设置顶部按钮事件
+        function setupHeaderButtons() {
+            // 新建考试按钮
+            const newExamButton = document.querySelector('.header-actions .btn-primary');
+            if (newExamButton) {
+                newExamButton.addEventListener('click', function() {
+                    createNewExamModal();
+                });
+            }
+            
+            // 导入题库按钮
+            const importQuestionButton = document.querySelector('.header-actions .btn-outline');
+            if (importQuestionButton) {
+                importQuestionButton.addEventListener('click', function() {
+                    createImportQuestionModal();
+                });
+            }
+        }
+        
+        // 设置筛选监听器
+        function setupExamFilterListeners() {
+            // 状态筛选
+            document.querySelectorAll('.status-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.status-item').forEach(i => {
+                        i.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    const status = this.querySelector('.status-text').textContent;
+                    filterExamsByStatus(status);
+                });
+            });
+            
+            // 课程筛选
+            document.querySelectorAll('.course-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.course-item').forEach(i => {
+                        i.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    const course = this.querySelector('span').textContent;
+                    filterExamsByCourse(course);
+                });
+            });
+            
+            // 日期筛选
+            document.querySelector('.date-range .btn').addEventListener('click', function() {
+                const startDate = document.querySelectorAll('.date-input')[0].value;
+                const endDate = document.querySelectorAll('.date-input')[1].value;
+                
+                if (startDate && endDate) {
+                    filterExamsByDate(startDate, endDate);
+                } else {
+                    alert('请选择开始和结束日期');
+                }
+            });
+            
+            // 搜索功能
+            document.querySelector('.search-input').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.trim();
+                if (searchTerm.length > 2) {
+                    searchExams(searchTerm);
+                } else if (searchTerm.length === 0) {
+                    resetExamFilters();
+                }
+            });
+            
+            // 重置筛选
+            document.querySelector('.filter-section .btn').addEventListener('click', resetExamFilters);
+        }
+        
+        // 设置考试卡片监听器
+        function setupExamCardListeners() {
+            document.querySelectorAll('.exam-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // 防止按钮点击触发卡片选择
+                    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'I') {
+                        return;
+                    }
+                    
+                    // 移除之前的选择
+                    document.querySelectorAll('.exam-card').forEach(c => {
+                        c.classList.remove('selected');
+                    });
+                    
+                    // 添加当前选择
+                    this.classList.add('selected');
+                    
+                    // 更新详情面板
+                    updateExamDetail(this);
+                });
+            });
+            
+            // 开始考试按钮
+            document.querySelectorAll('.btn-primary').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const card = this.closest('.exam-card');
+                    startExam(card);
+                });
+            });
+            
+            // 查看详情按钮
+            document.querySelectorAll('.btn-outline').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const card = this.closest('.exam-card');
+                    // 根据按钮文本判断功能
+                    const buttonText = this.textContent.trim();
+                    if (buttonText.includes('详情')) {
+                        viewExamDetails(card);
+                    } else if (buttonText.includes('成绩')) {
+                        viewExamResult(card);
+                    }
+                });
+            });
+        }
+        
+        // 设置视图切换监听器
+        function setupViewToggleListeners() {
+            document.querySelectorAll('.view-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.view-option').forEach(o => {
+                        o.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    const viewType = this.textContent;
+                    switchExamView(viewType);
+                });
+            });
+        }
+        
+        // 设置排序监听器
+        function setupSortingListeners() {
+            document.querySelector('.sort-select').addEventListener('change', function(e) {
+                const sortBy = e.target.value;
+                sortExams(sortBy);
+            });
+        }
+        
+        // 设置考试操作监听器
+        function setupExamActionListeners() {
+            // 进入考试按钮
+            document.querySelector('.detail-actions .btn-primary').addEventListener('click', function() {
+                enterExam();
+            });
+            
+            // 下载考试须知按钮
+            document.querySelector('.detail-actions .btn-outline').addEventListener('click', function() {
+                downloadExamGuidelines();
+            });
+        }
+        
+        // 加载考试数据
+        function loadExamData() {
+            // 模拟从服务器加载数据
+            console.log('加载考试数据...');
+            
+            // 这里可以添加实际的数据加载逻辑
+            // fetch('/api/exams')
+            //   .then(response => response.json())
+            //   .then(data => renderExams(data));
+        }
+        
+        // 高亮选中的考试
+        function highlightSelectedExam() {
+            // 默认选中第一个考试
+            const firstCard = document.querySelector('.exam-card');
+            if (firstCard) {
+                firstCard.classList.add('selected');
+                updateExamDetail(firstCard);
+            }
+        }
+        
+        // 更新考试统计信息
+        function updateExamStats() {
+            // 这里可以添加从服务器获取统计信息的逻辑
+            const stats = {
+                total: 15,
+                upcoming: 5,
+                inProgress: 3,
+                completed: 6,
+                expired: 1
+            };
+            
+            // 更新状态计数
+            document.querySelectorAll('.status-count').forEach((element, index) => {
+                const values = Object.values(stats);
+                if (index < values.length) {
+                    element.textContent = values[index];
+                }
+            });
+        }
+        
+        // 按状态筛选考试
+        function filterExamsByStatus(status) {
+            console.log('按状态筛选:', status);
+            
+            document.querySelectorAll('.exam-card').forEach(card => {
+                const cardStatus = card.querySelector('.status-badge').textContent;
+                
+                if (status === '全部考试') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = cardStatus === status ? 'block' : 'none';
+                }
+            });
+            
+            // 更新筛选结果计数
+            updateFilterResults();
+        }
+        
+        // 按课程筛选考试
+        function filterExamsByCourse(course) {
+            console.log('按课程筛选:', course);
+            
+            document.querySelectorAll('.exam-card').forEach(card => {
+                const cardCourse = card.querySelector('.card-course').textContent;
+                
+                if (course === '全部课程') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = cardCourse === course ? 'block' : 'none';
+                }
+            });
+            
+            // 更新筛选结果计数
+            updateFilterResults();
+        }
+        
+        // 按日期筛选考试
+        function filterExamsByDate(startDate, endDate) {
+            console.log('按日期筛选:', startDate, '至', endDate);
+            
+            // 简单的日期比较逻辑
+            document.querySelectorAll('.exam-card').forEach(card => {
+                const dueDate = card.querySelector('.meta-item:nth-child(2) span').textContent.split(': ')[1];
+                
+                if (dueDate >= startDate && dueDate <= endDate) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 更新筛选结果计数
+            updateFilterResults();
+        }
+        
+        // 搜索考试
+        function searchExams(searchTerm) {
+            console.log('搜索考试:', searchTerm);
+            
+            document.querySelectorAll('.exam-card').forEach(card => {
+                const title = card.querySelector('.card-title').textContent;
+                const desc = card.querySelector('.card-desc').textContent;
+                const course = card.querySelector('.card-course').textContent;
+                
+                if (title.includes(searchTerm) || desc.includes(searchTerm) || course.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 更新筛选结果计数
+            updateFilterResults();
+        }
+        
+        // 重置筛选
+        function resetExamFilters() {
+            console.log('重置筛选条件');
+            
+            // 重置状态筛选
+            document.querySelectorAll('.status-item').forEach((item, index) => {
+                if (index === 0) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // 重置课程筛选
+            document.querySelectorAll('.course-item').forEach((item, index) => {
+                if (index === 0) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // 重置搜索框
+            document.querySelector('.search-input').value = '';
+            
+            // 显示所有考试
+            document.querySelectorAll('.exam-card').forEach(card => {
+                card.style.display = 'block';
+            });
+            
+            // 更新筛选结果计数
+            updateFilterResults();
+        }
+        
+        // 更新筛选结果计数
+        function updateFilterResults() {
+            const visibleCards = document.querySelectorAll('.exam-card[style="display: block"]').length;
+            const totalCards = document.querySelectorAll('.exam-card').length;
+            
+            document.querySelector('.list-title').textContent = 
+                `考试列表 (${visibleCards}/${totalCards})`;
+        }
+        
+        // 更新考试详情
+        function updateExamDetail(card) {
+            const title = card.querySelector('.card-title').textContent;
+            const course = card.querySelector('.card-course').textContent;
+            const startDate = card.querySelector('.meta-item:nth-child(1) span').textContent.split(': ')[1];
+            const endDate = card.querySelector('.meta-item:nth-child(2) span').textContent.split(': ')[1];
+            const duration = card.querySelector('.meta-item:nth-child(3) span').textContent.split(': ')[1];
+            const questionCount = card.querySelector('.meta-item:nth-child(4) span').textContent.split(': ')[1];
+            const status = card.querySelector('.status-badge').textContent;
+            const description = card.querySelector('.card-desc').textContent;
+            
+            // 更新详情面板
+            document.querySelector('.detail-section:nth-child(1) .detail-value').textContent = title;
+            document.querySelector('.detail-section:nth-child(2) .detail-value').textContent = course;
+            document.querySelector('.detail-section:nth-child(3) .detail-value').textContent = startDate;
+            document.querySelector('.detail-section:nth-child(4) .detail-value').textContent = endDate;
+            document.querySelector('.detail-section:nth-child(5) .detail-value').textContent = duration;
+            
+            // 更新状态
+            const statusBadge = document.querySelector('.detail-section:nth-child(6) .status-badge');
+            statusBadge.textContent = status;
+            statusBadge.className = 'status-badge ' + getStatusClass(status);
+            
+            document.querySelector('.detail-section:nth-child(7) .detail-value').textContent = questionCount;
+            document.querySelector('.detail-section:nth-child(8) .detail-value').textContent = '100分';
+            document.querySelector('.detail-section:nth-child(9) .detail-value').textContent = '60分';
+            document.querySelector('.detail-section:nth-child(10) .detail-value').textContent = description;
+            
+            // 更新操作按钮状态
+            const enterButton = document.querySelector('.detail-actions .btn-primary');
+            if (status === '即将开始' || status === '进行中') {
+                enterButton.disabled = false;
+                enterButton.innerHTML = '<i class="fas fa-play"></i> ' + 
+                    (status === '即将开始' ? '进入考试' : '继续考试');
+            } else {
+                enterButton.disabled = true;
+                enterButton.innerHTML = '<i class="fas fa-check"></i> 已完成';
+            }
+        }
+        
+        // 获取状态对应的CSS类
+        function getStatusClass(status) {
+            switch(status) {
+                case '即将开始': return 'upcoming';
+                case '进行中': return 'in-progress';
+                case '已完成': return 'completed';
+                case '已过期': return 'expired';
+                default: return 'upcoming';
+            }
+        }
+        
+        // 开始考试
+        function startExam(card) {
+            const title = card.querySelector('.card-title').textContent;
+            console.log('开始考试:', title);
+            
+            // 显示考试准备模态框
+            showExamModal(title);
+        }
+        
+        // 查看考试详情
+        function viewExamDetails(card) {
+            const title = card.querySelector('.card-title').textContent;
+            console.log('查看考试详情:', title);
+            
+            // 创建考试详情模态框
+            createViewExamDetailModal(card);
+        }
+        
+        // 查看考试成绩
+        function viewExamResult(card) {
+            const title = card.querySelector('.card-title').textContent;
+            console.log('查看考试成绩:', title);
+            
+            // 创建成绩查看模态框
+            createViewExamResultModal(title);
+        }
+        
+        // 切换视图
+        function switchExamView(viewType) {
+            console.log('切换视图:', viewType);
+            
+            const examContainer = document.querySelector('.exam-container');
+            const examGrid = document.querySelector('.exam-grid');
+            
+            if (viewType === '卡片视图') {
+                examGrid.style.display = 'grid';
+                document.querySelectorAll('.exam-card').forEach(card => {
+                    card.style.width = '';
+                    card.style.marginBottom = '';
+                });
+            } else if (viewType === '列表视图') {
+                examGrid.style.display = 'block';
+                document.querySelectorAll('.exam-card').forEach(card => {
+                    card.style.width = '100%';
+                    card.style.marginBottom = '15px';
+                });
+            } else if (viewType === '日历视图') {
+                examGrid.style.display = 'none';
+                // 创建日历视图
+                renderCalendarView();
+            }
+        }
+        
+        // 排序考试
+        function sortExams(sortBy) {
+            console.log('排序方式:', sortBy);
+            
+            const examGrid = document.querySelector('.exam-grid');
+            const cards = Array.from(document.querySelectorAll('.exam-card'));
+            
+            // 简单模拟排序动画
+            examGrid.style.opacity = '0.5';
+            
+            // 根据选择的排序方式进行排序
+            setTimeout(() => {
+                if (sortBy === 'date') {
+                    // 按截止日期排序
+                    cards.sort((a, b) => {
+                        const dateA = a.querySelector('.meta-item:nth-child(2) span').textContent.split(': ')[1];
+                        const dateB = b.querySelector('.meta-item:nth-child(2) span').textContent.split(': ')[1];
+                        return new Date(dateA) - new Date(dateB);
+                    });
+                } else if (sortBy === 'name') {
+                    // 按考试名称排序
+                    cards.sort((a, b) => {
+                        const nameA = a.querySelector('.card-title').textContent;
+                        const nameB = b.querySelector('.card-title').textContent;
+                        return nameA.localeCompare(nameB);
+                    });
+                } else if (sortBy === 'status') {
+                    // 按状态排序
+                    const statusOrder = {'即将开始': 0, '进行中': 1, '已完成': 2, '已过期': 3};
+                    cards.sort((a, b) => {
+                        const statusA = a.querySelector('.status-badge').textContent;
+                        const statusB = b.querySelector('.status-badge').textContent;
+                        return statusOrder[statusA] - statusOrder[statusB];
+                    });
+                } else if (sortBy === 'course') {
+                    // 按课程排序
+                    cards.sort((a, b) => {
+                        const courseA = a.querySelector('.card-course').textContent;
+                        const courseB = b.querySelector('.card-course').textContent;
+                        return courseA.localeCompare(courseB);
+                    });
+                }
+                
+                // 清空当前网格
+                while (examGrid.firstChild) {
+                    examGrid.removeChild(examGrid.firstChild);
+                }
+                
+                // 添加排序后的卡片
+                cards.forEach(card => {
+                    examGrid.appendChild(card);
+                });
+                
+                examGrid.style.opacity = '1';
+            }, 300);
+        }
+        
+        // 进入考试
+        function enterExam() {
+            const title = document.querySelector('.detail-section:nth-child(1) .detail-value').textContent;
+            console.log('进入考试:', title);
+            
+            // 显示考试准备模态框
+            showExamModal(title);
+        }
+        
+        // 下载考试须知
+        function downloadExamGuidelines() {
+            const title = document.querySelector('.detail-section:nth-child(1) .detail-value').textContent;
+            console.log('下载考试须知:', title);
+            
+            // 模拟下载考试须知
+            alert(`已开始下载考试须知: ${title}`);
+        }
+        
+        // 显示考试模态框
+        function showExamModal(title) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>考试准备</h3>
+                        <button class="modal-close">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>您即将开始考试: <strong>${title}</strong></p>
+                        <div class="exam-info">
+                            <div class="info-item">
+                                <i class="fas fa-clock"></i>
+                                <span>考试时长: 120分钟</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-question-circle"></i>
+                                <span>题目数量: 50题</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>及格分数: 60分</span>
+                            </div>
+                        </div>
+                        <div class="exam-rules">
+                            <h4>考试规则</h4>
+                            <ul>
+                                <li>考试开始后不允许中途退出</li>
+                                <li>禁止切换浏览器标签页或应用程序</li>
+                                <li>考试期间摄像头必须保持开启</li>
+                                <li>提交后无法修改答案</li>
+                                <li>超时自动提交</li>
+                            </ul>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" class="agree-checkbox">
+                                我已阅读并同意考试规则
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary">取消</button>
+                        <button class="btn btn-primary" disabled>开始考试</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 添加模态框样式
+            addModalStyles();
+            
+            // 模态框交互
+            modal.querySelector('.modal-close').addEventListener('click', function() {
+                closeModal(modal);
+            });
+            
+            modal.querySelector('.btn-secondary').addEventListener('click', function() {
+                closeModal(modal);
+            });
+            
+            // 同意复选框交互
+            modal.querySelector('.agree-checkbox').addEventListener('change', function() {
+                modal.querySelector('.btn-primary').disabled = !this.checked;
+            });
+            
+            modal.querySelector('.btn-primary').addEventListener('click', function() {
+                alert('考试开始！祝您好运！');
+                closeModal(modal);
+                
+                // 更新考试状态
+                const statusBadge = document.querySelector('.detail-section:nth-child(6) .status-badge');
+                statusBadge.textContent = '进行中';
+                statusBadge.className = 'status-badge in-progress';
+                
+                const enterButton = document.querySelector('.detail-actions .btn-primary');
+                enterButton.innerHTML = '<i class="fas fa-play"></i> 继续考试';
+                
+                // 更新卡片状态
+                const selectedCard = document.querySelector('.exam-card.selected');
+                if (selectedCard) {
+                    const cardBadge = selectedCard.querySelector('.status-badge');
+                    cardBadge.textContent = '进行中';
+                    cardBadge.className = 'status-badge in-progress';
+                    
+                    const cardButton = selectedCard.querySelector('.btn');
+                    cardButton.innerHTML = '<i class="fas fa-play"></i> 继续考试';
+                    cardButton.className = 'btn btn-primary btn-sm';
+                }
+            });
+        }
+        
+        // 创建新建考试模态框
+        function createNewExamModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>新建考试</h3>
+                        <button class="modal-close">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="newExamForm">
+                            <div class="form-group">
+                                <label for="examTitle">考试标题 *</label>
+                                <input type="text" id="examTitle" class="form-input" placeholder="请输入考试标题" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="examCourse">所属课程 *</label>
+                                <select id="examCourse" class="form-input" required>
+                                    <option value="">请选择课程</option>
+                                    <option value="供应链管理基础">供应链管理基础</option>
+                                    <option value="物流与配送管理">物流与配送管理</option>
+                                    <option value="库存控制策略">库存控制策略</option>
+                                    <option value="供应链风险管理">供应链风险管理</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="startDate">开始时间 *</label>
+                                    <input type="datetime-local" id="startDate" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="endDate">截止时间 *</label>
+                                    <input type="datetime-local" id="endDate" class="form-input" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="questionCount">题目数量 *</label>
+                                    <input type="number" id="questionCount" class="form-input" min="1" max="100" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="totalScore">总分 *</label>
+                                    <input type="number" id="totalScore" class="form-input" min="1" max="200" value="100" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="examDescription">考试描述</label>
+                                <textarea id="examDescription" class="form-input" rows="3" placeholder="请输入考试描述"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="examRules">考试规则</label>
+                                <textarea id="examRules" class="form-input" rows="4" placeholder="请输入考试规则" disabled>
+考试开始后不允许中途退出
+禁止切换浏览器标签页或应用程序
+考试期间摄像头必须保持开启
+提交后无法修改答案
+超时自动提交</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="allowRetake">
+                                    允许重考
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary">取消</button>
+                        <button class="btn btn-primary" type="submit" form="newExamForm">创建考试</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 添加模态框样式
+            addModalStyles();
+            
+            // 模态框交互
+            modal.querySelector('.modal-close').addEventListener('click', function() {
+                closeModal(modal);
+            });
+            
+            modal.querySelector('.btn-secondary').addEventListener('click', function() {
+                closeModal(modal);
+            });
+            
+            // 表单提交
+            document.getElementById('newExamForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const examTitle = document.getElementById('examTitle').value;
+                
+                // 模拟创建考试
+                console.log('创建新考试:', examTitle);
+                alert(`考试"${examTitle}"创建成功！`);
+                
+                closeModal(modal);
+            });
+        }
+        
+        // 创建导入题库模态框
+        function createImportQuestionModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>导入题库</h3>
+                        <button class="modal-close">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="import-info">
+                            <p>请上传符合格式要求的题库文件（支持Excel、Word、CSV格式）</p>
+                            <div class="supported-formats">
+                                <span class="format-tag">.xlsx</span>
+                                <span class="format-tag">.docx</span>
+                                <span class="format-tag">.csv</span>
+                            </div>
+                        </div>
+                        <div class="upload-area">
+                            <input type="file" id="questionFile" accept=".xlsx,.docx,.csv" style="display: none;">
+                            <label for="questionFile" class="upload-label">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <p>点击上传文件或拖放文件到此处</p>
+                                <p class="upload-hint">最大支持10MB</p>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="targetCourse">目标课程 *</label>
+                            <select id="targetCourse" class="form-input" required>
+                                <option value="">请选择课程</option>
+                                <option value="供应链管理基础">供应链管理基础</option>
+                                <option value="物流与配送管理">物流与配送管理</option>
+                                <option value="库存控制策略">库存控制策略</option>
+                                <option value="供应链风险管理">供应链风险管理</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="questionType">题目类型</label>
+                            <select id="questionType" class="form-input">
+                                <option value="">全部类型</option>
+                                <option value="single">单选题</option>
+                                <option value="multiple">多选题</option>
+                                <option value="blank">填空题</option>
+                                <option value="essay">简答题</option>
+                                <option value="case">案例分析题</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <a href="#" class="download-template">下载题库模板</a>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary">取消</button>
+                        <button class="btn btn-primary" id="importButton" disabled>导入</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 添加模态框样式
+            addModalStyles();
+            
+            // 模态框交互
+            modal.querySelector('.modal-close').addEventListener('click', function() {
+                closeModal(modal);
+            });
+            
+            modal.querySelector('.btn-secondary').addEventListener('click', function() {
+                closeModal(modal);
+            });
+            
+            // 文件选择
+            document.getElementById('questionFile').addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    document.getElementById('importButton').disabled = false;
+                    const fileName = e.target.files[0].name;
+                    const uploadLabel = document.querySelector('.upload-label p:first-of-type');
+                    uploadLabel.textContent = fileName;
+                }
+            });
+            
+            // 导入按钮
+            document.getElementById('importButton').addEventListener('click', function() {
+                const targetCourse = document.getElementById('targetCourse').value;
+                
+                if (!targetCourse) {
+                    alert('请选择目标课程');
+                    return;
+                }
+                
+                // 模拟导入过程
+                alert(`题库导入成功！已导入到课程"${targetCourse}"`);
+                
+                closeModal(modal);
+            });
+            
+            // 下载模板
+            document.querySelector('.download-template').addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('已开始下载题库模板');
+            });
+        }
+        
+        // 创建考试详情查看模态框
+        function createViewExamDetailModal(card) {
+            const title = card.querySelector('.card-title').textContent;
+            const course = card.querySelector('.card-course').textContent;
+            const startDate = card.querySelector('.meta-item:nth-child(1) span').textContent.split(': ')[1];
+            const endDate = card.querySelector('.meta-item:nth-child(2) span').textContent.split(': ')[1];
+            const duration = card.querySelector('.meta-item:nth-child(3) span').textContent.split(': ')[1];
+            const questionCount = card.querySelector('.meta-item:nth-child(4) span').textContent.split(': ')[1];
+            const status = card.querySelector('.status-badge').textContent;
+            const description = card.querySelector('.card-desc').textContent;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>考试详情</h3>
+                        <button class="modal-close">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">考试标题:</span>
+                                <span class="detail-value">${title}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">所属课程:</span>
+                                <span class="detail-value">${course}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">开始时间:</span>
+                                <span class="detail-value">${startDate}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">截止时间:</span>
+                                <span class="detail-value">${endDate}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">考试时长:</span>
+                                <span class="detail-value">${duration}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">题目数量:</span>
+                                <span class="detail-value">${questionCount}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">考试状态:</span>
+                                <span class="detail-value"><span class="status-badge ${getStatusClass(status)}">${status}</span></span>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <h4>考试描述</h4>
+                            <p>${description}</p>
+                        </div>
+                        <div class="detail-section">
+                            <h4>考试规则</h4>
+                            <ul>
+                                <li>考试开始后不允许中途退出</li>
+                                <li>禁止切换浏览器标签页或应用程序</li>
+                                <li>考试期间摄像头必须保持开启</li>
+                                <li>提交后无法修改答案</li>
+                                <li>超时自动提交</li>
+                            </ul>
+                        </div>
+                        <div class="detail-section">
+                            <h4>题目类型分布</h4>
+                            <div class="question-type-stats">
+                                <div class="type-item">
+                                    <span class="type-name">单选题</span>
+                                    <span class="type-count">30题 (60%)</span>
+                                </div>
+                                <div class="type-item">
+                                    <span class="type-name">多选题</span>
+                                    <span class="type-count">10题 (20%)</span>
+                                </div>
+                                <div class="type-item">
+                                    <span class="type-name">简答题</span>
+                                    <span class="type-count">5题 (10%)</span>
+                                </div>
+                                <div class="type-item">
+                                    <span class="type-name">案例分析</span>
+                                    <span class="type-count">5题 (10%)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary">关闭</button>
+                        ${status === '即将开始' || status === '进行中' ? `<button class="btn btn-primary">进入考试</button>` : ''}
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 添加模态框样式
+            addModalStyles();
+            
+            // 模态框交互
+            modal.querySelector('.modal-close').addEventListener('click', function() {
+                closeModal(modal);
+            });
+            
+            modal.querySelector('.btn-secondary').addEventListener('click', function() {
+                closeModal(modal);
+            });
+            
+            // 进入考试按钮
+            const enterButton = modal.querySelector('.btn-primary');
+            if (enterButton) {
+                enterButton.addEventListener('click', function() {
+                    closeModal(modal);
+                    showExamModal(title);
+                });
+            }
+        }
+        
+        // 创建考试成绩查看模态框
+        function createViewExamResultModal(title) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>考试成绩</h3>
+                        <button class="modal-close">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="result-header">
+                            <h4>${title}</h4>
+                            <div class="score-display">
+                                <span class="score-number">85</span>
+                                <span class="score-max">/ 100</span>
+                            </div>
+                            <div class="score-status">
+                                <span class="status-badge passed">通过</span>
+                            </div>
+                        </div>
+                        <div class="result-summary">
+                            <div class="summary-item">
+                                <span>考试时间:</span>
+                                <span>2023-10-25 14:00-15:00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>用时:</span>
+                                <span>50分钟</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>得分率:</span>
+                                <span>85%</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>排名:</span>
+                                <span>第3名 / 共28人</span>
+                            </div>
+                        </div>
+                        <div class="result-chart">
+                            <h4>题型得分分布</h4>
+                            <div class="chart-container">
+                                <!-- 简单的得分条形图 -->
+                                <div class="chart-bar">
+                                    <div class="bar-label">单选题</div>
+                                    <div class="bar-wrapper">
+                                        <div class="bar-fill" style="width: 90%"></div>
+                                    </div>
+                                    <div class="bar-score">27/30</div>
+                                </div>
+                                <div class="chart-bar">
+                                    <div class="bar-label">多选题</div>
+                                    <div class="bar-wrapper">
+                                        <div class="bar-fill" style="width: 80%"></div>
+                                    </div>
+                                    <div class="bar-score">16/20</div>
+                                </div>
+                                <div class="chart-bar">
+                                    <div class="bar-label">简答题</div>
+                                    <div class="bar-wrapper">
+                                        <div class="bar-fill" style="width: 80%"></div>
+                                    </div>
+                                    <div class="bar-score">8/10</div>
+                                </div>
+                                <div class="chart-bar">
+                                    <div class="bar-label">案例分析</div>
+                                    <div class="bar-wrapper">
+                                        <div class="bar-fill" style="width: 88%"></div>
+                                    </div>
+                                    <div class="bar-score">34/40</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="result-actions">
+                            <button class="btn btn-primary">查看详细解析</button>
+                            <button class="btn btn-outline">下载成绩单</button>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary">关闭</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 添加模态框样式
+            addModalStyles();
+            
+            // 模态框交互
+            modal.querySelector('.modal-close').addEventListener('click', function() {
+                closeModal(modal);
+            });
+            
+            modal.querySelector('.btn-secondary').addEventListener('click', function() {
+                closeModal(modal);
+            });
+            
+            // 查看详细解析
+            modal.querySelector('.result-actions .btn-primary').addEventListener('click', function() {
+                alert(`正在加载"${title}"的详细解析...`);
+            });
+            
+            // 下载成绩单
+            modal.querySelector('.result-actions .btn-outline').addEventListener('click', function() {
+                alert(`已开始下载"${title}"的成绩单`);
+            });
+        }
+        
+        // 渲染日历视图
+        function renderCalendarView() {
+            const examContainer = document.querySelector('.exam-container');
+            const examGrid = document.querySelector('.exam-grid');
+            
+            // 检查是否已有日历容器
+            let calendarContainer = document.querySelector('.calendar-container');
+            if (!calendarContainer) {
+                calendarContainer = document.createElement('div');
+                calendarContainer.className = 'calendar-container';
+                examContainer.appendChild(calendarContainer);
+            } else {
+                calendarContainer.style.display = 'block';
+            }
+            
+            // 创建日历内容
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            
+            const monthNames = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+            
+            calendarContainer.innerHTML = `
+                <div class="calendar-header">
+                    <button class="btn btn-outline btn-sm" id="prevMonth">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h3>${year}年 ${monthNames[month]}</h3>
+                    <button class="btn btn-outline btn-sm" id="nextMonth">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="calendar-weekdays">
+                    <div class="weekday">日</div>
+                    <div class="weekday">一</div>
+                    <div class="weekday">二</div>
+                    <div class="weekday">三</div>
+                    <div class="weekday">四</div>
+                    <div class="weekday">五</div>
+                    <div class="weekday">六</div>
+                </div>
+                <div class="calendar-days" id="calendarDays">
+                    <!-- 日历天数将通过JavaScript动态生成 -->
+                </div>
+            `;
+            
+            // 添加日历样式
+            addCalendarStyles();
+            
+            // 生成日历天数
+            generateCalendarDays(year, month);
+            
+            // 绑定日历导航按钮事件
+            document.getElementById('prevMonth').addEventListener('click', function() {
+                renderCalendarViewForMonth(year, month - 1);
+            });
+            
+            document.getElementById('nextMonth').addEventListener('click', function() {
+                renderCalendarViewForMonth(year, month + 1);
+            });
+        }
+        
+        // 渲染指定月份的日历
+        function renderCalendarViewForMonth(year, month) {
+            const calendarContainer = document.querySelector('.calendar-container');
+            const monthNames = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+            
+            // 更新月份显示
+            calendarContainer.querySelector('.calendar-header h3').textContent = 
+                `${year}年 ${monthNames[month]}`;
+            
+            // 生成日历天数
+            generateCalendarDays(year, month);
+        }
+        
+        // 生成日历天数
+        function generateCalendarDays(year, month) {
+            const calendarDays = document.getElementById('calendarDays');
+            calendarDays.innerHTML = '';
+            
+            // 获取当月第一天是星期几
+            const firstDay = new Date(year, month, 1).getDay();
+            // 获取当月的天数
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // 添加空白格
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day empty';
+                calendarDays.appendChild(emptyDay);
+            }
+            
+            // 添加日期
+            for (let day = 1; day <= daysInMonth; day++) {
+                const calendarDay = document.createElement('div');
+                calendarDay.className = 'calendar-day';
+                calendarDay.textContent = day;
+                
+                // 检查是否是今天
+                const today = new Date();
+                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                    calendarDay.classList.add('today');
+                }
+                
+                // 添加模拟的考试事件
+                if ([10, 15, 20, 25].includes(day)) {
+                    const event = document.createElement('div');
+                    event.className = 'calendar-event';
+                    event.textContent = `考试 ${day}日`;
+                    calendarDay.appendChild(event);
+                }
+                
+                calendarDays.appendChild(calendarDay);
+            }
+        }
+        
+        // 添加模态框样式
+        function addModalStyles() {
+            // 检查是否已有模态框样式
+            if (!document.getElementById('modalStyles')) {
+                const style = document.createElement('style');
+                style.id = 'modalStyles';
+                style.textContent = `
+                    .modal {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(0, 0, 0, 0.5);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 1000;
+                        overflow-y: auto;
+                    }
+                    
+                    .modal-content {
+                        background: white;
+                        border-radius: 12px;
+                        width: 600px;
+                        max-width: 90%;
+                        max-height: 90vh;
+                        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+                        display: flex;
+                        flex-direction: column;
+                    }
+                    
+                    .modal-header {
+                        padding: 20px;
+                        border-bottom: 1px solid #e2e8f0;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    }
+                    
+                    .modal-header h3 {
+                        margin: 0;
+                        font-size: 18px;
+                    }
+                    
+                    .modal-close {
+                        background: none;
+                        border: none;
+                        font-size: 20px;
+                        cursor: pointer;
+                        color: #64748b;
+                    }
+                    
+                    .modal-close:hover {
+                        color: #0f172a;
+                    }
+                    
+                    .modal-body {
+                        padding: 20px;
+                        overflow-y: auto;
+                    }
+                    
+                    .modal-footer {
+                        padding: 20px;
+                        border-top: 1px solid #e2e8f0;
+                        display: flex;
+                        justify-content: flex-end;
+                        gap: 10px;
+                    }
+                    
+                    /* 表单样式 */
+                    .form-group {
+                        margin-bottom: 20px;
+                    }
+                    
+                    .form-row {
+                        display: flex;
+                        gap: 20px;
+                    }
+                    
+                    .form-row .form-group {
+                        flex: 1;
+                    }
+                    
+                    .form-label {
+                        display: block;
+                        margin-bottom: 8px;
+                        font-weight: 500;
+                        color: #0f172a;
+                    }
+                    
+                    .form-input {
+                        width: 100%;
+                        padding: 10px 12px;
+                        border: 1px solid #cbd5e1;
+                        border-radius: 6px;
+                        font-size: 14px;
+                        transition: border-color 0.2s;
+                    }
+                    
+                    .form-input:focus {
+                        outline: none;
+                        border-color: #3b82f6;
+                    }
+                    
+                    /* 考试信息样式 */
+                    .exam-info {
+                        background: #f8fafc;
+                        border-radius: 8px;
+                        padding: 15px;
+                        margin: 20px 0;
+                    }
+                    
+                    .info-item {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        margin-bottom: 10px;
+                    }
+                    
+                    .info-item:last-child {
+                        margin-bottom: 0;
+                    }
+                    
+                    .exam-rules {
+                        margin: 20px 0;
+                    }
+                    
+                    .exam-rules h4 {
+                        margin-bottom: 10px;
+                        font-size: 16px;
+                    }
+                    
+                    .exam-rules ul {
+                        margin-left: 20px;
+                        color: #64748b;
+                    }
+                    
+                    .exam-rules li {
+                        margin-bottom: 5px;
+                    }
+                    
+                    /* 上传区域样式 */
+                    .import-info {
+                        margin-bottom: 20px;
+                    }
+                    
+                    .supported-formats {
+                        display: flex;
+                        gap: 10px;
+                        margin-top: 10px;
+                    }
+                    
+                    .format-tag {
+                        background: #e2e8f0;
+                        padding: 4px 12px;
+                        border-radius: 20px;
+                        font-size: 12px;
+                    }
+                    
+                    .upload-area {
+                        border: 2px dashed #cbd5e1;
+                        border-radius: 8px;
+                        padding: 40px 20px;
+                        text-align: center;
+                        margin-bottom: 20px;
+                        cursor: pointer;
+                    }
+                    
+                    .upload-area:hover {
+                        border-color: #3b82f6;
+                    }
+                    
+                    .upload-icon {
+                        font-size: 48px;
+                        color: #cbd5e1;
+                        margin-bottom: 10px;
+                    }
+                    
+                    .upload-hint {
+                        color: #94a3b8;
+                        font-size: 14px;
+                    }
+                    
+                    .download-template {
+                        color: #3b82f6;
+                        text-decoration: none;
+                    }
+                    
+                    .download-template:hover {
+                        text-decoration: underline;
+                    }
+                    
+                    /* 详情样式 */
+                    .detail-grid {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 15px;
+                        margin-bottom: 20px;
+                    }
+                    
+                    .detail-item {
+                        display: flex;
+                        flex-direction: column;
+                    }
+                    
+                    .detail-item .detail-label {
+                        font-size: 12px;
+                        color: #94a3b8;
+                        margin-bottom: 4px;
+                    }
+                    
+                    .detail-section {
+                        margin-bottom: 20px;
+                    }
+                    
+                    .detail-section h4 {
+                        margin-bottom: 10px;
+                        font-size: 16px;
+                    }
+                    
+                    .detail-section p {
+                        color: #64748b;
+                        line-height: 1.6;
+                    }
+                    
+                    /* 成绩视图样式 */
+                    .result-header {
+                        text-align: center;
+                        margin-bottom: 20px;
+                    }
+                    
+                    .score-display {
+                        display: flex;
+                        justify-content: center;
+                        align-items: baseline;
+                        margin: 10px 0;
+                    }
+                    
+                    .score-number {
+                        font-size: 48px;
+                        font-weight: bold;
+                        color: #10b981;
+                    }
+                    
+                    .score-max {
+                        font-size: 18px;
+                        color: #64748b;
+                        margin-left: 5px;
+                    }
+                    
+                    .score-status {
+                        margin-top: 10px;
+                    }
+                    
+                    .status-badge.passed {
+                        background: #d1fae5;
+                        color: #065f46;
+                    }
+                    
+                    .status-badge.failed {
+                        background: #fee2e2;
+                        color: #991b1b;
+                    }
+                    
+                    .result-summary {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 10px;
+                        background: #f8fafc;
+                        padding: 15px;
+                        border-radius: 8px;
+                        margin-bottom: 20px;
+                    }
+                    
+                    .summary-item {
+                        display: flex;
+                        justify-content: space-between;
+                    }
+                    
+                    .result-chart {
+                        margin-bottom: 20px;
+                    }
+                    
+                    .chart-bar {
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 10px;
+                    }
+                    
+                    .bar-label {
+                        width: 80px;
+                        font-size: 14px;
+                    }
+                    
+                    .bar-wrapper {
+                        flex: 1;
+                        height: 20px;
+                        background: #e2e8f0;
+                        border-radius: 10px;
+                        overflow: hidden;
+                        margin: 0 10px;
+                    }
+                    
+                    .bar-fill {
+                        height: 100%;
+                        background: #3b82f6;
+                        border-radius: 10px;
+                    }
+                    
+                    .bar-score {
+                        width: 60px;
+                        text-align: right;
+                        font-size: 14px;
+                    }
+                    
+                    .result-actions {
+                        display: flex;
+                        gap: 10px;
+                        justify-content: center;
+                        margin-bottom: 20px;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        // 添加日历样式
+        function addCalendarStyles() {
+            // 检查是否已有日历样式
+            if (!document.getElementById('calendarStyles')) {
+                const style = document.createElement('style');
+                style.id = 'calendarStyles';
+                style.textContent = `
+                    .calendar-container {
+                        width: 100%;
+                        max-width: 800px;
+                        margin: 0 auto;
+                        background: white;
+                        border-radius: 8px;
+                        padding: 20px;
+                        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                    }
+                    
+                    .calendar-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 20px;
+                    }
+                    
+                    .calendar-header h3 {
+                        margin: 0;
+                        font-size: 18px;
+                    }
+                    
+                    .calendar-weekdays {
+                        display: grid;
+                        grid-template-columns: repeat(7, 1fr);
+                        text-align: center;
+                        margin-bottom: 10px;
+                    }
+                    
+                    .weekday {
+                        padding: 10px;
+                        font-weight: 500;
+                        color: #64748b;
+                        font-size: 14px;
+                    }
+                    
+                    .calendar-days {
+                        display: grid;
+                        grid-template-columns: repeat(7, 1fr);
+                        gap: 5px;
+                    }
+                    
+                    .calendar-day {
+                        min-height: 80px;
+                        padding: 8px;
+                        border: 1px solid #e2e8f0;
+                        border-radius: 6px;
+                        position: relative;
+                    }
+                    
+                    .calendar-day.empty {
+                        background: #f8fafc;
+                        border-color: #f1f5f9;
+                    }
+                    
+                    .calendar-day.today {
+                        background: #dbeafe;
+                        border-color: #3b82f6;
+                        font-weight: 500;
+                    }
+                    
+                    .calendar-event {
+                        background: #eff6ff;
+                        color: #1e40af;
+                        padding: 4px 8px;
+                        border-radius: 4px;
+                        font-size: 12px;
+                        margin-top: 5px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        // 关闭模态框
+        function closeModal(modal) {
+            if (modal && modal.parentNode) {
+                modal.parentNode.removeChild(modal);
+            }
+        }
+   
+// ... existing code ...
+    </script>
+
+</body>
+</html>                                    

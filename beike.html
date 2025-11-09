@@ -1,0 +1,2512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>备课中心 - 供应链实训课程系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --success: #4ade80;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --border-radius: 12px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 30px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+        
+        .page-title p {
+            color: var(--gray);
+            font-size: 15px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        /* 备课中心特有样式 */
+        .preparation-layout {
+            display: flex;
+            gap: 24px;
+            height: calc(100vh - 180px);
+        }
+        
+        .course-tree {
+            width: 300px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .tree-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .tree-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .tree-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .tree-list {
+            list-style: none;
+        }
+        
+        .course-item {
+            margin-bottom: 10px;
+        }
+        
+        .course-header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .course-header:hover {
+            background: var(--gray-light);
+        }
+        
+        .course-header.active {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+        
+        .course-icon {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        
+        .chapter-list {
+            list-style: none;
+            margin-left: 30px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .course-item.active .chapter-list {
+            display: block;
+        }
+        
+        .chapter-item {
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 5px;
+            transition: var(--transition);
+        }
+        
+        .chapter-item:hover {
+            background: var(--gray-light);
+        }
+        
+        .chapter-item.active {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .content-editor {
+            flex: 1;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .editor-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .editor-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .editor-tools {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .editor-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .text-editor {
+            width: 100%;
+            min-height: 200px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 15px;
+            resize: vertical;
+            transition: var(--transition);
+        }
+        
+        .text-editor:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .knowledge-points {
+            margin-top: 20px;
+        }
+        
+        .points-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .point-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .tag i {
+            margin-left: 5px;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+        
+        .tag i:hover {
+            opacity: 1;
+        }
+        
+        .add-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border: 1px dashed var(--gray);
+            color: var(--gray);
+            border-radius: 20px;
+            font-size: 14px;
+            background: transparent;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .add-tag:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .resource-panel {
+            width: 600px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .resource-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .resource-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .resource-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .resource-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        .resource-tab.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .resource-list {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        
+        .resource-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: var(--transition);
+            cursor: grab;
+        }
+        
+        .resource-item:hover {
+            background: var(--gray-light);
+        }
+        
+        .resource-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        .resource-info {
+            flex: 1;
+        }
+        
+        .resource-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .resource-meta {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        .drag-handle {
+            background: transparent;
+            border: none;
+            cursor: grab;
+            color: var(--gray);
+            font-size: 16px;
+        }
+        
+        .upload-area {
+            padding: 20px;
+            border-top: 1px solid var(--gray-light);
+        }
+        
+        .upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .upload-btn:hover {
+            background: var(--secondary);
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        .modal-preview {
+            max-width: 1400px;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .modal-body {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 24px;
+            border-top: 1px solid var(--gray-light);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: var(--gray);
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        
+        .modal-close:hover {
+            background: var(--gray-light);
+            color: var(--dark);
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+        
+        .btn-secondary {
+            background: var(--gray);
+            color: white;
+            border: 1px solid var(--gray);
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--gray-dark);
+            border-color: var(--gray-dark);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray-light);
+            color: var(--dark);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .cancel-btn {
+            background: var(--gray);
+            color: white;
+            border: 1px solid var(--gray);
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .cancel-btn:hover {
+            background: var(--dark);
+            border-color: var(--dark);
+        }
+        
+        /* 预览视图切换样式 */
+        .preview-view-toggle {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .preview-view-toggle .btn-outline {
+            background: white;
+            border: 1px solid var(--gray-light);
+            color: var(--dark);
+        }
+        
+        .preview-view-toggle .btn-outline.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .preview-content {
+            transition: all 0.3s ease;
+        }
+        
+        /* 桌面视图 */
+        .preview-content.desktop-view {
+            max-width: 100%;
+        }
+        
+        /* 平板视图 */
+        .preview-content.tablet-view {
+            max-width: 768px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+        }
+        
+        /* 手机视图 */
+        .preview-content.mobile-view {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .preview-content.mobile-view .preview-header h2 {
+            font-size: 20px;
+        }
+        
+        .preview-content.mobile-view .preview-header h3 {
+            font-size: 16px;
+        }
+        
+        .preview-content.mobile-view .preview-section h4 {
+            font-size: 16px;
+        }
+        
+        .preview-content.mobile-view .preview-text {
+            font-size: 14px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .preparation-layout {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .course-tree, .resource-panel {
+                width: 100%;
+                height: 300px;
+            }
+            
+            .content-editor {
+                min-height: 500px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .preparation-layout {
+                gap: 15px;
+            }
+            
+            .editor-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .editor-tools {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            /* 在小屏幕上调整预览视图 */
+            .preview-content.tablet-view,
+            .preview-content.mobile-view {
+                max-width: 100%;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header">
+            <div class="page-title">
+                <h1>备课中心</h1>
+                <p>创建和管理您的课程内容与教学资源</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary">
+                    <i class="fas fa-plus"></i> 新建课程
+                </button>
+                <button class="btn btn-outline">
+                    <i class="fas fa-download"></i> 导入课程
+                </button>
+            </div>
+        </div>
+
+        <!-- 备课中心布局 -->
+        <div class="preparation-layout">
+            <!-- 左侧课程目录 -->
+            <div class="course-tree">
+                <div class="tree-header">
+                    <div class="tree-title">我的课程</div>
+                    <div class="tree-actions">
+                        <button class="btn btn-outline btn-sm">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button class="btn btn-outline btn-sm">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                </div>
+                <ul class="tree-list">
+                    <li class="course-item active">
+                        <div class="course-header active">
+                            <i class="fas fa-folder-open course-icon"></i>
+                            <span>供应链管理基础</span>
+                        </div>
+                        <ul class="chapter-list">
+                            <li class="chapter-item">第一章 供应链概述</li>
+                            <li class="chapter-item active">第二章 库存管理</li>
+                            <li class="chapter-item">第三章 物流配送</li>
+                            <li class="chapter-item">第四章 需求预测</li>
+                            <li class="chapter-item">第五章 供应链协同</li>
+                        </ul>
+                    </li>
+                    <li class="course-item">
+                        <div class="course-header">
+                            <i class="fas fa-folder course-icon"></i>
+                            <span>物流与配送管理</span>
+                        </div>
+                        <ul class="chapter-list">
+                            <li class="chapter-item">第一章 物流系统</li>
+                            <li class="chapter-item">第二章 配送中心</li>
+                            <li class="chapter-item">第三章 运输管理</li>
+                        </ul>
+                    </li>
+                    <li class="course-item">
+                        <div class="course-header">
+                            <i class="fas fa-folder course-icon"></i>
+                            <span>供应链优化策略</span>
+                        </div>
+                        <ul class="chapter-list">
+                            <li class="chapter-item">第一章 优化方法</li>
+                            <li class="chapter-item">第二章 案例分析</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 中间内容编辑区 -->
+            <div class="content-editor">
+                <div class="editor-header">
+                    <div class="editor-title">第二章 库存管理</div>
+                    <div class="editor-tools">
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-save"></i> 保存
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fas fa-eye"></i> 预览
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-share"></i> 发布
+                        </button>
+                    </div>
+                </div>
+                <div class="editor-content">
+                    <div class="section">
+                        <div class="section-title">2.1 库存管理基本概念</div>
+                        <textarea class="text-editor" placeholder="请输入章节内容...">
+库存管理是指对制造业或服务业生产、经营全过程的各种物品、产品以及其他资源进行管理和控制，使其储备保持在经济合理的水平上。
+
+库存管理的主要目标：
+1. 保证生产过程的连续性
+2. 平衡物流和信息流
+3. 优化库存成本
+4. 提高客户服务水平
+
+库存分类：
+- 原材料库存
+- 在制品库存
+- 成品库存
+- 备件库存
+                        </textarea>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">2.2 库存控制方法</div>
+                        <textarea class="text-editor" placeholder="请输入章节内容...">
+常用的库存控制方法包括：
+
+1. ABC分类法
+   - A类物品：高价值，低数量
+   - C类物品：低价值，高数量
+
+2. 定量订货模型
+   - 经济订货批量(EOQ)
+   - 再订货点(ROP)
+
+3. 定期订货模型
+   - 固定时间间隔检查库存
+   - 根据目标库存水平订货
+                        </textarea>
+                    </div>
+                    
+                    <div class="knowledge-points">
+                        <div class="points-title">知识点标注</div>
+                        <div class="point-tags">
+                            <span class="tag">库存分类 <i class="fas fa-times"></i></span>
+                            <span class="tag">库存控制 <i class="fas fa-times"></i></span>
+                            <span class="tag">ABC分析法 <i class="fas fa-times"></i></span>
+                            <span class="tag">经济订货批量 <i class="fas fa-times"></i></span>
+                            <button class="add-tag">
+                                <i class="fas fa-plus"></i> 添加知识点
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧资源面板 -->
+            <div class="resource-panel">
+                <div class="resource-header">
+                    <div class="resource-title">教学资源库</div>
+                </div>
+                <div class="resource-tabs">
+                    <button class="resource-tab active">PPT模板</button>
+                    <button class="resource-tab">视频素材</button>
+                    <button class="resource-tab">案例库</button>
+                    <button class="resource-tab">习题库</button>
+                </div>
+                <div class="resource-list">
+                    <div class="resource-item">
+                        <div class="resource-icon">
+                            <i class="fas fa-file-powerpoint"></i>
+                        </div>
+                        <div class="resource-info">
+                            <div class="resource-name">库存管理PPT模板</div>
+                            <div class="resource-meta">2.3MB · 2023-10-15</div>
+                        </div>
+                        <button class="drag-handle">
+                            <i class="fas fa-grip-lines"></i>
+                        </button>
+                    </div>
+                    <div class="resource-item">
+                        <div class="resource-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div class="resource-info">
+                            <div class="resource-name">京东仓储管理视频</div>
+                            <div class="resource-meta">15:30 · 1080P</div>
+                        </div>
+                        <button class="drag-handle">
+                            <i class="fas fa-grip-lines"></i>
+                        </button>
+                    </div>
+                    <div class="resource-item">
+                        <div class="resource-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="resource-info">
+                            <div class="resource-name">库存分析图表</div>
+                            <div class="resource-meta">Excel模板 · 356KB</div>
+                        </div>
+                        <button class="drag-handle">
+                            <i class="fas fa-grip-lines"></i>
+                        </button>
+                    </div>
+                    <div class="resource-item">
+                        <div class="resource-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="resource-info">
+                            <div class="resource-name">ABC分类法案例</div>
+                            <div class="resource-meta">PDF文档 · 1.2MB</div>
+                        </div>
+                        <button class="drag-handle">
+                            <i class="fas fa-grip-lines"></i>
+                        </button>
+                    </div>
+                    <div class="resource-item">
+                        <div class="resource-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div class="resource-info">
+                            <div class="resource-name">库存管理习题集</div>
+                            <div class="resource-meta">25道题 · 已分类</div>
+                        </div>
+                        <button class="drag-handle">
+                            <i class="fas fa-grip-lines"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="upload-area">
+                    <p>拖拽文件到这里或</p>
+                    <button class="upload-btn">
+                        <i class="fas fa-cloud-upload-alt"></i> 上传资源
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 课程目录展开/收起功能
+        document.querySelectorAll('.course-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const courseItem = this.parentElement;
+                courseItem.classList.toggle('active');
+            });
+        });
+        
+        // 章节选择功能
+        document.querySelectorAll('.chapter-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.chapter-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // 更新编辑区标题
+                document.querySelector('.editor-title').textContent = this.textContent;
+            });
+        });
+        
+        // 资源标签切换功能
+        document.querySelectorAll('.resource-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.resource-tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // 这里可以添加切换资源列表内容的逻辑
+                console.log('切换到: ' + this.textContent);
+            });
+        });
+        
+        // 知识点标签删除功能
+        document.querySelectorAll('.tag i').forEach(icon => {
+            icon.addEventListener('click', function() {
+                this.parentElement.remove();
+            });
+        });
+        
+        // 添加知识点功能
+        document.querySelector('.add-tag').addEventListener('click', function() {
+            const tagName = prompt('请输入知识点名称:');
+            if (tagName && tagName.trim() !== '') {
+                const newTag = document.createElement('span');
+                newTag.className = 'tag';
+                newTag.innerHTML = `${tagName} <i class="fas fa-times"></i>`;
+                
+                // 添加删除事件
+                newTag.querySelector('i').addEventListener('click', function() {
+                    this.parentElement.remove();
+                });
+                
+                this.parentElement.insertBefore(newTag, this);
+            }
+        });
+        
+        // 简单的拖拽功能模拟
+        document.querySelectorAll('.resource-item').forEach(item => {
+            item.addEventListener('mousedown', function(e) {
+                // 简单的拖拽反馈
+                this.style.opacity = '0.7';
+                this.style.transform = 'scale(0.95)';
+            });
+            
+            item.addEventListener('mouseup', function(e) {
+                this.style.opacity = '1';
+                this.style.transform = 'scale(1)';
+                
+                // 模拟添加到编辑区
+                const resourceName = this.querySelector('.resource-name').textContent;
+                alert(`资源 "${resourceName}" 已添加到编辑区`);
+            });
+        });
+        
+        // 保存功能
+        document.querySelector('.btn-secondary').addEventListener('click', function() {
+            // 简单的保存反馈
+            this.innerHTML = '<i class="fas fa-check"></i> 已保存';
+            this.style.background = 'var(--success)';
+            
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-save"></i> 保存';
+                this.style.background = '';
+            }, 2000);
+        });
+        // 新建课程功能
+        document.querySelector('.header-actions .btn-primary').addEventListener('click', function() {
+            showNewCourseModal();
+        });
+
+        // 导入课程功能
+        document.querySelector('.header-actions .btn-outline').addEventListener('click', function() {
+            showImportCourseModal();
+        });
+
+        // 预览功能
+        document.querySelector('.editor-tools .btn-outline').addEventListener('click', function() {
+            showPreviewModal();
+        });
+
+        // 发布功能
+        document.querySelector('.editor-tools .btn-primary').addEventListener('click', function() {
+            showPublishModal();
+        });
+
+        // 上传资源功能
+        document.querySelector('.upload-btn').addEventListener('click', function() {
+            showUploadResourceModal();
+        });
+
+        // 添加课程功能
+        document.querySelector('.tree-actions .btn:first-child').addEventListener('click', function() {
+            showNewCourseModal();
+        });
+
+        // 编辑课程功能
+        document.querySelector('.tree-actions .btn:last-child').addEventListener('click', function() {
+            showEditCourseModal();
+        });
+
+        // 新建课程模态框
+        function showNewCourseModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>新建课程</h3>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="courseName">课程名称</label>
+                            <input type="text" id="courseName" placeholder="请输入课程名称">
+                        </div>
+                        <div class="form-group">
+                            <label for="courseCode">课程代码</label>
+                            <input type="text" id="courseCode" placeholder="请输入课程代码">
+                        </div>
+                        <div class="form-group">
+                            <label for="courseDesc">课程描述</label>
+                            <textarea id="courseDesc" placeholder="请输入课程描述"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseType">课程类型</label>
+                            <select id="courseType">
+                                <option value="必修课">必修课</option>
+                                <option value="选修课">选修课</option>
+                                <option value="实训课">实训课</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseCredit">学分</label>
+                            <input type="number" id="courseCredit" min="0" max="8" step="0.5" value="2">
+                        </div>
+                        <div class="form-group">
+                            <label for="courseCover">课程封面</label>
+                            <div class="upload-area">
+                                <input type="file" id="courseCover" accept="image/*">
+                                <div class="upload-placeholder">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>点击上传课程封面</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary cancel-btn">取消</button>
+                        <button class="btn btn-primary" id="createCourseBtn">创建课程</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+
+            // 关闭模态框
+            modal.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.body.removeChild(modal);
+                });
+            });
+
+            // 取消按钮关闭模态框
+            modal.querySelector('.cancel-btn').addEventListener('click', function() {
+                document.body.removeChild(modal);
+            });
+
+            // 创建课程
+            document.getElementById('createCourseBtn').addEventListener('click', function() {
+                const courseName = document.getElementById('courseName').value;
+                if (!courseName) {
+                    alert('请输入课程名称');
+                    return;
+                }
+                // 这里可以添加创建课程的逻辑
+                alert(`课程"${courseName}"创建成功`);
+                document.body.removeChild(modal);
+            });
+
+            // 点击模态框外部关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+
+        // 导入课程模态框
+        function showImportCourseModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>导入课程</h3>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="import-guide">
+                            <p>支持导入的课程文件格式：</p>
+                            <ul>
+                                <li><i class="fas fa-check-circle"></i> 课程包文件 (.zip)</li>
+                                <li><i class="fas fa-check-circle"></i> 课程模板文件 (.xml)</li>
+                                <li><i class="fas fa-check-circle"></i> 教学大纲文件 (.docx, .pdf)</li>
+                            </ul>
+                        </div>
+                        <div class="import-upload-area">
+                            <div class="drop-zone">
+                                <i class="fas fa-file-upload"></i>
+                                <p>拖拽文件到这里或</p>
+                                <button class="btn btn-primary">选择文件</button>
+                                <input type="file" class="hidden" accept=".zip,.xml,.docx,.pdf">
+                            </div>
+                        </div>
+                        <div class="import-options">
+                            <h4>导入选项</h4>
+                            <label class="checkbox-option">
+                                <input type="checkbox" checked>
+                                <span>导入课程结构</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" checked>
+                                <span>导入教学内容</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" checked>
+                                <span>导入教学资源</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary cancel-btn">取消</button>
+                        <button class="btn btn-primary" id="importCourseBtn">开始导入</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+
+            // 关闭模态框
+            modal.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.body.removeChild(modal);
+                });
+            });
+
+            // 文件选择
+            const fileInput = modal.querySelector('.import-upload-area input');
+            const fileBtn = modal.querySelector('.import-upload-area .btn');
+            fileBtn.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            // 导入课程
+            document.getElementById('importCourseBtn').addEventListener('click', function() {
+                // 这里可以添加导入课程的逻辑
+                alert('课程导入功能启动，请选择要导入的文件');
+                fileInput.click();
+            });
+
+            // 文件选择变化
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    alert(`已选择文件：${this.files[0].name}，准备导入`);
+                    // 这里可以添加文件上传和处理的逻辑
+                }
+            });
+
+            // 点击模态框外部关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+
+        // 预览功能模态框
+        function showPreviewModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content modal-preview">
+                    <div class="modal-header">
+                        <h3>课程内容预览</h3>
+                        <div class="preview-tools preview-view-toggle">
+                            <button class="btn btn-outline btn-sm desktop-view active">
+                                <i class="fas fa-desktop"></i> 桌面视图
+                            </button>
+                            <button class="btn btn-outline btn-sm tablet-view">
+                                <i class="fas fa-tablet-alt"></i> 平板视图
+                            </button>
+                            <button class="btn btn-outline btn-sm mobile-view">
+                                <i class="fas fa-mobile-alt"></i> 手机视图
+                            </button>
+                        </div>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body preview-content desktop-view" id="preview-content">
+                        <div class="preview-header">
+                            <h2>供应链管理基础</h2>
+                            <h3>第二章 库存管理</h3>
+                        </div>
+                        <div class="preview-section">
+                            <h4>2.1 库存管理基本概念</h4>
+                            <div class="preview-text">
+                                <p>库存管理是指对制造业或服务业生产、经营全过程的各种物品、产品以及其他资源进行管理和控制，使其储备保持在经济合理的水平上。</p>
+                                <p><strong>库存管理的主要目标：</strong></p>
+                                <ol>
+                                    <li>保证生产过程的连续性</li>
+                                    <li>平衡物流和信息流</li>
+                                    <li>优化库存成本</li>
+                                    <li>提高客户服务水平</li>
+                                </ol>
+                                <p><strong>库存分类：</strong></p>
+                                <ul>
+                                    <li>原材料库存</li>
+                                    <li>在制品库存</li>
+                                    <li>成品库存</li>
+                                    <li>备件库存</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="preview-section">
+                            <h4>2.2 库存控制方法</h4>
+                            <div class="preview-text">
+                                <p>常用的库存控制方法包括：</p>
+                                <ol>
+                                    <li>
+                                        <strong>ABC分类法</strong>
+                                        <ul>
+                                            <li>A类物品：高价值，低数量</li>
+                                            <li>C类物品：低价值，高数量</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <strong>定量订货模型</strong>
+                                        <ul>
+                                            <li>经济订货批量(EOQ)</li>
+                                            <li>再订货点(ROP)</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <strong>定期订货模型</strong>
+                                        <ul>
+                                            <li>固定时间间隔检查库存</li>
+                                            <li>根据目标库存水平订货</li>
+                                        </ul>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                        <div class="preview-knowledge-points">
+                            <h4>知识点标注</h4>
+                            <div class="point-tags">
+                                <span class="tag">库存分类</span>
+                                <span class="tag">库存控制</span>
+                                <span class="tag">ABC分析法</span>
+                                <span class="tag">经济订货批量</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary cancel-btn">关闭预览</button>
+                        <button class="btn btn-primary print-preview-btn">打印预览</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+
+            // 关闭模态框
+            modal.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.body.removeChild(modal);
+                });
+            });
+
+            // 实现预览页面的视图切换功能
+            const desktopViewBtn = modal.querySelector('.preview-view-toggle .desktop-view');
+            const tabletViewBtn = modal.querySelector('.preview-view-toggle .tablet-view');
+            const mobileViewBtn = modal.querySelector('.preview-view-toggle .mobile-view');
+            const previewContent = modal.getElementById('preview-content');
+            
+            // 桌面视图
+            desktopViewBtn.addEventListener('click', function() {
+                // 移除其他视图的样式类
+                previewContent.classList.remove('tablet-view', 'mobile-view');
+                // 添加桌面视图样式类
+                previewContent.classList.add('desktop-view');
+                
+                // 更新按钮状态
+                updateViewButtonStates([desktopViewBtn, tabletViewBtn, mobileViewBtn], desktopViewBtn);
+            });
+            
+            // 平板视图
+            tabletViewBtn.addEventListener('click', function() {
+                // 移除其他视图的样式类
+                previewContent.classList.remove('desktop-view', 'mobile-view');
+                // 添加平板视图样式类
+                previewContent.classList.add('tablet-view');
+                
+                // 更新按钮状态
+                updateViewButtonStates([desktopViewBtn, tabletViewBtn, mobileViewBtn], tabletViewBtn);
+            });
+            
+            // 手机视图
+            mobileViewBtn.addEventListener('click', function() {
+                // 移除其他视图的样式类
+                previewContent.classList.remove('desktop-view', 'tablet-view');
+                // 添加手机视图样式类
+                previewContent.classList.add('mobile-view');
+                
+                // 更新按钮状态
+                updateViewButtonStates([desktopViewBtn, tabletViewBtn, mobileViewBtn], mobileViewBtn);
+            });
+
+            // 打印预览功能
+            modal.querySelector('.print-preview-btn').addEventListener('click', function() {
+                // 创建一个简化的打印样式
+                const printStyle = document.createElement('style');
+                printStyle.setAttribute('media', 'print');
+                printStyle.textContent = '@media print { body > *:not(.modal) { display: none !important; } .modal { position: static !important; background: transparent !important; } .modal-content { box-shadow: none !important; width: 100% !important; max-width: 100% !important; } .preview-view-toggle, .modal-footer { display: none !important; } }';
+                document.head.appendChild(printStyle);
+                
+                // 直接调用打印功能
+                setTimeout(function() {
+                    window.print();
+                    
+                    // 打印完成后移除样式
+                    setTimeout(function() {
+                        document.head.removeChild(printStyle);
+                    }, 100);
+                }, 100);
+            });
+
+            // 更新视图切换按钮状态的函数
+            function updateViewButtonStates(allButtons, activeBtn) {
+                allButtons.forEach(btn => {
+                    if (btn === activeBtn) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            // 点击模态框外部关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+
+        // 发布功能模态框
+        function showPublishModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>发布课程</h3>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="publish-info">
+                            <h4>发布信息</h4>
+                            <div class="form-group">
+                                <label for="publishTitle">发布标题</label>
+                                <input type="text" id="publishTitle" value="供应链管理基础 - 第二章 库存管理" placeholder="请输入发布标题">
+                            </div>
+                            <div class="form-group">
+                                <label for="publishDesc">发布描述</label>
+                                <textarea id="publishDesc" placeholder="请输入发布描述">本章介绍了库存管理的基本概念和常用控制方法，包括ABC分类法、定量订货模型和定期订货模型等内容。</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="publishScope">发布范围</label>
+                                <select id="publishScope">
+                                    <option value="all">全部学生</option>
+                                    <option value="specific">指定班级</option>
+                                    <option value="private">仅自己可见</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="specificClasses" style="display: none;">
+                                <label>指定班级</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-option">
+                                        <input type="checkbox">
+                                        <span>2022级供应链管理1班</span>
+                                    </label>
+                                    <label class="checkbox-option">
+                                        <input type="checkbox">
+                                        <span>2022级供应链管理2班</span>
+                                    </label>
+                                    <label class="checkbox-option">
+                                        <input type="checkbox">
+                                        <span>2023级物流管理1班</span>
+                                    </label>
+                                    <label class="checkbox-option">
+                                        <input type="checkbox">
+                                        <span>2023级物流管理2班</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="publish-settings">
+                            <h4>发布设置</h4>
+                            <label class="checkbox-option">
+                                <input type="checkbox" checked>
+                                <span>允许学生评论</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" checked>
+                                <span>允许学生下载资源</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox">
+                                <span>设置发布有效期</span>
+                            </label>
+                            <div class="date-range" style="display: none;">
+                                <div class="form-group">
+                                    <label for="publishStart">开始日期</label>
+                                    <input type="date" id="publishStart">
+                                </div>
+                                <div class="form-group">
+                                    <label for="publishEnd">结束日期</label>
+                                    <input type="date" id="publishEnd">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="publish-notify">
+                            <h4>通知设置</h4>
+                            <label class="checkbox-option">
+                                <input type="checkbox" checked>
+                                <span>发布后通知学生</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox">
+                                <span>通过邮件通知</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" checked>
+                                <span>通过系统消息通知</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary cancel-btn">取消</button>
+                        <button class="btn btn-primary" id="publishBtn">确认发布</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+
+            // 关闭模态框
+            modal.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.body.removeChild(modal);
+                });
+            });
+
+            // 发布范围切换
+            const publishScope = modal.querySelector('#publishScope');
+            const specificClasses = modal.querySelector('#specificClasses');
+            publishScope.addEventListener('change', function() {
+                specificClasses.style.display = this.value === 'specific' ? 'block' : 'none';
+            });
+
+            // 有效期设置
+            const有效期Checkbox = modal.querySelector('.publish-settings .checkbox-option input');
+            const dateRange = modal.querySelector('.date-range');
+            有效期Checkbox.addEventListener('change', function() {
+                dateRange.style.display = this.checked ? 'block' : 'none';
+            });
+
+            // 确认发布
+            document.getElementById('publishBtn').addEventListener('click', function() {
+                // 这里可以添加发布课程的逻辑
+                alert('课程内容发布成功！');
+                document.body.removeChild(modal);
+            });
+
+            // 点击模态框外部关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+
+        // 上传资源模态框
+        function showUploadResourceModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>上传教学资源</h3>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="upload-area">
+                            <div class="drop-zone">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>拖拽文件到这里或</p>
+                                <button class="btn btn-primary">选择文件</button>
+                                <input type="file" class="hidden" multiple>
+                            </div>
+                        </div>
+                        <div class="upload-options">
+                            <div class="form-group">
+                                <label for="resourceType">资源类型</label>
+                                <select id="resourceType">
+                                    <option value="PPT模板">PPT模板</option>
+                                    <option value="视频素材">视频素材</option>
+                                    <option value="案例库">案例库</option>
+                                    <option value="习题库">习题库</option>
+                                    <option value="其他">其他</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="resourceName">资源名称</label>
+                                <input type="text" id="resourceName" placeholder="请输入资源名称">
+                            </div>
+                            <div class="form-group">
+                                <label for="resourceDesc">资源描述</label>
+                                <textarea id="resourceDesc" placeholder="请输入资源描述"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="resourceTags">资源标签</label>
+                                <input type="text" id="resourceTags" placeholder="请输入资源标签，用逗号分隔">
+                            </div>
+                            <div class="form-group">
+                                <label for="resourceVisibility">可见性</label>
+                                <select id="resourceVisibility">
+                                    <option value="public">公开</option>
+                                    <option value="private">仅自己可见</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="upload-preview" style="display: none;">
+                            <h4>上传预览</h4>
+                            <div class="file-list"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary cancel-btn">取消</button>
+                        <button class="btn btn-primary" id="uploadBtn">开始上传</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+
+            // 关闭模态框
+            modal.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.body.removeChild(modal);
+                });
+            });
+
+            // 文件选择
+            const fileInput = modal.querySelector('input[type="file"]');
+            const fileBtn = modal.querySelector('.drop-zone .btn');
+            const dropZone = modal.querySelector('.drop-zone');
+            const uploadPreview = modal.querySelector('.upload-preview');
+            const fileList = modal.querySelector('.file-list');
+
+            fileBtn.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            // 文件选择变化
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    showFilePreview(this.files);
+                }
+            });
+
+            // 拖拽上传
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight() {
+                dropZone.classList.add('highlight');
+            }
+
+            function unhighlight() {
+                dropZone.classList.remove('highlight');
+            }
+
+            dropZone.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files.length > 0) {
+                    showFilePreview(files);
+                }
+            }
+
+            // 显示文件预览
+            function showFilePreview(files) {
+                uploadPreview.style.display = 'block';
+                fileList.innerHTML = '';
+                
+                Array.from(files).forEach(file => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.innerHTML = `
+                        <i class="fas fa-file"></i>
+                        <div class="file-info">
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-size">${formatFileSize(file.size)}</div>
+                        </div>
+                        <button class="file-remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    fileList.appendChild(fileItem);
+                });
+            }
+
+            // 格式化文件大小
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            // 开始上传
+            document.getElementById('uploadBtn').addEventListener('click', function() {
+                // 这里可以添加上传资源的逻辑
+                alert('资源上传功能启动');
+                // 模拟上传进度
+                const progressBar = document.createElement('div');
+                progressBar.className = 'progress-bar';
+                progressBar.innerHTML = `
+                    <div class="progress-text">正在上传...</div>
+                    <div class="progress-fill"></div>
+                `;
+                this.parentNode.insertBefore(progressBar, this);
+                
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 5;
+                    progressBar.querySelector('.progress-fill').style.width = `${progress}%`;
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            alert('资源上传成功！');
+                            document.body.removeChild(modal);
+                        }, 500);
+                    }
+                }, 200);
+            });
+
+            // 点击模态框外部关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+
+        // 编辑课程模态框
+        function showEditCourseModal() {
+            // 获取当前选中的课程
+            const activeCourse = document.querySelector('.course-item.active .course-header span').textContent;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>编辑课程</h3>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="editCourseName">课程名称</label>
+                            <input type="text" id="editCourseName" value="${activeCourse}" placeholder="请输入课程名称">
+                        </div>
+                        <div class="form-group">
+                            <label for="editCourseCode">课程代码</label>
+                            <input type="text" id="editCourseCode" value="SC001" placeholder="请输入课程代码">
+                        </div>
+                        <div class="form-group">
+                            <label for="editCourseDesc">课程描述</label>
+                            <textarea id="editCourseDesc" placeholder="请输入课程描述">本课程介绍供应链管理的基本概念、原理和方法，包括供应链规划、库存管理、物流配送等内容。</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="editCourseType">课程类型</label>
+                            <select id="editCourseType">
+                                <option value="必修课">必修课</option>
+                                <option value="选修课" selected>选修课</option>
+                                <option value="实训课">实训课</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editCourseCredit">学分</label>
+                            <input type="number" id="editCourseCredit" min="0" max="8" step="0.5" value="3">
+                        </div>
+                        <div class="form-group">
+                            <label>课程章节管理</label>
+                            <div class="chapter-management">
+                                <div class="chapter-list">
+                                    <div class="chapter-item">
+                                        <i class="fas fa-book"></i>
+                                        <span>第一章 供应链概述</span>
+                                        <div class="chapter-actions">
+                                            <button class="btn btn-outline btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline btn-sm">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="chapter-item">
+                                        <i class="fas fa-book"></i>
+                                        <span>第二章 库存管理</span>
+                                        <div class="chapter-actions">
+                                            <button class="btn btn-outline btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline btn-sm">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="chapter-item">
+                                        <i class="fas fa-book"></i>
+                                        <span>第三章 物流配送</span>
+                                        <div class="chapter-actions">
+                                            <button class="btn btn-outline btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline btn-sm">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline add-chapter-btn">
+                                    <i class="fas fa-plus"></i> 添加章节
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary cancel-btn">取消</button>
+                        <button class="btn btn-primary" id="saveCourseBtn">保存修改</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+
+            // 关闭模态框
+            modal.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.body.removeChild(modal);
+                });
+            });
+
+            // 添加章节
+            modal.querySelector('.add-chapter-btn').addEventListener('click', function() {
+                const chapterName = prompt('请输入章节名称:');
+                if (chapterName && chapterName.trim() !== '') {
+                    const chapterList = modal.querySelector('.chapter-list');
+                    const newChapter = document.createElement('div');
+                    newChapter.className = 'chapter-item';
+                    newChapter.innerHTML = `
+                        <i class="fas fa-book"></i>
+                        <span>${chapterName}</span>
+                        <div class="chapter-actions">
+                            <button class="btn btn-outline btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-outline btn-sm">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    chapterList.appendChild(newChapter);
+                }
+            });
+
+            // 保存修改
+            document.getElementById('saveCourseBtn').addEventListener('click', function() {
+                const courseName = document.getElementById('editCourseName').value;
+                if (!courseName) {
+                    alert('请输入课程名称');
+                    return;
+                }
+                // 这里可以添加保存课程修改的逻辑
+                alert(`课程"${courseName}"修改成功`);
+                document.body.removeChild(modal);
+            });
+
+            // 点击模态框外部关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+        // 为所有取消按钮添加关闭模态框功能
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('cancel-btn') || e.target.closest('.cancel-btn')) {
+                const cancelBtn = e.target.closest('.cancel-btn');
+                const modal = cancelBtn.closest('.modal');
+                if (modal) {
+                    document.body.removeChild(modal);
+                }
+            }
+        });
+    </script>
+    <style>
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-preview .modal-content {
+            max-width: 1200px;
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--gray-light);
+            color: var(--dark);
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="date"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="number"]:focus,
+        .form-group input[type="date"]:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* 上传区域样式 */
+        .upload-area {
+            border: 2px dashed var(--gray-light);
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            transition: var(--transition);
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .upload-area .fa-cloud-upload-alt {
+            font-size: 48px;
+            color: var(--gray);
+            margin-bottom: 12px;
+        }
+
+        .upload-area p {
+            margin-bottom: 16px;
+            color: var(--gray);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* 复选框样式 */
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-option input[type="checkbox"] {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+        }
+
+        /* 预览样式 */
+        /* 预览内容样式 - 桌面视图 */
+        .preview-content.desktop-view {
+            background: #f9fafb;
+            padding: 24px;
+            border-radius: 8px;
+            max-width: 100%;
+            margin: 0 auto;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* 预览内容样式 - 平板视图 */
+        .preview-content.tablet-view {
+            background: #f9fafb;
+            padding: 24px;
+            border-radius: 8px;
+            max-width: 768px;
+            margin: 0 auto;
+            font-size: 15px;
+            line-height: 1.5;
+            transform: scale(0.95);
+            transform-origin: center;
+        }
+
+        /* 预览内容样式 - 手机视图 */
+        .preview-content.mobile-view {
+            background: #f9fafb;
+            padding: 24px;
+            border-radius: 8px;
+            max-width: 375px;
+            margin: 0 auto;
+            font-size: 14px;
+            line-height: 1.4;
+            transform: scale(0.9);
+            transform-origin: center;
+        }
+
+        .preview-header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .preview-header h2 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .preview-header h3 {
+            font-size: 20px;
+            color: var(--gray);
+        }
+
+        .preview-section {
+            margin-bottom: 32px;
+        }
+
+        .preview-section h4 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: var(--dark);
+        }
+
+        .preview-text {
+            line-height: 1.8;
+            color: var(--dark);
+        }
+
+        .preview-text p {
+            margin-bottom: 16px;
+        }
+
+        .preview-text ol,
+        .preview-text ul {
+            margin-bottom: 16px;
+            padding-left: 24px;
+        }
+
+        .preview-text li {
+            margin-bottom: 8px;
+        }
+
+        .preview-knowledge-points {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--gray-light);
+        }
+
+        .preview-knowledge-points h4 {
+            margin-bottom: 16px;
+        }
+
+        /* 视图切换按钮样式 */
+        .preview-view-toggle {
+            display: flex;
+            gap: 10px;
+        }
+
+        .preview-view-toggle button {
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid var(--gray-light);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .preview-view-toggle button:hover {
+            background: var(--gray-light);
+        }
+
+        .preview-view-toggle button.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* 三种预览视图样式 */
+        .preview-content {
+            transition: all 0.3s ease;
+        }
+
+        .preview-content.desktop-view {
+            max-width: 1200px;
+            margin: 0 auto;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .preview-content.tablet-view {
+            max-width: 768px;
+            margin: 0 auto;
+            font-size: 15px;
+            line-height: 1.7;
+            padding: 0 15px;
+        }
+
+        .preview-content.mobile-view {
+            max-width: 480px;
+            margin: 0 auto;
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 0 10px;
+        }
+
+        /* 上传预览样式 */
+        .file-list {
+            margin-top: 16px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: var(--gray-light);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .file-item i {
+            margin-right: 12px;
+            color: var(--primary);
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .file-remove {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--gray);
+            padding: 4px;
+        }
+
+        .file-remove:hover {
+            color: var(--danger);
+        }
+
+        /* 进度条样式 */
+        .progress-bar {
+            width: 100%;
+            height: 40px;
+            background: var(--gray-light);
+            border-radius: 8px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        /* 导入向导样式 */
+        .import-guide {
+            background: rgba(67, 97, 238, 0.05);
+            border-left: 4px solid var(--primary);
+            padding: 16px;
+            margin-bottom: 24px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .import-guide ul {
+            margin-top: 12px;
+            padding-left: 24px;
+        }
+
+        .import-guide li {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .import-guide li i {
+            margin-right: 8px;
+            color: var(--success);
+        }
+
+        /* 章节管理样式 */
+        .chapter-management {
+            background: var(--gray-light);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .chapter-management .chapter-list {
+            margin-bottom: 16px;
+        }
+
+        .chapter-management .chapter-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .chapter-management .chapter-item i {
+            margin-right: 12px;
+            color: var(--primary);
+        }
+
+        .chapter-management .chapter-item span {
+            flex: 1;
+        }
+
+        .chapter-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .add-chapter-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .modal-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .preview-tools {
+                width: 100%;
+                display: flex;
+                gap: 8px;
+            }
+
+            .preview-tools .btn {
+                flex: 1;
+                font-size: 12px;
+                padding: 6px 8px;
+            }
+
+            .modal-footer {
+                flex-direction: column;
+            }
+
+            .modal-footer .btn {
+                width: 100%;
+            }
+        }
+    </style>
+    <script>
+        // 页面加载完成后绑定事件
+        document.addEventListener('DOMContentLoaded', function() {
+            // 绑定预览按钮点击事件
+            const previewBtn = document.querySelector('.editor-tools .btn-outline');
+            if (previewBtn) {
+                previewBtn.addEventListener('click', showPreviewModal);
+            }
+        });
+
+        // 显示预览模态框
+        function showPreviewModal() {
+            // 创建模态框元素
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="preview-tools">
+                            <div class="preview-view-toggle">
+                                <button class="btn btn-outline desktop-view active">
+                                    <i class="fas fa-desktop"></i> 桌面视图
+                                </button>
+                                <button class="btn btn-outline tablet-view">
+                                    <i class="fas fa-tablet-alt"></i> 平板视图
+                                </button>
+                                <button class="btn btn-outline mobile-view">
+                                    <i class="fas fa-mobile-alt"></i> 手机视图
+                                </button>
+                            </div>
+                            <button class="modal-close">×</button>
+                        </div>
+                    </div>
+                    <div class="modal-body preview-content desktop-view" id="preview-content">
+                        <div class="preview-header">
+                            <h2>供应链管理基础</h2>
+                            <h3>第二章 库存管理</h3>
+                        </div>
+                        <div class="preview-section">
+                            <h4>2.1 库存管理基本概念</h4>
+                            <div class="preview-text">
+                                <p>库存管理是指对制造业或服务业生产、经营全过程的各种物品、产品以及其他资源进行管理和控制，使其储备保持在经济合理的水平上。</p>
+                                <p><strong>库存管理的主要目标：</strong></p>
+                                <ol>
+                                    <li>保证生产过程的连续性</li>
+                                    <li>平衡物流和信息流</li>
+                                    <li>优化库存成本</li>
+                                    <li>提高客户服务水平</li>
+                                </ol>
+                                <p><strong>库存分类：</strong></p>
+                                <ul>
+                                    <li>原材料库存</li>
+                                    <li>在制品库存</li>
+                                    <li>成品库存</li>
+                                    <li>备件库存</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="preview-section">
+                            <h4>2.2 库存控制方法</h4>
+                            <div class="preview-text">
+                                <p>常用的库存控制方法包括：</p>
+                                <ol>
+                                    <li>
+                                        <strong>ABC分类法</strong>
+                                        <ul>
+                                            <li>A类物品：高价值，低数量</li>
+                                            <li>C类物品：低价值，高数量</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <strong>定量订货模型</strong>
+                                        <ul>
+                                            <li>经济订货批量(EOQ)</li>
+                                            <li>再订货点(ROP)</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <strong>定期订货模型</strong>
+                                        <ul>
+                                            <li>固定时间间隔检查库存</li>
+                                            <li>根据目标库存水平订货</li>
+                                        </ul>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                        <div class="preview-knowledge-points">
+                            <h4>知识点标注</h4>
+                            <div class="point-tags">
+                                <span class="tag">库存分类</span>
+                                <span class="tag">库存控制</span>
+                                <span class="tag">ABC分析法</span>
+                                <span class="tag">经济订货批量</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary cancel-btn">关闭预览</button>
+                        <button class="btn btn-primary print-preview-btn">打印预览</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+
+            // 关闭模态框
+            modal.querySelectorAll('.modal-close, .cancel-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.body.removeChild(modal);
+                });
+            });
+
+            // 实现预览页面的视图切换功能
+            const desktopViewBtn = modal.querySelector('.preview-view-toggle .desktop-view');
+            const tabletViewBtn = modal.querySelector('.preview-view-toggle .tablet-view');
+            const mobileViewBtn = modal.querySelector('.preview-view-toggle .mobile-view');
+            const previewContent = modal.querySelector('#preview-content');
+            
+            // 桌面视图
+            desktopViewBtn.addEventListener('click', function() {
+                // 移除其他视图的样式类
+                previewContent.classList.remove('tablet-view', 'mobile-view');
+                // 添加桌面视图样式类
+                previewContent.classList.add('desktop-view');
+                
+                // 更新按钮状态
+                updateViewButtonStates([desktopViewBtn, tabletViewBtn, mobileViewBtn], desktopViewBtn);
+            });
+            
+            // 平板视图
+            tabletViewBtn.addEventListener('click', function() {
+                // 移除其他视图的样式类
+                previewContent.classList.remove('desktop-view', 'mobile-view');
+                // 添加平板视图样式类
+                previewContent.classList.add('tablet-view');
+                
+                // 更新按钮状态
+                updateViewButtonStates([desktopViewBtn, tabletViewBtn, mobileViewBtn], tabletViewBtn);
+            });
+            
+            // 手机视图
+            mobileViewBtn.addEventListener('click', function() {
+                // 移除其他视图的样式类
+                previewContent.classList.remove('desktop-view', 'tablet-view');
+                // 添加手机视图样式类
+                previewContent.classList.add('mobile-view');
+                
+                // 更新按钮状态
+                updateViewButtonStates([desktopViewBtn, tabletViewBtn, mobileViewBtn], mobileViewBtn);
+            });
+
+            // 打印预览功能
+            modal.querySelector('.print-preview-btn').addEventListener('click', function() {
+                // 创建一个简化的打印样式
+                const printStyle = document.createElement('style');
+                printStyle.setAttribute('media', 'print');
+                printStyle.textContent = '@media print { body > *:not(.modal) { display: none !important; } .modal { position: static !important; background: transparent !important; } .modal-content { box-shadow: none !important; width: 100% !important; max-width: 100% !important; } .preview-view-toggle, .modal-footer { display: none !important; } }';
+                document.head.appendChild(printStyle);
+                
+                // 直接调用打印功能
+                setTimeout(function() {
+                    window.print();
+                    
+                    // 打印完成后移除样式
+                    setTimeout(function() {
+                        document.head.removeChild(printStyle);
+                    }, 100);
+                }, 100);
+            });
+
+            // 更新视图切换按钮状态的函数
+            function updateViewButtonStates(allButtons, activeBtn) {
+                allButtons.forEach(btn => {
+                    if (btn === activeBtn) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            // 点击模态框外部关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

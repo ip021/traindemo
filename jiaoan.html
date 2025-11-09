@@ -1,0 +1,1416 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教案管理 - 供应链实训课程系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --success: #4ade80;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --border-radius: 12px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 30px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+        
+        .page-title p {
+            color: var(--gray);
+            font-size: 15px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 16px;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+        
+        .btn-secondary {
+            background: var(--gray-light);
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+        
+        /* 教案管理特有样式 */
+        .lesson-plan-layout {
+            display: flex;
+            gap: 24px;
+            height: calc(100vh - 180px);
+        }
+        
+        .template-library {
+            width: 300px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .library-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .library-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .template-list {
+            list-style: none;
+        }
+        
+        .template-item {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+        
+        .template-item:hover {
+            background: var(--gray-light);
+        }
+        
+        .template-item.active {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+        
+        .template-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .template-desc {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .ai-template {
+            border-top: 1px solid var(--gray-light);
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+        
+        .ai-title {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ai-title i {
+            color: var(--primary);
+        }
+        
+        .ai-desc {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 16px;
+        }
+        
+        .ai-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .ai-btn:hover {
+            background: var(--secondary);
+        }
+        
+        .lesson-editor {
+            flex: 1;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+.editor-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .editor-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .editor-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .editor-tools {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .editor-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .plan-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .section-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .section-content {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+        }
+        
+        .objective-list {
+            list-style: none;
+        }
+        
+        .objective-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: white;
+        }
+        
+        .objective-check {
+            margin-right: 12px;
+        }
+        
+        .objective-text {
+            flex: 1;
+        }
+        
+        .time-suggestion {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(67, 97, 238, 0.05);
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+        
+        .time-icon {
+            color: var(--primary);
+            font-size: 18px;
+        }
+        
+        .time-text {
+            flex: 1;
+        }
+        
+        .time-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .activity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+        }
+        
+        .activity-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .activity-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .activity-card.selected {
+            border: 2px solid var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+        
+        .activity-name {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .activity-desc {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .resource-panel {
+            width: 600px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .resource-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .resource-tab {
+            flex: 1;
+            padding: 8px;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+        
+        .resource-tab:hover {
+            background: var(--gray-light);
+        }
+        
+        .resource-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .resource-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .resource-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--light);
+        }
+        
+        .resource-item:hover {
+            background: var(--gray-light);
+        }
+        
+        .resource-type {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+margin-right: 12px;
+        }
+        
+        .resource-details {
+            flex: 1;
+        }
+        
+        .resource-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+            font-size: 14px;
+        }
+        
+        .resource-size {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        /* 版本历史样式 */
+        .version-history {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-light);
+        }
+        
+        .history-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .version-list {
+            list-style: none;
+        }
+        
+        .version-item {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            background: var(--light);
+        }
+        
+        .version-item:hover:not(.current) {
+            background: var(--gray-light);
+        }
+        
+        .version-item.current {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+            cursor: default;
+        }
+        
+        .version-name {
+            margin-bottom: 4px;
+        }
+        
+        .version-date {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        /* 模态窗口样式 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+        
+        .modal-close:hover {
+            background: var(--gray-light);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+.form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 页面头部 -->
+    <div class="header">
+        <div class="page-title">
+            <h1>教案管理</h1>
+            <p>创建、编辑和管理您的教学方案</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary"><i class="fas fa-download"></i> 导出</button>
+            <button class="btn btn-primary"><i class="fas fa-plus"></i> 新建教案</button>
+        </div>
+    </div>
+
+    <!-- 教案管理主布局 -->
+    <div class="lesson-plan-layout">
+        <!-- 模板库 -->
+        <div class="template-library">
+            <div class="library-header">
+                <h3 class="library-title">教案模板</h3>
+                <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 14px;"><i class="fas fa-plus"></i></button>
+            </div>
+            <ul class="template-list">
+                <li class="template-item active">
+                    <div class="template-name">标准教案模板</div>
+                    <div class="template-desc">适用于大多数课堂教学场景</div>
+                </li>
+                <li class="template-item">
+                    <div class="template-name">案例教学模板</div>
+                    <div class="template-desc">以实际案例为中心的教学方案</div>
+                </li>
+                <li class="template-item">
+                    <div class="template-name">实训课程模板</div>
+                    <div class="template-desc">实践操作导向的教学方案</div>
+                </li>
+                <li class="template-item">
+                    <div class="template-name">翻转课堂模板</div>
+                    <div class="template-desc">混合式学习的教学方案</div>
+</li>
+                <li class="template-item">
+                    <div class="template-name">专题讲座模板</div>
+                    <div class="template-desc">知识讲解类的教学方案</div>
+                </li>
+            </ul>
+            
+            <!-- AI生成模板 -->
+            <div class="ai-template">
+                <div class="ai-title">
+                    <i class="fas fa-robot"></i>
+                    <span>AI智能生成</span>
+                </div>
+                <p class="ai-desc">描述您的教学需求，AI将为您生成个性化教案</p>
+                <button class="ai-btn">
+                    <i class="fas fa-magic"></i> 开始生成
+                </button>
+            </div>
+        </div>
+
+        <!-- 教案编辑器 -->
+        <div class="lesson-editor">
+            <div class="editor-header">
+                <div>
+                    <h2 class="editor-title">供应链管理基础教案</h2>
+                    <div class="editor-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>2023-10-15</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>4课时</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-user"></i>
+<span>张老师</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="editor-tools">
+                    <button class="btn btn-secondary" id="addActivityBtn"><i class="fas fa-plus"></i> 添加活动</button>
+                    <button class="btn btn-primary"><i class="fas fa-save"></i> 保存</button>
+                </div>
+            </div>
+            <div class="editor-content">
+                <!-- 教学目标部分 -->
+                <div class="plan-section">
+                    <div class="section-header">
+                        <h3 class="section-title">教学目标</h3>
+                        <div class="section-actions">
+                            <button class="btn" style="padding: 6px 12px; font-size: 14px;"><i class="fas fa-edit"></i></button>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <ul class="objective-list">
+                            <li class="objective-item">
+                                <input type="checkbox" class="objective-check">
+                                <div class="objective-text">理解供应链管理的基本概念和核心要素</div>
+                            </li>
+                            <li class="objective-item">
+                                <input type="checkbox" class="objective-check">
+                                <div class="objective-text">掌握供应链设计与规划的基本原则</div>
+                            </li>
+                            <li class="objective-item">
+                                <input type="checkbox" class="objective-check">
+                                <div class="objective-text">能够分析实际供应链案例中的问题并提出解决方案</div>
+                            </li>
+                            <li class="objective-item">
+                                <input type="checkbox" class="objective-check">
+                                <div class="objective-text">了解供应链管理的最新趋势和技术应用</div>
+                            </li>
+                        </ul>
+                        <div class="time-suggestion">
+                            <div class="time-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="time-text">
+                                <span>AI建议：</span>
+                                <span class="time-value">这部分内容建议安排20-30分钟讲解</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 教学活动部分 -->
+                <div class="plan-section">
+                    <div class="section-header">
+                        <h3 class="section-title">教学活动</h3>
+                        <div class="section-actions">
+                            <button class="btn" style="padding: 6px 12px; font-size: 14px;"><i class="fas fa-sort"></i></button>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="activity-grid">
+                            <div class="activity-card">
+                                <div class="activity-icon">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                </div>
+                                <div class="activity-name">概念讲解</div>
+                                <div class="activity-desc">讲解供应链管理的基本概念和理论框架</div>
+                            </div>
+                            <div class="activity-card">
+                                <div class="activity-icon">
+                                    <i class="fas fa-project-diagram"></i>
+                                </div>
+                                <div class="activity-name">案例分析</div>
+                                <div class="activity-desc">分析经典供应链管理案例，讨论成功经验</div>
+                            </div>
+                            <div class="activity-card">
+                                <div class="activity-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="activity-name">小组讨论</div>
+                                <div class="activity-desc">分组讨论供应链管理中的实际问题</div>
+                            </div>
+                            <div class="activity-card">
+                                <div class="activity-icon">
+                                    <i class="fas fa-laptop-code"></i>
+                                </div>
+                                <div class="activity-name">模拟演练</div>
+                                <div class="activity-desc">使用供应链管理软件进行模拟操作</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 评估方法部分 -->
+                <div class="plan-section">
+                    <div class="section-header">
+                        <h3 class="section-title">评估方法</h3>
+                        <div class="section-actions">
+                            <button class="btn" style="padding: 6px 12px; font-size: 14px;"><i class="fas fa-edit"></i></button>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <label>参与度评估</label>
+                            <input type="text" class="form-control" placeholder="例如：课堂参与、小组讨论贡献度">
+                        </div>
+                        <div class="form-group">
+                            <label>知识掌握评估</label>
+                            <input type="text" class="form-control" placeholder="例如：小测验、案例分析报告">
+                        </div>
+                        <div class="form-group">
+                            <label>技能应用评估</label>
+                            <input type="text" class="form-control" placeholder="例如：模拟操作表现、方案设计质量">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 资源面板 -->
+        <div class="resource-panel">
+            <div class="panel-header">
+                <h3 class="panel-title">教学资源</h3>
+                <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 14px;"><i class="fas fa-upload"></i></button>
+            </div>
+            
+            <div class="resource-tabs">
+                <div class="resource-tab active">文档</div>
+                <div class="resource-tab">图片</div>
+                <div class="resource-tab">视频</div>
+            </div>
+            
+            <div class="resource-list">
+                <div class="resource-item">
+                    <div class="resource-type">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div class="resource-details">
+                        <div class="resource-name">供应链管理基础理论.pdf</div>
+                        <div class="resource-size">2.5MB</div>
+                    </div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-type">
+                        <i class="fas fa-file-word"></i>
+                    </div>
+                    <div class="resource-details">
+                        <div class="resource-name">案例分析模板.docx</div>
+                        <div class="resource-size">1.2MB</div>
+                    </div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-type">
+                        <i class="fas fa-file-excel"></i>
+                    </div>
+                    <div class="resource-details">
+                        <div class="resource-name">供应链数据分析.xlsx</div>
+                        <div class="resource-size">850KB</div>
+                    </div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-type">
+                        <i class="fas fa-file-powerpoint"></i>
+                    </div>
+                    <div class="resource-details">
+                        <div class="resource-name">教学演示课件.pptx</div>
+                        <div class="resource-size">5.8MB</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 版本历史 -->
+            <div class="version-history">
+                <h4 class="history-title">版本历史</h4>
+                <ul class="version-list">
+                    <li class="version-item current">
+                        <div class="version-name">版本 1.0 (当前)</div>
+                        <div class="version-date">2023-10-15 14:30</div>
+                    </li>
+                    <li class="version-item">
+                        <div class="version-name">版本 0.9</div>
+                        <div class="version-date">2023-10-14 16:45</div>
+                    </li>
+                    <li class="version-item">
+                        <div class="version-name">版本 0.8</div>
+                        <div class="version-date">2023-10-13 10:15</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+    <!-- 教学活动模态窗口 -->
+    <div class="modal" id="activityModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">添加教学活动</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>活动名称</label>
+                    <input type="text" class="form-control" placeholder="请输入活动名称">
+                </div>
+                <div class="form-group">
+                    <label>活动描述</label>
+                    <textarea class="form-control" rows="3" placeholder="请输入活动描述"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>预计时长</label>
+                    <input type="text" class="form-control" placeholder="例如：30分钟">
+                </div>
+                <div class="form-group">
+                    <label>活动类型</label>
+                    <select class="form-control">
+                        <option>讲授</option>
+                        <option>讨论</option>
+                        <option>案例分析</option>
+                        <option>实践操作</option>
+                        <option>小组活动</option>
+                        <option>角色扮演</option>
+                        <option>其他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>参与方式</label>
+                    <select class="form-control">
+                        <option>个人活动</option>
+                        <option>两人搭档</option>
+                        <option>小组活动 (3-4人)</option>
+                        <option>小组活动 (5-6人)</option>
+                        <option>全班活动</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary">取消</button>
+                <button class="btn btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新建教案模态窗口 -->
+    <div class="modal" id="newLessonModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">新建教案</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>教案名称</label>
+                    <input type="text" class="form-control" placeholder="请输入教案名称">
+                </div>
+                <div class="form-group">
+                    <label>课程主题</label>
+                    <input type="text" class="form-control" placeholder="请输入课程主题">
+                </div>
+                <div class="form-group">
+                    <label>适用年级</label>
+                    <select class="form-control">
+                        <option>大一</option>
+                        <option>大二</option>
+                        <option>大三</option>
+                        <option>大四</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>学科</label>
+                    <input type="text" class="form-control" placeholder="请输入学科">
+                </div>
+                <div class="form-group">
+                    <label>课时</label>
+                    <input type="number" class="form-control" placeholder="请输入课时数">
+                </div>
+                <div class="form-group">
+                    <label>选择模板</label>
+                    <select class="form-control">
+                        <option>标准教案模板</option>
+                        <option>案例教学模板</option>
+                        <option>实训课程模板</option>
+                        <option>翻转课堂模板</option>
+                        <option>专题讲座模板</option>
+                    </select>
+</div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary">取消</button>
+                <button class="btn btn-primary">创建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导出教案模态窗口 -->
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">导出教案</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>导出格式</label>
+                    <select class="form-control">
+                        <option>Word文档 (.docx)</option>
+                        <option>PDF文档 (.pdf)</option>
+                        <option>Markdown格式 (.md)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>导出内容</label>
+                    <div>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" checked> 教学目标
+                        </label>
+<label class="checkbox-inline" style="margin-left: 20px;">
+                            <input type="checkbox" checked> 教学活动
+                        </label>
+                        <label class="checkbox-inline" style="margin-left: 20px;">
+                            <input type="checkbox" checked> 评估方法
+                        </label>
+                        <label class="checkbox-inline" style="margin-left: 20px;">
+                            <input type="checkbox" checked> 教学资源
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>文件名</label>
+                    <input type="text" class="form-control" value="供应链管理基础教案">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary">取消</button>
+                <button class="btn btn-primary">导出</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加模板模态窗口 -->
+    <div class="modal" id="addTemplateModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">添加教案模板</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>模板名称</label>
+                    <input type="text" class="form-control" placeholder="请输入模板名称">
+                </div>
+                <div class="form-group">
+                    <label>模板描述</label>
+                    <textarea class="form-control" rows="3" placeholder="请输入模板描述"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>适用场景</label>
+                    <select class="form-control">
+                        <option>常规教学</option>
+                        <option>案例教学</option>
+                        <option>实训课程</option>
+                        <option>翻转课堂</option>
+                        <option>专题讲座</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>模板内容</label>
+                    <textarea class="form-control" rows="5" placeholder="请输入模板内容结构"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary">取消</button>
+                <button class="btn btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑教学目标模态窗口 -->
+    <div class="modal" id="editObjectivesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">编辑教学目标</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>教学目标</label>
+                    <div id="objectives-container">
+                        <div class="form-group objective-item-edit">
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" class="form-control" placeholder="请输入教学目标" value="理解供应链管理的基本概念和核心要素">
+                                <button class="btn btn-danger" style="padding: 6px 12px;"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="form-group objective-item-edit">
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" class="form-control" placeholder="请输入教学目标" value="掌握供应链设计与规划的基本原则">
+                                <button class="btn btn-danger" style="padding: 6px 12px;"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="form-group objective-item-edit">
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" class="form-control" placeholder="请输入教学目标" value="能够分析实际供应链案例中的问题并提出解决方案">
+                                <button class="btn btn-danger" style="padding: 6px 12px;"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="form-group objective-item-edit">
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" class="form-control" placeholder="请输入教学目标" value="了解供应链管理的最新趋势和技术应用">
+                                <button class="btn btn-danger" style="padding: 6px 12px;"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" id="addObjectiveBtn" style="margin-top: 10px;"><i class="fas fa-plus"></i> 添加目标</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary">取消</button>
+                <button class="btn btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑评估方法模态窗口 -->
+    <div class="modal" id="editAssessmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">编辑评估方法</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>参与度评估</label>
+                    <input type="text" class="form-control" placeholder="例如：课堂参与、小组讨论贡献度" value="课堂参与、小组讨论贡献度">
+                </div>
+                <div class="form-group">
+                    <label>知识掌握评估</label>
+                    <input type="text" class="form-control" placeholder="例如：小测验、案例分析报告" value="小测验、案例分析报告">
+                </div>
+                <div class="form-group">
+                    <label>技能应用评估</label>
+                    <input type="text" class="form-control" placeholder="例如：模拟操作表现、方案设计质量" value="模拟操作表现、方案设计质量">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary">取消</button>
+                <button class="btn btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI智能生成模态窗口 -->
+    <div class="modal" id="aiGenerateModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">AI智能生成教案</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>课程主题</label>
+                    <input type="text" class="form-control" placeholder="请输入课程主题">
+                </div>
+                <div class="form-group">
+                    <label>适用年级</label>
+                    <select class="form-control">
+                        <option>大一</option>
+                        <option>大二</option>
+                        <option>大三</option>
+                        <option>大四</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>学科</label>
+                    <input type="text" class="form-control" placeholder="请输入学科">
+                </div>
+                <div class="form-group">
+                    <label>课时数</label>
+                    <input type="number" class="form-control" placeholder="请输入课时数">
+                </div>
+                <div class="form-group">
+                    <label>教学目标</label>
+                    <textarea class="form-control" rows="3" placeholder="请描述您希望学生达到的学习目标"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>特殊要求</label>
+                    <textarea class="form-control" rows="3" placeholder="如有特殊要求，请在此说明"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary">取消</button>
+                <button class="btn btn-primary" id="generateBtn">开始生成</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 上传教学资源模态窗口 -->
+    <div class="modal" id="uploadResourceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">上传教学资源</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>资源类型</label>
+                    <select class="form-control">
+                        <option>文档</option>
+                        <option>图片</option>
+                        <option>视频</option>
+                        <option>音频</option>
+                        <option>链接</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>资源名称</label>
+                    <input type="text" class="form-control" placeholder="请输入资源名称">
+                </div>
+                <div class="form-group">
+                    <label>上传文件</label>
+                    <div class="upload-area" style="border: 2px dashed #ddd; border-radius: 8px; padding: 30px; text-align: center; cursor: pointer;">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #666; margin-bottom: 15px;"></i>
+                        <p>点击选择文件或拖拽文件到此处</p>
+                        <p style="font-size: 12px; color: #999;">支持 doc, docx, pdf, ppt, pptx, jpg, png, mp4 等格式</p>
+                        <input type="file" id="fileInput" style="display: none;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>资源描述</label>
+                    <textarea class="form-control" rows="3" placeholder="请输入资源描述"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary">取消</button>
+                <button class="btn btn-primary">上传</button>
+            </div>
+        </div>
+    </div>
+
+
+  
+    
+    <script>
+        // 模板选择功能
+        document.querySelectorAll('.template-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.template-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+        
+        // 教学活动选择功能
+        document.querySelectorAll('.activity-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.classList.toggle('selected');
+            });
+        });
+        
+        // 模态窗口控制
+        const activityModal = document.getElementById('activityModal');
+        const addActivityBtn = document.getElementById('addActivityBtn');
+        const modalClose = document.querySelector('.modal-close');
+        
+        addActivityBtn.addEventListener('click', function() {
+            activityModal.style.display = 'flex';
+        });
+        
+        modalClose.addEventListener('click', function() {
+            activityModal.style.display = 'none';
+        });
+        
+        activityModal.addEventListener('click', function(e) {
+            if (e.target === activityModal) {
+                activityModal.style.display = 'none';
+            }
+        });
+        
+        // 版本历史查看功能
+        document.querySelectorAll('.version-item').forEach(item => {
+            item.addEventListener('click', function() {
+                if (!this.classList.contains('current')) {
+                    alert('查看版本: ' + this.querySelector('.version-name').textContent);
+                }
+            });
+        });
+        
+        // 资源标签切换功能
+        document.querySelectorAll('.resource-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.resource-tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+        
+        // 简单的表单验证示例
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.value.trim() === '') {
+                    this.style.borderColor = 'var(--danger)';
+                } else {
+                    this.style.borderColor = 'var(--gray-light)';
+                }
+            });
+        });
+        
+        // 新增功能：新建教案
+        const newLessonModal = document.getElementById('newLessonModal');
+        const newLessonBtn = document.querySelector('.header-actions .btn-primary');
+        
+        newLessonBtn.addEventListener('click', function() {
+            newLessonModal.style.display = 'flex';
+        });
+        
+        // 新增功能：导出教案
+        const exportModal = document.getElementById('exportModal');
+        const exportBtn = document.querySelector('.header-actions .btn-secondary');
+        
+        exportBtn.addEventListener('click', function() {
+            exportModal.style.display = 'flex';
+        });
+        
+        // 新增功能：添加模板
+        const addTemplateModal = document.getElementById('addTemplateModal');
+        const addTemplateBtn = document.querySelector('.library-header .btn-secondary');
+        
+        addTemplateBtn.addEventListener('click', function() {
+            addTemplateModal.style.display = 'flex';
+        });
+        
+        // 新增功能：编辑教学目标
+        const editObjectivesModal = document.getElementById('editObjectivesModal');
+        const editObjectivesBtn = document.querySelector('.plan-section:first-child .section-actions .btn');
+        
+        editObjectivesBtn.addEventListener('click', function() {
+            editObjectivesModal.style.display = 'flex';
+        });
+        
+        // 新增功能：编辑评估方法
+        const editAssessmentModal = document.getElementById('editAssessmentModal');
+        const editAssessmentBtn = document.querySelector('.plan-section:nth-child(3) .section-actions .btn');
+        
+        editAssessmentBtn.addEventListener('click', function() {
+            editAssessmentModal.style.display = 'flex';
+        });
+        
+        // 新增功能：上传教学资源
+        const uploadResourceModal = document.getElementById('uploadResourceModal');
+        const uploadResourceBtn = document.querySelector('.resource-panel .panel-header .btn-secondary');
+        
+        uploadResourceBtn.addEventListener('click', function() {
+            uploadResourceModal.style.display = 'flex';
+        });
+        
+        // 关闭所有模态窗口的通用函数
+        document.querySelectorAll('.modal-close, .modal').forEach(element => {
+            element.addEventListener('click', function(e) {
+                if (e.target === this || e.target.classList.contains('modal-close')) {
+                    document.querySelectorAll('.modal').forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                }
+            });
+        });
+        
+        // 为每个模态窗口的取消按钮单独添加关闭功能
+        document.querySelectorAll('.modal-footer .btn-secondary').forEach(button => {
+            button.addEventListener('click', function() {
+                const modal = this.closest('.modal');
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+        
+        // 添加教学目标
+        const addObjectiveBtn = document.getElementById('addObjectiveBtn');
+        const objectivesContainer = document.getElementById('objectives-container');
+        
+        addObjectiveBtn.addEventListener('click', function() {
+            const newObjective = document.createElement('div');
+            newObjective.className = 'form-group objective-item-edit';
+            newObjective.innerHTML = `
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" class="form-control" placeholder="请输入教学目标">
+                    <button class="btn btn-danger" style="padding: 6px 12px;"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            objectivesContainer.appendChild(newObjective);
+            
+            // 为新添加的删除按钮绑定事件
+            newObjective.querySelector('.btn-danger').addEventListener('click', function() {
+                objectivesContainer.removeChild(newObjective);
+            });
+        });
+        
+        // 为已有的删除按钮绑定事件
+        document.querySelectorAll('.objective-item-edit .btn-danger').forEach(button => {
+            button.addEventListener('click', function() {
+                const objectiveItem = this.closest('.objective-item-edit');
+                objectivesContainer.removeChild(objectiveItem);
+            });
+        });
+        
+        // 上传区域点击事件
+        const uploadArea = document.querySelector('.upload-area');
+        const fileInput = document.getElementById('fileInput');
+        
+        uploadArea.addEventListener('click', function() {
+            fileInput.click();
+        });
+        
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                uploadArea.innerHTML = `
+                    <i class="fas fa-file" style="font-size: 48px; color: #666; margin-bottom: 15px;"></i>
+                    <p>已选择文件: ${this.files[0].name}</p>
+                    <p>点击重新选择</p>
+                `;
+            }
+        });
+        
+        // AI智能生成功能
+        const aiGenerateModal = document.getElementById('aiGenerateModal');
+        const aiBtn = document.querySelector('.ai-btn');
+        const generateBtn = document.getElementById('generateBtn');
+        
+        aiBtn.addEventListener('click', function() {
+            aiGenerateModal.style.display = 'flex';
+        });
+        
+        generateBtn.addEventListener('click', function() {
+            // 这里可以添加AI生成的逻辑
+            alert('正在生成教案，请稍候...');
+            // 模拟生成过程
+            setTimeout(function() {
+                aiGenerateModal.style.display = 'none';
+                alert('教案生成完成！');
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

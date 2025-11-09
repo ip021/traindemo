@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字人讲座 - 数字人教育平台</title>
+    <!-- 引入Font Awesome图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* 全局变量 */
+        :root {
+            --primary-color: #4a6cf7;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-color: #dee2e6;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        /* 重置样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: var(--dark-color);
+            background-color: var(--light-color);
+            line-height: 1.6;
+            padding: 30px;
+        }
+
+        /* 内容区域样式 */
+        .content {
+            flex: 1;
+            padding: 0;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* 标题样式 */
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        .subtitle {
+            color: var(--secondary-color);
+            margin-bottom: 2rem;
+        }
+
+        /* 筛选面板样式 */
+        .filter-panel {
+            width: 260px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 80px;
+        }
+
+        .filter-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .filter-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .filter-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .status-list, .category-list {
+            list-style: none;
+        }
+
+        .status-item, .category-item {
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-item:hover, .category-item:hover {
+            background-color: var(--light-color);
+        }
+
+        .status-item.active, .category-item.active {
+            background-color: rgba(74, 108, 247, 0.1);
+            color: var(--primary-color);
+        }
+
+        .date-range {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .date-input {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.2);
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a5bd4;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--dark-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--light-color);
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        /* 讲座列表样式 */
+        .lecture-list-container {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .lecture-list {
+            flex: 1;
+        }
+
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .list-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .view-options {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .view-option {
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .view-option.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .sort-options {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sort-select {
+            padding: 0.25rem 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+        }
+
+        /* 单列讲座布局样式 */
+        .lecture-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* 讲座卡片样式 */
+        .lecture-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1rem;
+            transition: var(--transition);
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .lecture-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .lecture-card.selected {
+            border: 2px solid var(--primary-color);
+        }
+
+        .card-header {
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-course {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+        .card-body {
+            margin-bottom: 1rem;
+        }
+
+        .card-desc {
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+            line-height: 1.5;
+        }
+
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+        .meta-item i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 状态标签 */
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-badge.upcoming {
+            background-color: #e3f2fd;
+            color: var(--primary-color);
+        }
+
+        .status-badge.live {
+            background-color: #ffebee;
+            color: var(--danger-color);
+        }
+
+        .status-badge.completed {
+            background-color: #e8f5e9;
+            color: var(--success-color);
+        }
+
+        .status-badge.recorded {
+            background-color: #fff3e0;
+            color: var(--warning-color);
+        }
+
+        /* 列表页脚 */
+        .list-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .list-info {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        /* 分页控件 */
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .page-numbers {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .page-number {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .page-number:hover {
+            background-color: var(--light-color);
+        }
+
+        .page-number.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* 讲座详情面板 */
+        .lecture-detail {
+            width: 750px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            height: fit-content;
+            position: sticky;
+            top: 80px;
+        }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .detail-content {
+            padding: 1rem;
+        }
+
+        .detail-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+        }
+
+        .detail-value {
+            line-height: 1.5;
+        }
+
+        .instructor-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .instructor-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .instructor-details {
+            flex: 1;
+        }
+
+        .instructor-name {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .instructor-title {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+        .outline-list {
+            padding-left: 1.5rem;
+        }
+
+        .outline-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .audience-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .audience-tag {
+            padding: 0.25rem 0.75rem;
+            background-color: var(--light-color);
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .benefits-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .benefit-item i {
+            color: var(--success-color);
+            margin-top: 0.25rem;
+        }
+
+        .detail-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .lecture-list-container {
+                flex-direction: column;
+            }
+
+            .lecture-detail {
+                width: 100%;
+                position: static;
+                margin-top: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .filter-panel {
+                width: 100%;
+                position: static;
+                margin-bottom: 1.5rem;
+            }
+
+            .list-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .view-options {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        /* 工具提示 */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 120px;
+            background-color: var(--dark-color);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .loading::after {
+            content: "";
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 卡片动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        /* 打印样式 */
+        @media print {
+            .filter-panel, .view-options, .pagination, .detail-actions {
+                display: none !important;
+            }
+
+            .content {
+                margin-left: 0 !important;
+                padding: 0;
+            }
+
+            .lecture-card {
+                border: 1px solid var(--border-color);
+                break-inside: avoid;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 内容区域 -->
+    <div class="content">
+        <!-- 数字人讲座标题 -->
+        <h1>数字人讲座</h1>
+        <p class="subtitle">探索前沿技术，提升专业技能</p>
+        
+        <!-- 三列布局 -->
+        <div class="lecture-list-container">
+            <!-- 左侧筛选面板 -->
+            <div class="filter-panel">
+                <div class="filter-header">
+                    <div class="filter-title">筛选</div>
+                </div>
+                
+                <!-- 状态筛选 -->
+                <div class="filter-section">
+                    <div class="filter-label">讲座状态</div>
+                    <ul class="status-list">
+                        <li class="status-item active">
+                            <span>全部</span>
+                            <span class="count">15</span>
+                        </li>
+                        <li class="status-item">
+                            <span>即将开始</span>
+                            <span class="count">4</span>
+                        </li>
+                        <li class="status-item">
+                            <span>正在直播</span>
+                            <span class="count">3</span>
+                        </li>
+                        <li class="status-item">
+                            <span>已结束</span>
+                            <span class="count">3</span>
+                        </li>
+                        <li class="status-item">
+                            <span>录播回放</span>
+                            <span class="count">5</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- 分类筛选 -->
+                <div class="filter-section">
+                    <div class="filter-label">讲座分类</div>
+                    <ul class="category-list">
+                        <li class="category-item active">
+                            <span>全部</span>
+                            <span class="count">15</span>
+                        </li>
+                        <li class="category-item">
+                            <span>人工智能应用</span>
+                            <span class="count">6</span>
+                        </li>
+                        <li class="category-item">
+                            <span>数字化转型</span>
+                            <span class="count">4</span>
+                        </li>
+                        <li class="category-item">
+                            <span>供应链管理</span>
+                            <span class="count">5</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- 时间范围筛选 -->
+                <div class="filter-section">
+                    <div class="filter-label">时间范围</div>
+                    <div class="date-range">
+                        <input type="date" class="date-input">
+                        <input type="date" class="date-input">
+                        <button class="btn btn-primary btn-sm">
+                            <i class="fas fa-search"></i> 应用筛选
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 搜索框 -->
+                <div class="filter-section">
+                    <div class="filter-label">搜索</div>
+                    <input type="text" class="search-input" placeholder="输入讲座关键词...">
+                </div>
+                
+                <!-- 重置按钮 -->
+                <div class="filter-section">
+                    <button class="btn btn-outline">
+                        <i class="fas fa-redo-alt"></i> 重置筛选条件
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 中间讲座列表 -->
+            <div class="lecture-list">
+                <!-- 列表头部 -->
+                <div class="list-header">
+                    <div class="list-title">讲座列表</div>
+                    
+                    <div class="view-options">
+                        <div class="view-option active">
+                            <i class="fas fa-list"></i>
+                        </div>
+                        
+                        <div class="sort-options">
+                            <span>排序:</span>
+                            <select class="sort-select">
+                                <option value="time">按时间</option>
+                                <option value="popularity">按人气</option>
+                                <option value="name">按名称</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 讲座网格 -->
+                <div class="lecture-grid">
+                    <!-- 讲座卡片 1 -->
+                    <div class="lecture-card">
+                        <div class="card-header">
+                            <div class="card-title">人工智能在供应链中的应用</div>
+                            <div class="card-course">供应链管理基础</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                本讲座将深入探讨人工智能技术在供应链预测、库存优化和物流路径规划中的实际应用场景，结合企业案例解析技术落地难点与解决方案。
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-user-tie"></i>
+                                    <span>主讲人: 李教授</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>开始: 2023-11-15 14:00</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>时长: 120分钟</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-users"></i>
+                                    <span>报名: 150人</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge upcoming">即将开始</span>
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-ticket-alt"></i> 立即报名
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 讲座卡片 2 -->
+                    <div class="lecture-card">
+                        <div class="card-header">
+                            <div class="card-title">数字化转型战略与实践</div>
+                            <div class="card-course">数字化转型</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                探讨企业数字化转型的核心战略、实施路径与成功要素，分享行业领先企业的转型案例与实践经验。
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-user-tie"></i>
+                                    <span>主讲人: 张总监</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>开始: 2023-11-12 10:00</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>时长: 90分钟</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-users"></i>
+                                    <span>报名: 85人</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge upcoming">即将开始</span>
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-ticket-alt"></i> 立即报名
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 讲座卡片 3 -->
+                    <div class="lecture-card">
+                        <div class="card-header">
+                            <div class="card-title">智能物流路径优化算法</div>
+                            <div class="card-course">供应链优化</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                详细讲解智能物流路径规划算法原理，包括遗传算法、模拟退火算法和蚁群算法，提供实际应用案例分析。
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-user-tie"></i>
+                                    <span>主讲人: 王博士</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>开始: 2023-11-10 10:00</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>时长: 60分钟</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-users"></i>
+                                    <span>报名: 120人</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge live">正在直播</span>
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-play"></i> 立即观看
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 讲座卡片 4 -->
+                    <div class="lecture-card">
+                        <div class="card-header">
+                            <div class="card-title">区块链技术在供应链溯源中的应用</div>
+                            <div class="card-course">供应链管理前沿</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                分析区块链技术如何提升供应链透明度和安全性，实现产品全生命周期溯源，降低欺诈风险。
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-user-tie"></i>
+                                    <span>主讲人: 刘教授</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>开始: 2023-11-05 16:00</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>时长: 120分钟</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-users"></i>
+                                    <span>报名: 95人</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge completed">已结束</span>
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-play-circle"></i> 观看回放
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 讲座卡片 5 -->
+                    <div class="lecture-card">
+                        <div class="card-header">
+                            <div class="card-title">供应链风险管理策略</div>
+                            <div class="card-course">供应链战略管理</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                学习如何识别、评估和应对供应链风险，建立弹性供应链体系，应对突发事件和市场波动。
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-user-tie"></i>
+                                    <span>主讲人: 陈经理</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>开始: 2023-10-28 15:00</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>时长: 90分钟</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-users"></i>
+                                    <span>报名: 110人</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge recorded">录播回放</span>
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-play-circle"></i> 观看回放
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 讲座卡片 6 -->
+                    <div class="lecture-card">
+                        <div class="card-header">
+                            <div class="card-title">大数据分析在需求预测中的应用</div>
+                            <div class="card-course">供应链数据分析</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-desc">
+                                掌握大数据分析技术在需求预测中的应用方法，提高预测准确度，优化库存管理和生产计划。
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-user-tie"></i>
+                                    <span>主讲人: 吴博士</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>开始: 2023-10-20 14:00</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>时长: 100分钟</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-users"></i>
+                                    <span>报名: 75人</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge recorded">录播回放</span>
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-play-circle"></i> 观看回放
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 列表页脚 -->
+                <div class="list-footer">
+                    <div class="list-info">显示 1-6 条，共 15 条</div>
+                    <div class="pagination">
+                        <button class="btn btn-outline btn-sm">上一页</button>
+                        <div class="page-numbers">
+                            <div class="page-number active">1</div>
+                            <div class="page-number">2</div>
+                            <div class="page-number">3</div>
+                        </div>
+                        <button class="btn btn-outline btn-sm">下一页</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧讲座详情面板 -->
+            <div class="lecture-detail">
+                <div class="detail-header">
+                    <div class="detail-title">讲座详情</div>
+                    <button class="btn btn-outline btn-sm">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+                
+                <div class="detail-content">
+                    <div class="detail-section">
+                        <div class="detail-label">讲座标题</div>
+                        <div class="detail-value">人工智能在供应链中的应用</div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <div class="detail-label">所属课程</div>
+                        <div class="detail-value">供应链管理基础</div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <div class="detail-label">主讲讲师</div>
+                        <div class="detail-value">
+                            <div class="instructor-info">
+                                <div class="instructor-avatar">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <div class="instructor-details">
+                                    <div class="instructor-name">李教授</div>
+                                    <div class="instructor-title">清华大学供应链管理研究中心主任</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <div class="detail-label">开始时间</div>
+                        <div class="detail-value">2023-11-15 14:00</div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <div class="detail-label">讲座时长</div>
+                        <div class="detail-value">120分钟</div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <div class="detail-label">讲座状态</div>
+                        <div class="detail-value">
+                            <span class="status-badge upcoming">即将开始</span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <div class="detail-label">报名人数</div>
+                        <div class="detail-value">150人 / 300人</div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <div class="detail-label">讲座描述</div>
+                        <div class="detail-value">
+                            本讲座将深入探讨人工智能技术在供应链预测、库存优化和物流路径规划中的实际应用场景，结合企业案例解析技术落地难点与解决方案。
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <div class="detail-label">讲座大纲</div>
+                        <div class="detail-value">
+                            <ul class="outline-list">
+                                <li>人工智能在供应链中的核心价值</li>
+                                <li>需求预测与库存优化AI模型</li>
+                                <li>智能物流路径规划算法</li>
+                                <li>企业案例分析与实践建议</li>
+                                <li>未来发展趋势与挑战</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <div class="detail-label">适合人群</div>
+                        <div class="detail-value">
+                            <div class="audience-tags">
+                                <span class="audience-tag">供应链管理者</span>
+                                <span class="audience-tag">物流从业者</span>
+                                <span class="audience-tag">技术研发人员</span>
+                                <span class="audience-tag">企业决策者</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <div class="detail-label">学习收获</div>
+                        <div class="detail-value">
+                            <div class="benefits-list">
+                                <div class="benefit-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>掌握AI在供应链中的核心应用场景</span>
+                                </div>
+                                <div class="benefit-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>学习企业AI转型成功案例</span>
+                                </div>
+                                <div class="benefit-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>了解AI技术实施的关键挑战</span>
+                                </div>
+                                <div class="benefit-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>获得实用工具与方法论</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-actions">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-ticket-alt"></i> 立即报名
+                    </button>
+                    <button class="btn btn-outline">
+                        <i class="fas fa-share-alt"></i> 分享讲座
+                    </button>
+                    <button class="btn btn-outline">
+                        <i class="fas fa-calendar-plus"></i> 添加到日历
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化讲座页面
+            initializeLecturePage();
+        });
+        
+        // 初始化讲座页面
+        function initializeLecturePage() {
+            // 设置事件监听器
+            setupEventListeners();
+            
+            // 初始化讲座卡片动画
+            initLectureCardAnimations();
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 设置筛选器事件监听器
+            setupFilterListeners();
+            
+            // 设置讲座卡片事件监听器
+            setupLectureCardListeners();
+            
+            // 设置视图切换事件监听器
+            setupViewToggleListeners();
+            
+            // 设置排序事件监听器
+            setupSortListeners();
+            
+            // 设置分页事件监听器
+            setupPaginationListeners();
+        }
+        
+        // 设置筛选器事件监听器
+        function setupFilterListeners() {
+            // 状态筛选器点击事件
+            const statusItems = document.querySelectorAll('.status-item');
+            statusItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有激活状态
+                    statusItems.forEach(i => i.classList.remove('active'));
+                    // 添加当前激活状态
+                    this.classList.add('active');
+                    // 这里可以添加筛选逻辑
+                });
+            });
+            
+            // 分类筛选器点击事件
+            const categoryItems = document.querySelectorAll('.category-item');
+            categoryItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有激活状态
+                    categoryItems.forEach(i => i.classList.remove('active'));
+                    // 添加当前激活状态
+                    this.classList.add('active');
+                    // 这里可以添加筛选逻辑
+                });
+            });
+            
+            // 日期筛选应用按钮点击事件
+            const dateFilterBtn = document.querySelector('.date-range .btn');
+            dateFilterBtn.addEventListener('click', function() {
+                // 这里可以添加日期筛选逻辑
+            });
+            
+            // 重置筛选按钮点击事件
+            const resetFilterBtn = document.querySelector('.filter-section .btn:last-child');
+            resetFilterBtn.addEventListener('click', function() {
+                // 重置状态筛选
+                statusItems.forEach(i => i.classList.remove('active'));
+                statusItems[0].classList.add('active');
+                
+                // 重置分类筛选
+                categoryItems.forEach(i => i.classList.remove('active'));
+                categoryItems[0].classList.add('active');
+                
+                // 重置日期输入
+                const dateInputs = document.querySelectorAll('.date-input');
+                dateInputs.forEach(input => {
+                    input.value = '';
+                });
+                
+                // 重置搜索输入
+                const searchInput = document.querySelector('.search-input');
+                searchInput.value = '';
+            });
+            
+            // 搜索输入框事件
+            const searchInput = document.querySelector('.search-input');
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    // 这里可以添加搜索逻辑
+                }
+            });
+        }
+        
+        // 设置讲座卡片事件监听器
+        function setupLectureCardListeners() {
+            const lectureCards = document.querySelectorAll('.lecture-card');
+            lectureCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // 移除所有卡片的选中状态
+                    lectureCards.forEach(c => c.classList.remove('selected'));
+                    // 添加当前卡片的选中状态
+                    this.classList.add('selected');
+                    
+                    // 这里可以添加加载讲座详情的逻辑
+                });
+            });
+            
+            // 为卡片内的按钮添加事件委托，防止冒泡触发卡片点击事件
+            const cardButtons = document.querySelectorAll('.lecture-card .btn');
+            cardButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation(); // 阻止事件冒泡
+                    // 这里可以添加按钮点击逻辑
+                });
+            });
+        }
+        
+        // 设置视图切换事件监听器
+        function setupViewToggleListeners() {
+            const viewOptions = document.querySelectorAll('.view-option');
+            viewOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // 移除所有激活状态
+                    viewOptions.forEach(o => o.classList.remove('active'));
+                    // 添加当前激活状态
+                    this.classList.add('active');
+                    
+                    // 这里可以添加视图切换逻辑
+                });
+            });
+        }
+        
+        // 设置排序事件监听器
+        function setupSortListeners() {
+            const sortSelect = document.querySelector('.sort-select');
+            sortSelect.addEventListener('change', function() {
+                // 这里可以添加排序逻辑
+            });
+        }
+        
+        // 设置分页事件监听器
+        function setupPaginationListeners() {
+            const pageNumbers = document.querySelectorAll('.page-number');
+            pageNumbers.forEach(number => {
+                number.addEventListener('click', function() {
+                    // 移除所有激活状态
+                    pageNumbers.forEach(n => n.classList.remove('active'));
+                    // 添加当前激活状态
+                    this.classList.add('active');
+                    
+                    // 这里可以添加分页逻辑
+                });
+            });
+            
+            // 上一页按钮点击事件
+            const prevBtn = document.querySelector('.pagination button:first-child');
+            prevBtn.addEventListener('click', function() {
+                // 这里可以添加上一页逻辑
+            });
+            
+            // 下一页按钮点击事件
+            const nextBtn = document.querySelector('.pagination button:last-child');
+            nextBtn.addEventListener('click', function() {
+                // 这里可以添加下一页逻辑
+            });
+        }
+        
+        // 初始化讲座卡片动画
+        function initLectureCardAnimations() {
+            const lectureCards = document.querySelectorAll('.lecture-card');
+            lectureCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+        }
+        
+        // 报名功能
+        function registerForLecture(lectureId) {
+            // 这里可以添加报名逻辑
+            console.log('报名讲座:', lectureId);
+        }
+        
+        // 分享讲座功能
+        function shareLecture(lectureId) {
+            // 这里可以添加分享逻辑
+            console.log('分享讲座:', lectureId);
+        }
+        
+        // 添加到日历功能
+        function addToCalendar(lectureId) {
+            // 这里可以添加添加到日历逻辑
+            console.log('添加到日历:', lectureId);
+        }
+    </script>
+</body>
+</html>
