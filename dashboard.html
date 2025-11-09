@@ -300,7 +300,7 @@
     <div class="header">
         <div class="page-title">
             <h1>教师工作台</h1>
-            <p>欢迎回来，张老师！今天是2023年10月26日</p>
+            <p id="welcomeMessage">欢迎回来，张老师！现在是<span id="currentDate"></span></p>
         </div>
     </div>
 
@@ -496,6 +496,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('教师工作台页面已加载');
             
+            // 显示当前日期
+            updateCurrentDate();
+            
             // 为所有带有data-page属性的元素添加点击事件
             document.querySelectorAll('[data-page]').forEach(element => {
                 element.addEventListener('click', function() {
@@ -543,6 +546,17 @@
                 });
             }
         });
+        
+        // 更新当前日期显示
+        function updateCurrentDate() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            
+            const dateString = `${year}年${month}月${day}日`;
+            document.getElementById('currentDate').textContent = dateString;
+        }
         
         // 刷新活动列表
         function refreshActivity() {
